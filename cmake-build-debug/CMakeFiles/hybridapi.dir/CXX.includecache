@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/lrg/CLionProjects/hybridapi/main.cpp
+iostream
+-
+watertanksimulation.h
+/Users/lrg/CLionProjects/hybridapi/watertanksimulation.h
+
+/Users/lrg/CLionProjects/hybridapi/simulation.h
+ctime
+-
+
+/Users/lrg/CLionProjects/hybridapi/watertanksimulation.cpp
+iostream
+-
+cmath
+-
+watertanksimulation.h
+/Users/lrg/CLionProjects/hybridapi/watertanksimulation.h
+
+/Users/lrg/CLionProjects/hybridapi/watertanksimulation.h
+simulation.h
+/Users/lrg/CLionProjects/hybridapi/simulation.h
+string
+-
+sstream
+-
+
