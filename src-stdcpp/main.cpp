@@ -9,6 +9,7 @@
 #include <chrono>
 #include "labsland/simulations/watertanksimulation.h"
 #include "labsland/simulations/utils/communicatorfiles.h"
+#include "labsland/simulations/targetdevicestd.h"
 #include "labsland/utils/timemanagerstd.h"
 
 using namespace std;
@@ -18,12 +19,12 @@ using namespace LabsLand::Simulations::Utils;
 int main() {
     auto timeManager = new TimeManagerStd();
     auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("input.dump", "output.dump");
+    auto targetDevice = new TargetDeviceStd();
 
     WatertankSimulation simulation;
     simulation.injectTimeManager(timeManager);
     simulation.injectCommunicator(communicator);
-
-    // simulation->injectTargetDevice(targetDevice);
+    simulation.injectTargetDevice(targetDevice);
     std::clock_t currentClock = clock();
 
     int i = 0;
