@@ -3,4 +3,10 @@ project(hybridapi)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(hybridapi main.cpp watertanksimulation.cpp)
+add_compile_options( -I../src )
+
+add_executable(hybridapi 
+    src-stdcpp/main.cpp 
+
+    src/labsland/simulations/watertanksimulation.cpp
+)

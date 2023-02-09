@@ -1,5 +1,5 @@
 #include <iostream>
-#include "watertanksimulation.h"
+#include "labsland/simulations/watertanksimulation.h"
 
 int main() {
 
