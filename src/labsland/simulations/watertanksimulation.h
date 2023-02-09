@@ -1,5 +1,10 @@
-
-
+/*
+ * Copyright (C) 2023 onwards LabsLand, Inc.
+ * All rights reserved.
+ *
+ * This software is licensed as described in the file LICENSE, which
+ * you should have received as part of this distribution.
+ */
 #ifndef HYBRIDAPI_WATERTANKSIMULATION_H
 #define HYBRIDAPI_WATERTANKSIMULATION_H
 
