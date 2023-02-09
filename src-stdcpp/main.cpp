@@ -6,12 +6,25 @@
  * you should have received as part of this distribution.
  */
 #include <iostream>
+#include <chrono>
 #include "labsland/simulations/watertanksimulation.h"
+#include "labsland/simulations/utils/communicatorfiles.h"
+#include "labsland/utils/timemanagerstd.h"
+
+using namespace std;
+using namespace LabsLand::Utils;
+using namespace LabsLand::Simulations::Utils;
 
 int main() {
+    auto timeManager = new TimeManagerStd();
+    auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("input.dump", "output.dump");
 
     WatertankSimulation simulation;
-    clock_t currentClock = clock();
+    simulation.injectTimeManager(timeManager);
+    simulation.injectCommunicator(communicator);
+
+    // simulation->injectTargetDevice(targetDevice);
+    std::clock_t currentClock = clock();
 
     int i = 0;
     simulation._initialize();

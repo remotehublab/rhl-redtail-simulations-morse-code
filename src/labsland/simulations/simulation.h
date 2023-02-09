@@ -27,7 +27,10 @@ struct BaseOutputDataType {
  * Also, it must be a struct and it must NOT contain dynamic memory (so no "string" but char buffer[], etc.).
  */
 struct BaseInputDataType {
-    virtual void deserialize(std::string const & input) = 0;
+    /*
+     * Load the string in the struct. Return true if it succeeded, false if it did not.
+     */
+    virtual bool deserialize(std::string const & input) = 0;
 };
 
 
@@ -135,9 +138,9 @@ class Simulation
 
         /**
          *
-         * Time works different in the Raspberry Pi Pico and in standard C++. The way we handle this
-         * is by relying on a TimeManager, and later injecting a PicoTimeManager or StandardTimeManager
-         *
+         * Time works different in different embedded platforms and not necessarily compatible with standard C++. 
+         * The way we handle this is by relying on a TimeManager, and later injecting a Time Manager compatible with
+         * the target platform.
          */
         void injectTimeManager(LabsLand::Utils::TimeManager * timeManager) {
             this->timeManager = timeManager;

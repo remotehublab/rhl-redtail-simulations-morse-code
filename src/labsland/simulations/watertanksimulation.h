@@ -65,9 +65,10 @@ struct WatertankData : public BaseOutputDataType {
 struct WatertankRequest : public BaseInputDataType {
     float outputFlow;
 
-    void deserialize(std::string const & input) {
+    bool deserialize(std::string const & input) {
         std::stringstream stream(input);
         stream >> outputFlow;
+        return true;
     }
 };
 

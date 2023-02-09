@@ -7,6 +7,7 @@ add_compile_options( -I../src )
 
 add_executable(hybridapi 
     src-stdcpp/main.cpp 
+    src-stdcpp/labsland/utils/timemanagerstd.cpp
 
     src/labsland/simulations/watertanksimulation.cpp
 )
