@@ -18,8 +18,8 @@ using namespace LabsLand::Simulations::Utils;
 
 int main() {
     auto timeManager = new TimeManagerStd();
-    auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("input-messages.txt", "output-messages.txt");
-    auto targetDevice = new TargetDeviceFiles("input-gpios.txt", "output-gpios.txt");
+    auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("output-messages.txt", "input-messages.txt");
+    auto targetDevice = new TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 10, 5);
 
     WatertankSimulation simulation;
     simulation.injectTimeManager(timeManager);

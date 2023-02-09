@@ -24,7 +24,7 @@ namespace LabsLand::Simulations::Utils {
             const std::string outputFilename;
         public:
 
-            SimulationCommunicatorFiles(std::string inputFilename, std::string outputFilename): inputFilename(inputFilename), outputFilename(outputFilename) {}
+            SimulationCommunicatorFiles(std::string outputFilename, std::string inputFilename): outputFilename(outputFilename), inputFilename(inputFilename) {}
 
             /*
              * Receive data from the user interface (web browser). 

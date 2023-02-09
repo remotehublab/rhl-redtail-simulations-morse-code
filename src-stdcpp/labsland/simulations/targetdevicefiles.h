@@ -18,9 +18,16 @@ namespace LabsLand::Utils {
         private:
             const std::string inputFilename;
             const std::string outputFilename;
+            const int numberOfOutputs;
+            const int numberOfInputs;
+
+            int numberOfSimulationOutputs;
+            int numberOfSimulationInputs;
+
+            std::string getOutputValues();
 
         public:
-            TargetDeviceFiles(std::string inputFilename, std::string outputFilename);
+            TargetDeviceFiles(std::string outputFilename, std::string inputFilename, int numberOfOutputs, int numberOfInputs);
 
             /*
              * Does it support this number of inputs and outputs?

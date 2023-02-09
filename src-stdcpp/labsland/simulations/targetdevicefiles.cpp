@@ -5,27 +5,45 @@
  * This software is licensed as described in the file LICENSE, which
  * you should have received as part of this distribution.
  */
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #include "targetdevicefiles.h"
 
 using namespace std;
 using namespace LabsLand::Utils;
 
-TargetDeviceFiles::TargetDeviceFiles(string inputFilename, string outputFilename): inputFilename(inputFilename), outputFilename(outputFilename) {
+TargetDeviceFiles::TargetDeviceFiles(string outputFilename, string inputFilename, int numberOfOutputs, int numberOfInputs): inputFilename(inputFilename), outputFilename(outputFilename), numberOfOutputs(numberOfOutputs), numberOfInputs(numberOfInputs) {
 
 }
 
 bool TargetDeviceFiles::checkSimulationSupport(int outputGpios, int inputGpios) {
-    // TODO
-    return true;
+    return outputGpios <= this->numberOfOutputs && inputGpios <= this->numberOfInputs;
 }
 
 bool TargetDeviceFiles::initializeSimulation(int outputGpios, int inputGpios) {
-    // TODO
+    if (!checkSimulationSupport(outputGpios, inputGpios))
+        return false;
+
+    this->numberOfSimulationOutputs = outputGpios;
+    this->numberOfSimulationInputs = inputGpios;
+
+    // Initialize the file
+    ofstream ofile(this->outputFilename);
+    for (int i = 0; i < this->numberOfSimulationOutputs; ++i)
+        ofile << "0";
+
+    ofile.close();
     return true;
 }
 
 void TargetDeviceFiles::resetAfterSimulation() {
-    // TODO
+    this->numberOfSimulationOutputs = 0;
+    this->numberOfSimulationInputs = 0;
+
+    ofstream ofile(this->outputFilename);
+    ofile.close();
 }
 
 bool TargetDeviceFiles::initializeCustomSerial() {
@@ -33,12 +51,29 @@ bool TargetDeviceFiles::initializeCustomSerial() {
     return true;
 }
 
+string TargetDeviceFiles::getOutputValues() {
+    ifstream ifile(this->outputFilename);
+    stringstream buffer;
+    buffer << ifile.rdbuf();
+    string gpios = buffer.str();
+    ifile.close();
+    return gpios;
+}
+
 void TargetDeviceFiles::setGpio(int outputPosition, bool value) {
-    // TODO
+    string currentOutputs = this->getOutputValues();
+    if (outputPosition > currentOutputs.size()) {
+        return;
+    }
+
+    currentOutputs[outputPosition] = value?'1':'0';
+    ofstream ofile(this->outputFilename);
+    ofile << currentOutputs;
+    ofile.close();
 }
 
 void TargetDeviceFiles::resetGpio(int outputPosition) {
-    // TODO
+    this->setGpio(outputPosition, false);
 }
 
 bool TargetDeviceFiles::getGpio(int inputPosition) {
