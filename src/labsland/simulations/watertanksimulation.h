@@ -7,12 +7,10 @@
 #include <string>
 #include <sstream>
 
-
-
 /**
  * The WatertankData structure contains data that is to be transmitted to the 3D environment.
  */
-struct WatertankData {
+struct WatertankData : public BaseOutputDataType {
 
     // Level percent.
     float level;
@@ -59,7 +57,7 @@ struct WatertankData {
  * The WatertankRequest structure receives requests and interactions from the 3D environment. In the case of the
  * watertank simulation, the load (flowrate) varies dynamically, and is set externally.
  */
-struct WatertankRequest {
+struct WatertankRequest : public BaseInputDataType {
     float outputFlow;
 
     void deserialize(std::string const & input) {

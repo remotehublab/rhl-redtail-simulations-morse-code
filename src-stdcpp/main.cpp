@@ -4,7 +4,7 @@
 int main() {
 
     WatertankSimulation simulation;
-    std::clock_t currentClock = clock();
+    clock_t currentClock = clock();
 
     int i = 0;
     simulation._initialize();
