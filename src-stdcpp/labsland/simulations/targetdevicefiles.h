@@ -8,13 +8,19 @@
 #ifndef LL_TARGET_DEVICE_STD
 #define LL_TARGET_DEVICE_STD
 
+#include <string>
 #include "labsland/simulations/targetdevice.h"
 
 namespace LabsLand::Utils {
 
-    class TargetDeviceStd: public TargetDevice {
+    class TargetDeviceFiles: public TargetDevice {
+
+        private:
+            const std::string inputFilename;
+            const std::string outputFilename;
+
         public:
-            TargetDeviceStd();
+            TargetDeviceFiles(std::string inputFilename, std::string outputFilename);
 
             /*
              * Does it support this number of inputs and outputs?

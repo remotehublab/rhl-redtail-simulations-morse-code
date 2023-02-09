@@ -9,7 +9,7 @@
 #include <chrono>
 #include "labsland/simulations/watertanksimulation.h"
 #include "labsland/simulations/utils/communicatorfiles.h"
-#include "labsland/simulations/targetdevicestd.h"
+#include "labsland/simulations/targetdevicefiles.h"
 #include "labsland/utils/timemanagerstd.h"
 
 using namespace std;
@@ -18,8 +18,8 @@ using namespace LabsLand::Simulations::Utils;
 
 int main() {
     auto timeManager = new TimeManagerStd();
-    auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("input.dump", "output.dump");
-    auto targetDevice = new TargetDeviceStd();
+    auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("input-messages.txt", "output-messages.txt");
+    auto targetDevice = new TargetDeviceFiles("input-gpios.txt", "output-gpios.txt");
 
     WatertankSimulation simulation;
     simulation.injectTimeManager(timeManager);
