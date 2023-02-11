@@ -77,8 +77,15 @@ void TargetDeviceFiles::resetGpio(int outputPosition) {
 }
 
 bool TargetDeviceFiles::getGpio(int inputPosition) {
-    // TODO
-    return false;
+    ifstream ifile(this->inputFilename);
+    stringstream buffer;
+    buffer << ifile.rdbuf();
+    string gpios = buffer.str();
+    ifile.close();
+    if (inputPosition >= gpios.size())
+        return false;
+
+    return gpios[inputPosition] == '1';
 }
 
 void TargetDeviceFiles::setGpio(NamedGpio outputPosition, bool value) {

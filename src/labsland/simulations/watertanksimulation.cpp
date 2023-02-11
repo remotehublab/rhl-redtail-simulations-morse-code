@@ -76,5 +76,6 @@ void WatertankSimulation::initialize() {
     mState.lowSensorActive = mState.level >= 0.20;
     mState.midSensorActive = mState.level >= 0.50;
     mState.highSensorActive = mState.level >= 0.80;
+    requestReportState();
 }
 

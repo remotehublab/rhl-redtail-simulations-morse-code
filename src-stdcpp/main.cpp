@@ -6,6 +6,7 @@
  * you should have received as part of this distribution.
  */
 #include <iostream>
+#include <thread>
 #include <chrono>
 #include "labsland/simulations/watertanksimulation.h"
 #include "labsland/simulations/utils/communicatorfiles.h"
@@ -16,30 +17,93 @@ using namespace std;
 using namespace LabsLand::Utils;
 using namespace LabsLand::Simulations::Utils;
 
-int main() {
-    auto timeManager = new TimeManagerStd();
-    auto communicator = new SimulationCommunicatorFiles<WatertankData, WatertankRequest>("output-messages.txt", "input-messages.txt");
-    auto targetDevice = new TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 10, 5);
+class SimulationRunner {
+    public:
+        virtual void run() = 0;
+};
 
-    WatertankSimulation simulation;
-    simulation.injectTimeManager(timeManager);
-    simulation.injectCommunicator(communicator);
-    simulation.injectTargetDevice(targetDevice);
-    std::clock_t currentClock = clock();
+template <class SimulationClass, class OutputDataType, class InputDataType>
+class ConcreteSimulationRunner : public SimulationRunner {
+    private:
+        string configuration; // "files" or anything else in the future (e.g., maybe provide another class or whatever)
+        string mode; // "run" or "run-fast"
+    public:
+        ConcreteSimulationRunner(const string & config, const string & mode): configuration(config), mode(mode) {}
 
-    int i = 0;
-    simulation._initialize();
+        void run() {
+            auto timeManager = new TimeManagerStd();
+            TargetDevice * targetDevice = 0;
+            SimulationCommunicator<OutputDataType, InputDataType> * communicator;
+            if (configuration == "files") {
+                targetDevice = new TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 10, 5);
+                communicator = new SimulationCommunicatorFiles<OutputDataType, InputDataType>("output-messages.txt", "input-messages.txt");
+            } else {
+                // Add here other implementations
+                cerr << "Unsupported configuration: " << configuration << endl;
+                return;
+            }
+            SimulationClass simulation;
+            simulation.injectTimeManager(timeManager);
+            simulation.injectCommunicator(communicator);
+            simulation.injectTargetDevice(targetDevice);
 
-    while(i < 100) {
+            simulation._initialize();
 
-        currentClock += 0.1 * CLOCKS_PER_SEC; // Make the simulation advance 100 ms.
-        simulation._update(currentClock);
-        i++;
+            if (mode == "run-fast") {
+                std::clock_t currentClock = clock();
+                int i = 0;
+                while(i < 100) {
+                    currentClock += 0.1 * CLOCKS_PER_SEC; // Make the simulation advance 100 ms.
+                    simulation._update(currentClock);
+                    i++;
 
-        std::cout << "Current water level: " << simulation.mState.level << std::endl;
-        std::cout << "Current volume out of total: " << simulation.mState.volume << " l out of " << simulation.mState.totalVolume << std::endl;
-        std::cout << std::endl;
+                    cout << "Current water level: " << simulation.mState.level << endl;
+                    cout << "Current volume out of total: " << simulation.mState.volume << " l out of " << simulation.mState.totalVolume << endl;
+                    cout << endl;
+                }
+            } else if (mode == "run") {
+                while (true) {
+                    cout << "Running _update()" << endl;
+                    simulation._update();
+                    this_thread::sleep_for (chrono::milliseconds(100));
+                }
+            } else {
+                cerr << "Unsupported mode: " << mode << endl;
+            }
+        }
+};
+
+
+int main(int argc, char * argv[]) {
+    if (argc == 1) {
+        cerr << "No simulation requested. Run " << argv[0] << " <simulation>" << endl;
+        return 1;
     }
+
+    string simulation(argv[1]);
+    string configuration;
+    if (argc >= 3) {
+        configuration = argv[2];
+    } else {
+        configuration = "files";
+    }
+    string mode;
+    if (argc >= 4) {
+        mode = argv[3];
+    } else {
+        mode = "run";
+    }
+
+    SimulationRunner * runner = 0;
+
+    if (simulation == "watertank") {
+        runner = new ConcreteSimulationRunner<WatertankSimulation, WatertankData, WatertankRequest>(configuration, mode);
+    } else {
+        cerr << "Invalid simulation: '" << simulation << "'. Use a valid name" << endl;
+        return 2;
+    }
+
+    runner->run();
 
     return 0;
 }

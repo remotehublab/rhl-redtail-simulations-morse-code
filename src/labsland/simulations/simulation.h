@@ -113,7 +113,7 @@ class Simulation
          * perspective.
          */
         void sendVirtualEnvironmentReport() {
-        this->communicator->sendReport(mState);
+            this->communicator->sendReport(mState);
         }
 
         /**
