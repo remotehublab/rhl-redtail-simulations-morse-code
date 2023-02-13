@@ -20,7 +20,7 @@ main_blueprint = Blueprint('main', __name__)
 
 @main_blueprint.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("index.html", sep=os.sep)
 
 def supports_long_polling(func):
     """
@@ -59,10 +59,14 @@ def check_long_polling(value) -> bool:
     return False
 
 
-@main_blueprint.route('/api/gpios/sim2web/', defaults={'number': None})
-@main_blueprint.route('/api/gpios/sim2web/<int:number>')
+@main_blueprint.route('/api')
+def api_index():
+    return "API root"
+
+@main_blueprint.route('/api/gpios/sim2dut/', defaults={'number': None})
+@main_blueprint.route('/api/gpios/sim2dut/<int:number>')
 @supports_long_polling
-def gpios_sim2web(number: Optional[int]):
+def gpios_sim2dut(number: Optional[int]):
     """
     Obtain the data that the simulation tries to send to the web.
 
@@ -75,24 +79,25 @@ def gpios_sim2web(number: Optional[int]):
 
     if you want the server to wait at most 15 seconds OR whenever the new response != 101.
     """
-    sim2web_gpios_size = current_app.config['GPIO_SIMULATIONS2WEB_FILE_SIZE']
+    sim2dut_gpios_size = current_app.config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']
     if number is not None:
-        if number < 0 or number >= sim2web_gpios_size:
-            return jsonify(success=False, message=f"Requested GPIO number {number} is outside the range of sim2web: 0..{sim2web_gpios_size-1}"), 400
+        if number < 0 or number >= sim2dut_gpios_size:
+            return jsonify(success=False, message=f"Requested GPIO number {number} is outside the range of sim2dut: 0..{sim2dut_gpios_size-1}"), 400
 
-    sim2web_gpios = current_app.config['GPIO_SIMULATIONS2WEB_FILE']
+    binary_dir = current_app.config['BINARY_DIRECTORY']
+    sim2dut_gpios = os.path.join(binary_dir, current_app.config['SIMULATION_CONFIG']['gpios']['sim2dut']['file'])
 
     while True:
-        if not os.path.exists(sim2web_gpios):
-            logger.warning(f"File {sim2web_gpios} not found. It might be normal if file is starting.")
+        if not os.path.exists(sim2dut_gpios):
+            logger.warning(f"File {sim2dut_gpios} not found. It might be normal if file is starting.")
             if number is None:
-                value = '0' * sim2web_gpios_size
+                value = '0' * sim2dut_gpios_size
             else:
                 value = '0'
         else:
-            content = open(sim2web_gpios, 'r').read().strip()
-            content = content[:sim2web_gpios_size]
-            content = content + '0' * (sim2web_gpios_size - len(content))
+            content = open(sim2dut_gpios, 'r').read().strip()
+            content = content[:sim2dut_gpios_size]
+            content = content + '0' * (sim2dut_gpios_size - len(content))
             if number is None:
                 value = content
             else:
@@ -107,33 +112,34 @@ def gpios_sim2web(number: Optional[int]):
             return jsonify(success=True, value=value == '1')
 
 
-@main_blueprint.route('/api/gpios/web2sim/', defaults={'number': None})
-@main_blueprint.route('/api/gpios/web2sim/<int:number>', methods=['GET', 'POST'])
+@main_blueprint.route('/api/gpios/dut2sim/', defaults={'number': None})
+@main_blueprint.route('/api/gpios/dut2sim/<int:number>', methods=['GET', 'POST'])
 @supports_long_polling
-def gpios_web2sim(number: Optional[int]):
-    web2sims_gpios = current_app.config['GPIO_WEB2SIMULATIONS_FILE']
-    web2sims_gpios_size = current_app.config['GPIO_WEB2SIMULATIONS_FILE_SIZE']
+def gpios_dut2sim(number: Optional[int]):
+    binary_dir = current_app.config['BINARY_DIRECTORY']
+    dut2sims_gpios = os.path.join(binary_dir, current_app.config['SIMULATION_CONFIG']['gpios']['dut2sim']['file'])
+    dut2sims_gpios_size = current_app.config['SIMULATION_CONFIG']['gpios']['dut2sim']['number']
 
     if number is not None:
-        if number < 0 or number >= web2sims_gpios_size:
-            return jsonify(success=False, message=f"Requested GPIO number {number} is outside the range of web2simulations: 0..{web2sims_gpios_size-1}"), 400
+        if number < 0 or number >= dut2sims_gpios_size:
+            return jsonify(success=False, message=f"Requested GPIO number {number} is outside the range of dut2simulations: 0..{dut2sims_gpios_size-1}"), 400
 
-    if os.path.exists(web2sims_gpios):
-        content = open(web2sims_gpios).read().strip()
-        content = content[:web2sims_gpios_size]
-        content = content + '0' * (web2sims_gpios_size - len(content))
+    if os.path.exists(dut2sims_gpios):
+        content = open(dut2sims_gpios).read().strip()
+        content = content[:dut2sims_gpios_size]
+        content = content + '0' * (dut2sims_gpios_size - len(content))
     else:
-        content = '0' * web2sims_gpios_size
-        logger.warning(f"File {web2sims_gpios} not found. It might be normal if sim is starting.")
+        content = '0' * dut2sims_gpios_size
+        logger.warning(f"File {dut2sims_gpios} not found. It might be normal if sim is starting.")
 
     if request.method == 'GET':
         while True:
-            if os.path.exists(web2sims_gpios):
-                content = open(web2sims_gpios).read().strip()
-                content = content[:web2sims_gpios_size]
-                content = content + '0' * (web2sims_gpios_size - len(content))
+            if os.path.exists(dut2sims_gpios):
+                content = open(dut2sims_gpios).read().strip()
+                content = content[:dut2sims_gpios_size]
+                content = content + '0' * (dut2sims_gpios_size - len(content))
             else:
-                content = '0' * web2sims_gpios_size
+                content = '0' * dut2sims_gpios_size
 
             if number is None:
                 value = content
@@ -161,23 +167,24 @@ def gpios_web2sim(number: Optional[int]):
     content_as_list[number] = '1' if value else '0'
     content = ''.join(content_as_list)
 
-    if os.path.exists(web2sims_gpios):
+    if os.path.exists(dut2sims_gpios):
         mode = 'r+' # Be able to go to the beginning and change it
     else:
         mode = 'w' # File does not exist, add the content
 
-    with open(web2sims_gpios, mode) as web2sims_write_mode:
-        web2sims_write_mode.seek(0)
-        web2sims_write_mode.write(content)
-        web2sims_write_mode.truncate(web2sims_gpios_size)
-        web2sims_write_mode.flush()
+    with open(dut2sims_gpios, mode) as dut2sims_write_mode:
+        dut2sims_write_mode.seek(0)
+        dut2sims_write_mode.write(content)
+        dut2sims_write_mode.truncate(dut2sims_gpios_size)
+        dut2sims_write_mode.flush()
 
     return jsonify(success=True)
 
 @main_blueprint.route('/api/messages/sim2web/')
 @supports_long_polling
 def messages_sim2web():
-    sim2web_messages = current_app.config['MESSAGES_SIMULATIONS2WEB_FILE']
+    binary_dir = current_app.config['BINARY_DIRECTORY']
+    sim2web_messages = os.path.join(binary_dir, current_app.config['SIMULATION_CONFIG']['messages']['sim2web']['file'])
     while True:
         if os.path.exists(sim2web_messages):
             value = open(sim2web_messages).read().strip()
@@ -193,7 +200,8 @@ def messages_sim2web():
 @main_blueprint.route('/api/messages/web2sim/', methods=['GET', 'POST'])
 @supports_long_polling
 def messages_web2sim():
-    web2sim_messages = current_app.config['MESSAGES_WEB2SIMULATIONS_FILE']
+    binary_dir = current_app.config['BINARY_DIRECTORY']
+    web2sim_messages = os.path.join(binary_dir, current_app.config['SIMULATION_CONFIG']['messages']['web2sim']['file'])
     if request.method == 'GET':
         while True:
             if os.path.exists(web2sim_messages):

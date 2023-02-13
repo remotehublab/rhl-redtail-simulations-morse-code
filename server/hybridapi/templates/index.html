@@ -1,11 +1,136 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-      <title>Simulation runner</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LabsLand Simulation Runner</title>
+    <link href="{{ url_for('static', filename='vendor/bootstrap-5.2.3/css/bootstrap.min.css') }}" rel="stylesheet">
   </head>
   <body>
-	<p>Hello world</p>
-  </body>    
+    <div class="container-fluid">
+        <h2>LabsLand Simulation Runner</h2>
+        
+        <ul>
+            <li>Simulation: {{ config['SIMULATION_CONFIG']['name'] }}</li>
+            <li>Description: {{ config['SIMULATION_CONFIG']['description'] }}</li>
+            <li>File: {{ config['SIMULATIONS_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG_FILE'] }}</li>
+        </ul>
+        <div class="row">
+            <div class="col">
+                <h3>GPIOs</h3>
+
+                <strong>Simulation to Device Under Test:</strong>
+                <br>
+                <small><tt>{{ config['BINARY_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['file'] }}</tt></small>
+                <br>
+
+                {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']['number'] == 0 %}
+                    No GPIO in this direction
+                {% else %}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                {% for n in range(config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']) %}
+                                <th>gpio-sim2dut-{{ n }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for n in range(config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']) %}
+                                <td id="gpios-sim2dut-{{ n }}">
+                                    <div class="form-check gpio-sim2dut">
+                                        <input class="form-check-input" disabled type="checkbox" id="gpios-sim2dut-{{ n }}" data-number="{{ n }}">
+                                        <label class="form-check-label" for="gpios-sim2dut-{{ n }}" id="gpios-sim2dut-{{ n }}-label">0</label>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endif %}
+
+                <strong>Device Under Test to simulation:</strong>
+                <br>
+                <small><tt>{{ config['BINARY_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG']['gpios']['dut2sim']['file'] }}</tt></small>
+                <br>
+
+                {% if config['SIMULATION_CONFIG']['gpios']['dut2sim']['number'] == 0 %}
+                    No GPIO in this direction
+                {% else %}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                {% for n in range(config['SIMULATION_CONFIG']['gpios']['dut2sim']['number']) %}
+                                <th>gpio-dut2sim-{{ n }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for n in range(config['SIMULATION_CONFIG']['gpios']['dut2sim']['number']) %}
+                                <td>
+                                    <div class="form-check gpio-dut2sim">
+                                        <input class="form-check-input" type="checkbox" id="gpios-dut2sim-{{ n }}" data-number="{{ n }}">
+                                        <label class="form-check-label" for="gpios-dut2sim-{{ n }}" id="gpios-dut2sim-{{ n }}-label">0</label>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endif %}
+
+            </div>
+            <div class="col">
+                <h3>Messages</h3>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Simulation 2 web:</strong>
+                                <br>
+                                <small><tt>{{ config['BINARY_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG']['messages']['sim2web']['file'] }}</tt></small>
+                            </td>
+                            <td id="sim2web-messages"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Web 2 simulation:</strong>
+                                <br>
+                                <small><tt>{{ config['BINARY_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG']['messages']['web2sim']['file'] }}</tt></small>
+                            
+                            </td>
+                            <td>
+                                <input type="text" id="web2sim-messages"></input>
+                                <button class="btn btn-primary" id="web2sim-messages-button">Send</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2>Simulation iframe</h2>
+
+            <ul>
+                <li>Location: {{ url_for('static', filename='simulations/' + config['SIMULATION_CONFIG']['iframe']) }}</li>
+                <li>Note: please use relative URLs inside your simulation</li>
+            </ul>
+            <iframe src="{{ url_for('static', filename='simulations/' + config['SIMULATION_CONFIG']['iframe']) }}" width="100%" height="500px" style="border: 1px solid black"></iframe>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='vendor/jquery-3.6.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap-5.2.3/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ll-loader.js') }}"></script>
+    <script>
+        window.BASE_URL = "{{ url_for('.api_index') }}";
+        window.SIM2DUT_STATUS = "";
+        window.DUT2SIM_STATUS = "";
+        window.WEB2SIM_STATUS = "";
+        window.SIM2WEB_STATUS = "";
+        loadSimulation();
+    </script>
+  </body>
 </html>
-
-
-

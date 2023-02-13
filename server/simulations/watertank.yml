@@ -1,0 +1,10 @@
+name: Watertank
+description: This is a watertank simulation
+iframe: watertank/watertank.html
+gpios:
+  sim2dut:
+    # 3 sensors (low, mid, high)
+    number: 3
+  dut2sim:
+    # 2 actuators (pump1, pump2)
+    number: 2
