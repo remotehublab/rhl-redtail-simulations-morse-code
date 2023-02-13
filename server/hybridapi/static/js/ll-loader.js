@@ -44,6 +44,10 @@ function requestWeb2SimMessages() {
 
 function requestSim2WebMessages() {
     $.get(window.BASE_URL + "/messages/sim2web/?previous_response=" + encodeURIComponent(window.SIM2WEB_STATUS)).done(function (data) {
+        if (window.SIM2WEB_STATUS != data.value) {
+            console.log("Sending data with postMessage");
+            $("#simulation-iframe")[0].contentWindow.postMessage(data.value);
+        }
         window.SIM2WEB_STATUS = data.value;
         $("#sim2web-messages").text(data.value);
         requestSim2WebMessages();
@@ -77,6 +81,11 @@ function initializeGpios() {
         });
     });
 
+    requestDut2SimGpios();
+    requestSim2DutGpios();
+}
+
+function initializeMessages() {
     $("#web2sim-messages-button").click(function() {
         $.ajax({
             'url': window.BASE_URL + "/messages/web2sim/",
@@ -88,8 +97,24 @@ function initializeGpios() {
         });
     });
 
-    requestDut2SimGpios();
-    requestSim2DutGpios();
+
+    window.addEventListener("message", (event) => {
+        var simulationIframe = $("#simulation-iframe")[0];
+        if (event.source != event.source == simulationIframe.contentWindow) {
+            console.log("Message from somewhere other than the iframe", event);
+            return;
+        }
+        $.ajax({
+            'url': window.BASE_URL + "/messages/web2sim/",
+            'method': 'POST',
+            'dataType': 'json',
+            'data': JSON.stringify({
+                value: event.data 
+            })
+        });
+    }, false);
+    
+
     requestWeb2SimMessages();
     requestSim2WebMessages();
 }
@@ -97,4 +122,5 @@ function initializeGpios() {
 function loadSimulation() {
     window.sim2dut = "";
     initializeGpios();
+    initializeMessages();
 }

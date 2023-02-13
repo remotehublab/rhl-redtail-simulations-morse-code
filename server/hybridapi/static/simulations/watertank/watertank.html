@@ -1,1 +1,23 @@
-This is an iframe :-)
+<html>
+    <body>
+        <p>This is an iframe :-)</p>
+        <p>Latest message received from the simulation: <span id="sim2web"></span></p>
+        <p>Send a message to the simulation: <input id="web2sim"></input> <button id="web2sim-btn">Send</button> </p>
+
+        <script>
+            window.addEventListener("message", (event) => {
+                if (event.source != parent) {
+                    console.log("Message from somewhere other than the parent window", event);
+                    return;
+                }
+                document.getElementById("sim2web").innerText = event.data;
+            }, false);
+
+            document.getElementById("web2sim-btn").addEventListener("click", (event) => {
+                var textMessage = document.getElementById("web2sim").value;
+                console.log("Sending " + textMessage + " to parent window");
+                parent.postMessage(textMessage);
+            }, false);
+        </script>
+    </body>
+</html>
