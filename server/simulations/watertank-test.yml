@@ -1,6 +1,6 @@
 name: Watertank
 description: This is a watertank simulation
-iframe: https://ll-static-apps.s3.eu-central-1.amazonaws.com/watertank/index.html
+iframe: watertank/watertank.html
 gpios:
   sim2dut:
     # 3 sensors (low, mid, high)
