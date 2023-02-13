@@ -16,12 +16,8 @@ import getpass
 import hashlib
 
 from flask import Flask
-from flask_redis import FlaskRedis
 
 from config import configurations
-
-# Plugins
-redis_store = FlaskRedis(decode_responses=True)
 
 def create_app(config_name: str = 'default'):
 
@@ -56,9 +52,6 @@ def create_app(config_name: str = 'default'):
 
     if not app.config['SIMULATION_CONFIG'].get('iframe'):
         raise Exception("iframe is mandatory in any simulation .yml file") 
-
-    # Initialize plugins
-    redis_store.init_app(app)
 
     # Register views
     from .views.main import main_blueprint
