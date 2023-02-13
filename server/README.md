@@ -54,6 +54,6 @@ To run the dev server you may in parallel run:
 
 ```
 $ . devrc
-$ export SIMULATION_CONFIG_FILE=watertank
+$ export SIMULATION_CONFIG_FILE=watertank-test.yml
 $ flask run
 ```

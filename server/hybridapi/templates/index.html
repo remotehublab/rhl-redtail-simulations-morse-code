@@ -115,13 +115,20 @@
             <h2>Simulation iframe</h2>
 
             <ul>
-                <li>Location: {{ url_for('static', filename='simulations/' + config['SIMULATION_CONFIG']['iframe']) }}</li>
+                <li>Location: {{ url_for('static', filename='simulations/' + config['SIMULATION_CONFIG']['iframe']['url']) }}</li>
                 <li>Note: please use relative URLs inside your simulation</li>
             </ul>
-            <iframe id="simulation-iframe" src="{{ url_for('static', filename='simulations/' + config['SIMULATION_CONFIG']['iframe']) }}" width="100%" height="500px" style="border: 1px solid black"></iframe>
+            {% if config['SIMULATION_CONFIG']['iframe']['url'].startswith(('http://', 'https://')) %}
+                {% set iframe_src = config['SIMULATION_CONFIG']['iframe']['url'] %}
+            {% else %}
+                {% set iframe_src = url_for('static', filename='simulations/') + config['SIMULATION_CONFIG']['iframe']['url'] %}
+            {% endif %}
+            {% set initial_height = config['SIMULATION_CONFIG']['iframe'].get('height', '500') %}
+            <iframe id="simulation-iframe" src="{{ iframe_src }}" width="100%" height="{{ initial_height }}" style="border: 1px solid black"></iframe>
         </div>
     </div>
     <script src="{{ url_for('static', filename='vendor/jquery-3.6.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/iframeResizer.min.js') }}"></script>
     <script src="{{ url_for('static', filename='vendor/bootstrap-5.2.3/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ll-loader.js') }}"></script>
     <script>
@@ -131,6 +138,8 @@
         window.WEB2SIM_STATUS = "";
         window.SIM2WEB_STATUS = "";
         loadSimulation();
+
+        iFrameResize({ log: true }, '#simulation-iframe')
     </script>
   </body>
 </html>
