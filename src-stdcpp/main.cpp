@@ -62,8 +62,13 @@ class ConcreteSimulationRunner : public SimulationRunner {
                     cout << endl;
                 }
             } else if (mode == "run") {
+                time_t end_time;
                 while (true) {
-                    cout << "Running _update()" << endl;
+                    auto end = std::chrono::system_clock::now();
+                    end_time = std::chrono::system_clock::to_time_t(end);
+                    string timeString(ctime(&end_time));
+
+                    cout << "[" << timeString.substr(0, timeString.size() - 1) << "] Running _update()" << endl;
                     simulation._update();
                     this_thread::sleep_for (chrono::milliseconds(100));
                 }

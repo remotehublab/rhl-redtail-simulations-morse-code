@@ -253,6 +253,20 @@ class Simulation
             return 0;
         }
 
+        /*
+         * Log a message
+         */
+        virtual void log(std::string message) {
+            this->log() << message << std::endl;
+        }
+
+        /*
+         * Get an ostream to log to
+         */
+        virtual std::ostream& log() {
+            return this->targetDevice->log();
+        }
+
         /**
          * To initialize the simulation.
          */

@@ -12,6 +12,8 @@
 
 void WatertankSimulation::initialize() {
 
+    this->targetDevice->initializeSimulation(3, 2);
+
     // Calculate the total volume of the tank.
     // V = pi * r*2 * h (in m3)
     float radius = WATERTANK_DIAMETER / 2;
@@ -30,7 +32,7 @@ void WatertankSimulation::initialize() {
 
  void WatertankSimulation::update(double delta) {
 
-    std::cout << "Updating simulation. Delta: " << delta << std::endl;
+    this->log() << "Updating simulation. Delta: " << delta << std::endl;
 
     // Check if we have received any interaction from the 3D environment.
     // TO-DO: Maybe a better API would be exception-based so that it can return by value and be slightly more explicit.
@@ -43,7 +45,12 @@ void WatertankSimulation::initialize() {
         mCurrentDemandFlowrate = request.outputFlow;
     }
 
-    float addedWater = 0;
+    double addedWater = 0;
+
+    mState.pump1Active = this->targetDevice->getGpio(0);
+    mState.pump2Active = this->targetDevice->getGpio(1);
+
+    this->log() << "Pumps: pump1: " << mState.pump1Active << "; pump2: " << mState.pump2Active << std::endl;
 
     if(mState.pump1Active) {
         // Pump1 is adding water at PUMP1_FLOWRATE liters per second.
@@ -60,6 +67,8 @@ void WatertankSimulation::initialize() {
     float removedWater = 0;
     removedWater = mCurrentDemandFlowrate * delta;
 
+    this->log() << "Old volume: " << mState.volume << "; adding: " << addedWater << "; removing (flow rate=" << mCurrentDemandFlowrate << "): " << removedWater << std::endl;
+
     // Update the volume.
     mState.volume = mState.volume + addedWater - removedWater;
     if (mState.volume < 0) {
@@ -72,10 +81,17 @@ void WatertankSimulation::initialize() {
 
     mState.level = mState.volume / mState.totalVolume;
 
+    this->log() << "New volume: " << mState.volume << "; which is level=" << mState.level << std::endl;
+
     // Update the state of the level sensors according to the watertank level.
     mState.lowSensorActive = mState.level >= 0.20;
     mState.midSensorActive = mState.level >= 0.50;
     mState.highSensorActive = mState.level >= 0.80;
+    this->log() << "Sensors: Low (0.2): " << mState.lowSensorActive << "; Mid (0.5): " << mState.midSensorActive << "; High (0.8): " << mState.highSensorActive << std::endl;
+
+    this->targetDevice->setGpio(0, mState.lowSensorActive);
+    this->targetDevice->setGpio(1, mState.midSensorActive);
+    this->targetDevice->setGpio(2, mState.highSensorActive);
     requestReportState();
 }
 

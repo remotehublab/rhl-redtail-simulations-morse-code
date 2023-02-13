@@ -27,6 +27,7 @@ LabsLand::Utils::clock_t TimeManagerStd::getAbsoluteTime() {
 }
 
 uint64_t TimeManagerStd::getClocksPerSec() {
-    return CLOCKS_PER_SEC;
+    // Should be CLOCKS_PER_SEC
+    return 1000;
 }
 

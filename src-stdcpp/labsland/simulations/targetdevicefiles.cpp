@@ -60,6 +60,10 @@ string TargetDeviceFiles::getOutputValues() {
     return gpios;
 }
 
+ostream& TargetDeviceFiles::log() {
+    return cout;
+}
+
 void TargetDeviceFiles::setGpio(int outputPosition, bool value) {
     string currentOutputs = this->getOutputValues();
     if (outputPosition > currentOutputs.size()) {

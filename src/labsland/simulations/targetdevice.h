@@ -8,6 +8,8 @@
 #ifndef LL_TARGET_DEVICE
 #define LL_TARGET_DEVICE
 
+#include <iostream>
+
 namespace LabsLand::Utils {
 
 
@@ -97,6 +99,13 @@ namespace LabsLand::Utils {
             virtual void setGpio(int outputPosition, bool value = true) = 0;
             virtual void resetGpio(int outputPosition) = 0;
             virtual bool getGpio(int inputPosition) = 0;
+
+            /*
+             * Get log() so as to do:
+             *
+             * targetDevice->log() << "foo";
+             */
+            virtual std::ostream& log() = 0;
 
             /**
              * Same, but using custom names

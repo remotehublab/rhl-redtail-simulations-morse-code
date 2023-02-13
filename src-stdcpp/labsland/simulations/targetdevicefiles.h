@@ -51,6 +51,8 @@ namespace LabsLand::Utils {
              */
             virtual bool initializeCustomSerial();
 
+            virtual std::ostream& log();
+
             // Add other protocols in the future
 
             /*
