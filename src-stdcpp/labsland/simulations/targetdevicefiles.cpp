@@ -57,6 +57,13 @@ string TargetDeviceFiles::getOutputValues() {
     buffer << ifile.rdbuf();
     string gpios = buffer.str();
     ifile.close();
+
+    while(gpios.size() < this->numberOfSimulationOutputs)
+        gpios += "0";
+
+    if (gpios.size() > this->numberOfSimulationOutputs)
+        gpios = gpios.substr(0, this->numberOfSimulationOutputs);
+
     return gpios;
 }
 

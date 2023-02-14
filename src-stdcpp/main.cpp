@@ -36,7 +36,7 @@ class ConcreteSimulationRunner : public SimulationRunner {
             TargetDevice * targetDevice = 0;
             SimulationCommunicator<OutputDataType, InputDataType> * communicator;
             if (configuration == "files") {
-                targetDevice = new TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 10, 5);
+                targetDevice = new TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 20, 10);
                 communicator = new SimulationCommunicatorFiles<OutputDataType, InputDataType>("output-messages.txt", "input-messages.txt");
             } else {
                 // Add here other implementations
