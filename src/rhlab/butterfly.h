@@ -60,12 +60,20 @@ struct gpio_header {
 };
 
 // struct that receives the string
-struct butterfly_request {
+struct butterfly_request : public BaseInputDataType {
     char my_string[MAX_CHAR_ARRAY_SIZE];
+
+    bool deserialize(std::string const & input) {
+        if (input.size() < MAX_CHAR_ARRAY_SIZE - 1) {
+            strcpy(my_string, input.c_str());
+            return true;
+        }
+        return false;
+    }
 };
 
 // struct that tracks the virtual LED states
-struct butterfly_data {
+struct butterfly_data : public BaseOutputDataType {
     bool virtual_led[LED_ARRAY_SIZE];
 
     string serialize() const {
