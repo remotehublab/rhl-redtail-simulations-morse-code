@@ -3,4 +3,4 @@ export FLASK_CONFIG=development
 export FLASK_DEBUG=1
 export FLASK_RUN_WITH_THREADS=1
 # Use your own SIMULATION_CONFIG_FILE, such as:
-# export SIMULATION_CONFIG_FILE=watertank.yml
+# export SIMULATION_CONFIG_FILE=watertank-test.yml

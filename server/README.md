@@ -11,7 +11,7 @@ gpios:
     number: 3  
   dut2sim:  
     # 2 actuators (pump1, pump2)  
-    numer: 4
+    number: 4
 ```
 
 You may specify also "file", "messages -> web2sim -> file", etc.
@@ -40,12 +40,20 @@ Messages are strings (simple, text messages with no newline) send and received f
   1. web2sim: from the web interface to the simulation.
   1. sim2web: from the simulation to the web interface.
 
+
+
 ## Running the simulation
 
-In parallel, run the simulation process, and then run:
+After compiling the simulation, it may be run:
+
+```
+./hybridapi watertank
+```
+
+To run the dev server you may in parallel run:
 
 ```
 $ . devrc
-$ export SIMULATION_CONFIG_FILE=watertank
+$ export SIMULATION_CONFIG_FILE=watertank-test.yml
 $ flask run
 ```

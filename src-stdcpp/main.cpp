@@ -57,8 +57,7 @@ class ConcreteSimulationRunner : public SimulationRunner {
                     simulation._update(currentClock);
                     i++;
 
-                    cout << "Current water level: " << simulation.mState.level << endl;
-                    cout << "Current volume out of total: " << simulation.mState.volume << " l out of " << simulation.mState.totalVolume << endl;
+                    cout << "Current state: " << simulation.mState.serialize() << endl;
                     cout << endl;
                 }
             } else if (mode == "run") {

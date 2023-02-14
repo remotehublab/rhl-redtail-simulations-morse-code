@@ -1,7 +1,7 @@
 name: Watertank
 description: This is a watertank simulation
 iframe:
-  url: https://ll-static-apps.s3.eu-central-1.amazonaws.com/watertank/index.html
+  url: watertank/watertank.html
   height: 500
 gpios:
   sim2dut:
