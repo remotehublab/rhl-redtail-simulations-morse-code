@@ -15,7 +15,6 @@
 #include "labsland/utils/timemanagerstd.h"
 
 using namespace std;
-using namespace LabsLand::Utils;
 using namespace LabsLand::Simulations::Utils;
 
 class SimulationRunner {
@@ -32,11 +31,11 @@ class ConcreteSimulationRunner : public SimulationRunner {
         ConcreteSimulationRunner(const string & config, const string & mode): configuration(config), mode(mode) {}
 
         void run() {
-            auto timeManager = new TimeManagerStd();
-            TargetDevice * targetDevice = 0;
+            auto timeManager = new LabsLand::Utils::TimeManagerStd();
+            LabsLand::Utils::TargetDevice * targetDevice = 0;
             SimulationCommunicator<OutputDataType, InputDataType> * communicator;
             if (configuration == "files") {
-                targetDevice = new TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 20, 10);
+                targetDevice = new LabsLand::Utils::TargetDeviceFiles("output-gpios.txt", "input-gpios.txt", 20, 10);
                 communicator = new SimulationCommunicatorFiles<OutputDataType, InputDataType>("output-messages.txt", "input-messages.txt");
             } else {
                 // Add here other implementations
