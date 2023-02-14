@@ -4,6 +4,7 @@
 
 #include "../labsland/simulations/simulation.h"
 #include <string>
+#include <cstring>
 #include <sstream>
 #include <stdio.h>
 
@@ -60,7 +61,7 @@ struct gpio_header {
 };
 
 // struct that receives the string
-struct butterfly_request : public BaseInputDataType {
+struct ButterflyRequest : public BaseInputDataType {
     char my_string[MAX_CHAR_ARRAY_SIZE];
 
     bool deserialize(std::string const & input) {
@@ -73,7 +74,7 @@ struct butterfly_request : public BaseInputDataType {
 };
 
 // struct that tracks the virtual LED states
-struct butterfly_data : public BaseOutputDataType {
+struct ButterflyData : public BaseOutputDataType {
     bool virtual_led[LED_ARRAY_SIZE];
 
     string serialize() const {
@@ -89,14 +90,14 @@ struct butterfly_data : public BaseOutputDataType {
     }
 };
 
-class Breadboard : public Simulation<butterfly_data, butterfly_request> {
+class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
     private:
         gpio_header my_header;
         bool buffer[BUFFER_ARRAY_SIZE];
         string my_string;
     public:
 
-        Breadboard() = default;
+        ButterflySimulation() = default;
         virtual void update(double delta) override;
         virtual void initialize() override;
 

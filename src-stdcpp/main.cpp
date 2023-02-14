@@ -9,6 +9,7 @@
 #include <thread>
 #include <chrono>
 #include "labsland/simulations/watertanksimulation.h"
+#include "rhlab/butterfly.h"
 #include "labsland/simulations/utils/communicatorfiles.h"
 #include "labsland/simulations/targetdevicefiles.h"
 #include "labsland/utils/timemanagerstd.h"
@@ -102,6 +103,8 @@ int main(int argc, char * argv[]) {
 
     if (simulation == "watertank") {
         runner = new ConcreteSimulationRunner<WatertankSimulation, WatertankData, WatertankRequest>(configuration, mode);
+    } else if (simulation == "butterfly") {
+        runner = new ConcreteSimulationRunner<ButterflySimulation, ButterflyData, ButterflyRequest>(configuration, mode);
     } else {
         cerr << "Invalid simulation: '" << simulation << "'. Use a valid name" << endl;
         return 2;

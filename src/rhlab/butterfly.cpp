@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void Breadboard::initialize(){
+void ButterflySimulation::initialize(){
     // Initialize the structs for that simulates gpio
     gpio_input my_inputs = {
         false,  // g31
@@ -50,58 +50,58 @@ void Breadboard::initialize(){
     setReportWhenMarked(true);
 }
 
-void Breadboard::print_gpio_header_states(){
-    cout << "----- Input -----" << endl;
-    cout << "g31: " << this->my_header.input.g31 << endl;
-    cout << "g32: " << this->my_header.input.g32 << endl;
+void ButterflySimulation::print_gpio_header_states(){
+    this->log() << "----- Input -----" << endl;
+    this->log() << "g31: " << this->my_header.input.g31 << endl;
+    this->log() << "g32: " << this->my_header.input.g32 << endl;
 
-    cout << "----- Output -----" << endl;
-    cout << "g06: " << this->my_header.output.g06 << endl;
-    cout << "g07: " << this->my_header.output.g07 << endl;
-    cout << "g08: " << this->my_header.output.g08 << endl;
-    cout << "g09: " << this->my_header.output.g09 << endl;
-    cout << "g10: " << this->my_header.output.g10 << endl;
-    cout << "g13: " << this->my_header.output.g13 << endl;
-    cout << "g14: " << this->my_header.output.g14 << endl;
-    cout << "g15: " << this->my_header.output.g15 << endl;
-    cout << "g16: " << this->my_header.output.g16 << endl;
-    cout << "g17: " << this->my_header.output.g17 << endl;
-    cout << "g18: " << this->my_header.output.g18 << endl;
-    cout << "g19: " << this->my_header.output.g19 << endl;
-    cout << "g20: " << this->my_header.output.g20 << endl;
-    cout << "g21: " << this->my_header.output.g21 << endl;
-    cout << "g22: " << this->my_header.output.g22 << endl;
-    cout << "g23: " << this->my_header.output.g23 << endl;
-    cout << "g24: " << this->my_header.output.g24 << endl;
-    cout << "g25: " << this->my_header.output.g25 << endl;
+    this->log() << "----- Output -----" << endl;
+    this->log() << "g06: " << this->my_header.output.g06 << endl;
+    this->log() << "g07: " << this->my_header.output.g07 << endl;
+    this->log() << "g08: " << this->my_header.output.g08 << endl;
+    this->log() << "g09: " << this->my_header.output.g09 << endl;
+    this->log() << "g10: " << this->my_header.output.g10 << endl;
+    this->log() << "g13: " << this->my_header.output.g13 << endl;
+    this->log() << "g14: " << this->my_header.output.g14 << endl;
+    this->log() << "g15: " << this->my_header.output.g15 << endl;
+    this->log() << "g16: " << this->my_header.output.g16 << endl;
+    this->log() << "g17: " << this->my_header.output.g17 << endl;
+    this->log() << "g18: " << this->my_header.output.g18 << endl;
+    this->log() << "g19: " << this->my_header.output.g19 << endl;
+    this->log() << "g20: " << this->my_header.output.g20 << endl;
+    this->log() << "g21: " << this->my_header.output.g21 << endl;
+    this->log() << "g22: " << this->my_header.output.g22 << endl;
+    this->log() << "g23: " << this->my_header.output.g23 << endl;
+    this->log() << "g24: " << this->my_header.output.g24 << endl;
+    this->log() << "g25: " << this->my_header.output.g25 << endl;
 
 }
 
-void Breadboard::print_buffer_states(){
-    cout << "buffer: ";
+void ButterflySimulation::print_buffer_states(){
+    this->log() << "buffer: ";
     for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
-        cout << this->buffer[i] << " ";
+        this->log() << this->buffer[i] << " ";
     }
-    cout << endl;
+    this->log() << endl;
 }
 
-void Breadboard::print_led_states(){
-    cout << "virtual led: ";
+void ButterflySimulation::print_led_states(){
+    this->log() << "virtual led: ";
     for(int i = 0; i < LED_ARRAY_SIZE; i++){
-        cout << mState.virtual_led[i] << " ";
+        this->log() << mState.virtual_led[i] << " ";
     }
-    cout << endl;
+    this->log() << endl;
 }
 
-int Breadboard::read_literal_logic(string s){
+int ButterflySimulation::read_literal_logic(string s){
     return s[0] == 'T';
 }
 
-int Breadboard::read_switch_logic(string s){
+int ButterflySimulation::read_switch_logic(string s){
     return s[0] == 'T';
 }
 
-bool Breadboard::read_gpio_logic(string s){
+bool ButterflySimulation::read_gpio_logic(string s){
     char char_array[IS_GPIO_NEXT_CHAR_SIZE + 1];
     strcpy(char_array, s.c_str());
     switch(atoi(char_array)){
@@ -152,7 +152,7 @@ bool Breadboard::read_gpio_logic(string s){
     }
 }
 
-void Breadboard::update_gpio_logic(string s, int o){
+void ButterflySimulation::update_gpio_logic(string s, int o){
     char char_array[IS_GPIO_NEXT_CHAR_SIZE + 1];
     strcpy(char_array, s.c_str());
     switch(atoi(char_array)){
@@ -221,22 +221,22 @@ void Breadboard::update_gpio_logic(string s, int o){
     }
 }
 
-int Breadboard::read_buffer_logic(string s){
+int ButterflySimulation::read_buffer_logic(string s){
     int index = stoi(s);
     return this->buffer[index];
 }
 
-void Breadboard::update_buffer_logic(string s, int o){
+void ButterflySimulation::update_buffer_logic(string s, int o){
     int index = stoi(s);
     this->buffer[index] = (bool)o;
 }
 
-void Breadboard::update_led_logic(string s, int o){
+void ButterflySimulation::update_led_logic(string s, int o){
     int index = stoi(s);
     mState.virtual_led[index] = (bool)o;
 }
 
-int Breadboard::read_gate_input(char c){
+int ButterflySimulation::read_gate_input(char c){
     int in;
     switch(c){
         case 'L':
@@ -257,7 +257,7 @@ int Breadboard::read_gate_input(char c){
     return in;
 }
 
-int Breadboard::read_gate_output(char c){
+int ButterflySimulation::read_gate_output(char c){
     int out;
     switch(c){
         case 'g':
@@ -275,7 +275,7 @@ int Breadboard::read_gate_output(char c){
     return out;
 }
 
-int Breadboard::handle_input(string substring, int &start_index){
+int ButterflySimulation::handle_input(string substring, int &start_index){
     int p;
     p = read_gate_input((char)substring[start_index++]);
     int my_input = 0;
@@ -303,7 +303,7 @@ int Breadboard::handle_input(string substring, int &start_index){
     return my_input;
 }
 
-void Breadboard::handle_output(string substring, int &start_index, int my_output){
+void ButterflySimulation::handle_output(string substring, int &start_index, int my_output){
     int p;
     p = read_gate_output((char)substring[start_index++]);
     int temp = start_index;
@@ -325,7 +325,7 @@ void Breadboard::handle_output(string substring, int &start_index, int my_output
     }
 }
 
-int Breadboard::read_logic_gate(string substring){
+int ButterflySimulation::read_logic_gate(string substring){
     int start_index = 0;
     int my_input_1 = -1;
     int my_input_2 = -1;
@@ -392,7 +392,7 @@ int Breadboard::read_logic_gate(string substring){
     return start_index;
 }
 
-bool Breadboard::check_if_same(gpio_header h2, bool buffer_copy[]){
+bool ButterflySimulation::check_if_same(gpio_header h2, bool buffer_copy[]){
     // check if buffer states are the same:
     for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
         if(buffer_copy[i] != this->buffer[i]){
@@ -425,9 +425,9 @@ bool Breadboard::check_if_same(gpio_header h2, bool buffer_copy[]){
     return true;
 }
 
-void Breadboard::update(double delta){
+void ButterflySimulation::update(double delta){
 
-    butterfly_request request;
+    ButterflyRequest request;
     bool requestWasRead = readRequest(request);
     if(!requestWasRead) {
         return;
@@ -453,17 +453,17 @@ void Breadboard::update(double delta){
             buffer_copy[i] = this->buffer[i];
         }
 
-        cout << endl << "===== GPIO STATES =====" << endl;
+        this->log() << endl << "===== GPIO STATES =====" << endl;
         print_gpio_header_states();
-        cout << endl << "===== BUFFER STATES =====" << endl;
+        this->log() << endl << "===== BUFFER STATES =====" << endl;
         print_buffer_states();
-        cout << endl << "===== LED STATES =====" << endl;
+        this->log() << endl << "===== LED STATES =====" << endl;
         print_led_states();
-        cout << mState.serialize() << endl;
+        this->log() << mState.serialize() << endl;
 
-        cout << "===== STRING PROTOCOL =====" << endl;
+        this->log() << "===== STRING PROTOCOL =====" << endl;
         while(my_string[index] != '\n' || index > my_string_length){
-            cout << "Iter " << while_loop_counter << " : " << my_string.substr(index, my_string_length - index);
+            this->log() << "Iter " << while_loop_counter << " : " << my_string.substr(index, my_string_length - index);
             while_loop_counter++;
             index += read_logic_gate(my_string.substr(index, my_string_length - index));
             if(my_string[index] == ';'){
@@ -479,11 +479,11 @@ void Breadboard::update(double delta){
         }
     }
 
-    cout << endl << "===== GPIO STATES =====" << endl;
+    this->log() << endl << "===== GPIO STATES =====" << endl;
     print_gpio_header_states();
-    cout << endl << "===== BUFFER STATES =====" << endl;
+    this->log() << endl << "===== BUFFER STATES =====" << endl;
     print_buffer_states();
-    cout << endl << "===== LED STATES =====" << endl;
+    this->log() << endl << "===== LED STATES =====" << endl;
     print_led_states();
-    cout << mState.serialize() << endl;
+    this->log() << mState.serialize() << endl;
 }
