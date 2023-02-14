@@ -1882,7 +1882,7 @@ RHLab.Widgets.Breadboard = function() {
             // var $inactiveElement = this._$elem.find('img:not(.active)');
             // var $activeElement = this._$elem.find('img.active');
 
-            this._objVisir._$elem.find("img").attr("src", "/static/visir/instruments/breadboard/images/butterfly-led-on.png");
+            this._objVisir._$elem.find("img").attr("src", "static/visir/instruments/breadboard/images/butterfly-led-on.png");
 
             // set the other one as inactive
             // $inactiveElement.addClass('active');
@@ -1894,7 +1894,7 @@ RHLab.Widgets.Breadboard = function() {
             }
         }
         else {
-            this._objVisir._$elem.find("img").attr("src", "/static/visir/instruments/breadboard/images/butterfly-led-off.png");
+            this._objVisir._$elem.find("img").attr("src", "static/visir/instruments/breadboard/images/butterfly-led-off.png");
 
             // set the other one as inactive
             // $inactiveElement.addClass('active');
@@ -2030,10 +2030,10 @@ RHLab.Widgets.Breadboard = function() {
         this._valueChanged = true;
 
         if(this._value){
-            this._objVisir._$elem.find("img").attr("src", "/static/visir/instruments/breadboard/images/butterfly-switch-left-small.jpg");
+            this._objVisir._$elem.find("img").attr("src", "static/visir/instruments/breadboard/images/butterfly-switch-left-small.jpg");
         }
         else{
-            this._objVisir._$elem.find("img").attr("src", "/static/visir/instruments/breadboard/images/butterfly-switch-right-small.jpg");
+            this._objVisir._$elem.find("img").attr("src", "static/visir/instruments/breadboard/images/butterfly-switch-right-small.jpg");
         }
 
         // swap between the two different images
