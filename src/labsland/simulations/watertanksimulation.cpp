@@ -5,6 +5,7 @@
  * This software is licensed as described in the file LICENSE, which
  * you should have received as part of this distribution.
  */
+#include <string>
 #include <iostream>
 #include <cmath>
 #include "watertanksimulation.h"
@@ -12,7 +13,10 @@
 
 void WatertankSimulation::initialize() {
 
-    this->targetDevice->initializeSimulation(3, 2);
+    this->targetDevice->initializeSimulation(
+            {"lowSensorActive", "midSensorActive", "highSensorActive"},
+            {"pump1", "pump2"}
+    );
 
     // Calculate the total volume of the tank.
     // V = pi * r*2 * h (in m3)
@@ -47,8 +51,8 @@ void WatertankSimulation::initialize() {
 
     double addedWater = 0;
 
-    mState.pump1Active = this->targetDevice->getGpio(0);
-    mState.pump2Active = this->targetDevice->getGpio(1);
+    mState.pump1Active = this->targetDevice->getGpio("pump1");
+    mState.pump2Active = this->targetDevice->getGpio("pump2");
 
     this->log() << "Pumps: pump1: " << mState.pump1Active << "; pump2: " << mState.pump2Active << std::endl;
 
@@ -89,9 +93,9 @@ void WatertankSimulation::initialize() {
     mState.highSensorActive = mState.level >= 0.80;
     this->log() << "Sensors: Low (0.2): " << mState.lowSensorActive << "; Mid (0.5): " << mState.midSensorActive << "; High (0.8): " << mState.highSensorActive << std::endl;
 
-    this->targetDevice->setGpio(0, mState.lowSensorActive);
-    this->targetDevice->setGpio(1, mState.midSensorActive);
-    this->targetDevice->setGpio(2, mState.highSensorActive);
+    this->targetDevice->setGpio("lowSensorActive", mState.lowSensorActive);
+    this->targetDevice->setGpio("midSensorActive", mState.midSensorActive);
+    this->targetDevice->setGpio("highSensorActive", mState.highSensorActive);
     requestReportState();
 }
 

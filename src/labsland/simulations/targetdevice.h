@@ -9,6 +9,8 @@
 #define LL_TARGET_DEVICE
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace LabsLand::Utils {
 
@@ -65,6 +67,9 @@ namespace LabsLand::Utils {
      * Important: simulations will be able to know in advance if a target device works or not.
      */
     class TargetDevice {
+        private:
+            std::vector<std::string> inputLabels;
+            std::vector<std::string> outputLabels;
         public:
             /*
              * Does it support this number of inputs and outputs?
@@ -77,6 +82,20 @@ namespace LabsLand::Utils {
              * It returns true/false if possible.
              */
             virtual bool initializeSimulation(int outputGpios, int inputGpios) = 0;
+
+           /*
+             * Allocate a set of outputs and inputs, in whichever order the device defines.
+             *
+             * It is the same as calling initializeSimulation, but providing strings. Internally
+             * the initializeSimulation() is called.
+             *
+             * This allows providing names instead of positions, and calling later those names instead
+             * of numeric positions.
+             *
+             * The order in the vector is what matters. E.g., {"foo", "bar"} means that setGpio("foo", true) is
+             * exactly the same as calling setGpio(0, true), and same with "bar" and 1.
+             */
+            virtual bool initializeSimulation(std::vector<std::string> outputGpios, std::vector<std::string> inputGpios);
 
             /*
              * Reset to the default state of the target device (e.g., all GPIOs available for regular use)
@@ -99,6 +118,18 @@ namespace LabsLand::Utils {
             virtual void setGpio(int outputPosition, bool value = true) = 0;
             virtual void resetGpio(int outputPosition) = 0;
             virtual bool getGpio(int inputPosition) = 0;
+
+            /*
+             * Regular operations with GPIO (set/get) based on the position.
+             * In this case, you can make the calls using the names that you used
+             * in initializeSimulation() providing names. If you did not provide any
+             * names, or the name you provided was not in the list, do not expect any
+             * result here.
+             */
+            virtual void setGpio(std::string outputPosition, bool value = true);
+            virtual void resetGpio(std::string outputPosition);
+            virtual bool getGpio(std::string inputPosition);
+
 
             /*
              * Get log() so as to do:
