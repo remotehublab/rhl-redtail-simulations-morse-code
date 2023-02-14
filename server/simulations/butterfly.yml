@@ -1,0 +1,12 @@
+name: Butterfly
+description: This is a Breadboard of a DE1-SoC
+iframe:
+  url: butterfly/butterfly.html
+  height: 500
+gpios:
+  sim2dut:
+    # 3 sensors (low, mid, high)
+    number: 3
+  dut2sim:
+    # 2 actuators (pump1, pump2)
+    number: 2
