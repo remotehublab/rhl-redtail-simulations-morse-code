@@ -6,6 +6,10 @@
 using namespace std;
 
 void ButterflySimulation::initialize(){
+    this->targetDevice->initializeSimulation(18, 2);
+    // this->targetDevice.setGpio(0, true); //first output gpio
+    // this->targetDevice.getGpio(0);  // first input gpio, which is different
+
     // Initialize the structs for that simulates gpio
     gpio_input my_inputs = {
         false,  // g31
@@ -486,4 +490,9 @@ void ButterflySimulation::update(double delta){
     this->log() << endl << "===== LED STATES =====" << endl;
     print_led_states();
     this->log() << mState.serialize() << endl;
+
+    this->log() << "gpio[0] is " << this->targetDevice->getGpio(0) << endl;
+    this->targetDevice->setGpio(0, this->targetDevice->getGpio(0));
+
+    requestReportState();
 }

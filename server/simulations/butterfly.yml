@@ -5,8 +5,8 @@ iframe:
   height: 500
 gpios:
   sim2dut:
-    # 3 sensors (low, mid, high)
-    number: 3
+    # FPGA inputs
+    number: 18
   dut2sim:
-    # 2 actuators (pump1, pump2)
+    # FPGA outputs
     number: 2

@@ -122,8 +122,14 @@
     //     }
     // }
 
-    document.getElementById("protocol").innerHTML = myString;
-    console.log(myString);
+    // document.getElementById("protocol").innerHTML = myString;
+    // console.log(myString);
+
+    parent.postMessage({
+        messageType: "web2sim",
+        version: "1.0",
+        value: myString
+    });
 
     // codes = []
     // // Check output pin number 7, tying with the yellow led
