@@ -2,7 +2,7 @@
 #ifndef BUTTERFLYSIMULATION_H
 #define BUTTERFLYSIMULATION_H
 
-#include "simulation.h"
+#include "../labsland/simulations/simulation.h"
 #include <string>
 #include <sstream>
 #include <stdio.h>

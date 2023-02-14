@@ -17,13 +17,22 @@ import hashlib
 
 from flask import Flask
 
+# from flask_assets import Environment
+
 from config import configurations
+
+# assets = Environment()
 
 def create_app(config_name: str = 'default'):
 
     # Based on Flasky https://github.com/miguelgrinberg/flasky
     app = Flask(__name__)
     app.config.from_object(configurations[config_name])
+
+    # assets.init_app(app)
+
+    # from .bundles import register_bundles
+    # register_bundles(assets)
 
     if app.config['SIMULATION_CONFIG_FILE'] is None:
         raise Exception("Missing SIMULATION_CONFIG_FILE")
