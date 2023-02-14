@@ -238,6 +238,7 @@ void ButterflySimulation::update_buffer_logic(string s, int o){
 void ButterflySimulation::update_led_logic(string s, int o){
     int index = stoi(s);
     mState.virtual_led[index] = (bool)o;
+    requestReportState();
 }
 
 int ButterflySimulation::read_gate_input(char c){
