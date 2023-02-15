@@ -27,6 +27,8 @@ using namespace std;
 #define LED_ARRAY_SIZE      5
 #define NUM_SATURATION_ITR  5
 #define MAX_CHAR_ARRAY_SIZE 1024
+#define SIM_OUTPUT_GPIO_NUM 18
+#define SIM_INPUT_GPIO_NUM  2
 
 // GPIO structs
 struct gpio_input {
@@ -94,6 +96,8 @@ class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
     private:
         gpio_header my_header;
         bool buffer[BUFFER_ARRAY_SIZE];
+        bool output_gpio_tracker[SIM_OUTPUT_GPIO_NUM];
+        bool input_gpio_tracker[SIM_INPUT_GPIO_NUM];
         string my_string;
     public:
 
@@ -116,7 +120,7 @@ class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
         int handle_input(string substring, int &start_index);
         void handle_output(string substring, int &start_index, int my_output);
         int read_logic_gate(string substring);
-        bool check_if_same(gpio_header h2, bool buffer_copy[]);
+        bool check_if_same(bool input_gpio_copy[], bool output_gpio_copy[], bool buffer_copy[]);
 };
 
 #endif

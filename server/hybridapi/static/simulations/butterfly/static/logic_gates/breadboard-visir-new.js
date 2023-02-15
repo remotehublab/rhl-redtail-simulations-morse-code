@@ -34,49 +34,6 @@ RHLab.Widgets.Breadboard = function() {
     var VISIR_SQUARE_SIZE = 13;
     var DEFAULT_NUMBER_OF_SWITCHES = 18;
 
-    // Associate which of the 50-pin GPIO will be outputs (inputs to the microcontroller)
-    // var OUTPUTS_BY_PIN = {
-    //     07: 'PC1',  // GPIO6 //PC1
-    //     08: 'V_SW2',  // GPIO7
-    //     09: 'V_SW3',  // GPIO8
-    //     10: 'V_SW4',  // GPIO9
-    //     11: 'PA1', //PA1
-    //     12: 'temp',
-    //     13: 'V_SW5',  // GPIO10
-    //     14: 'V_SW6',  // GPIO11
-    //     15: 'V_SW7',  // GPIO12
-    //     16: 'V_SW8',  // GPIO13
-    //     17: 'V_SW9',  // GPIO14
-    //     18: 'V_SW10', // GPIO15
-    //     19: 'V_SW11', // GPIO16
-    //     20: 'V_SW12', // GPIO17
-    //     21: 'PB1', // GPIO18  //PB1
-    //     22: 'V_SW14', // GPIO19
-    //     //23: 'V_SW15', // GND
-    //     24: 'V_SW16', // GPIO21
-    //     25: 'V_SW17', // GPIO22
-    //     26: 'V_SW18',
-    //     27: 'V_SW19',
-    //     28: 'V_SW20',
-    //     29: 'V_SW21',
-    //     30: 'V_SW22',
-    //     // 33: 'V_SW23',
-    //     // 34: 'V_SW24',
-    //     35: 'V_SW25',
-    //     36: 'V_SW26',
-    //     37: 'V_SW27',
-    //     38: 'V_SW28',
-    //     39: 'V_SW29',
-    //     40: 'V_SW30',
-    //     41: 'V_SW31',
-    //     42: 'V_SW32',
-    //     43: 'V_SW33',
-    //     44: 'PD12', //Green
-    //     45: 'PD13', //Orange
-    //     46: 'PD14', //Red
-    //     47: 'PD15' //Blue
-    // };
-
     // Define the outputs from the 40-pin GPIO for the DE1-SoC
     var OUTPUTS_BY_PIN = {
         31: 'V_LED0', // GPIO26
@@ -104,14 +61,6 @@ RHLab.Widgets.Breadboard = function() {
         24: 'V_SW16', // GPIO21
         25: 'V_SW17', // GPIO22
     };
-
-    // // Associate which of the microcontroller will be inputs to the breadboard (output from the GPIO)
-    // var INPUTS_BY_PIN = {
-    //     31: 'V_LED0', // GPIO26
-    //     32: 'V_LED1', // GPIO27
-    //     33: 'V_SW23',
-    //     34: 'V_SW24',
-    // };
 
     // Function called by template.html for flask that initalizes a <div> for the breadboard
     function Breadboard($element, endpointBase, numberOfSwitches, imageBase, enableNetwork) {
@@ -504,7 +453,7 @@ RHLab.Widgets.Breadboard = function() {
     Breadboard.PinFinder.prototype.FindGpioPin = function(point) {
         // Return a GPIO pin
         // Crucial to make sure that the GPIO is 13 pixels apart
-        var factor = ((point.x - 229) / 13); // 13 is the number of pixels between GPIO pin points
+        var factor = ((point.x - 229) / VISIR_SQUARE_SIZE); // 13 is the number of pixels between GPIO pin points
                                              // 229 is the distance between left wall and the left edge of the GPIO connector
         if (point.y == 55) { // bottom row (1..39)
             if (point.x >= 229 && point.x <= 543) {
@@ -1024,6 +973,8 @@ RHLab.Widgets.Breadboard = function() {
             var isVirtualInput = INPUTS_BY_PIN[gpioPin] !== undefined;
             var point1Code = "";
             if(isVirtualInput){
+                gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
+                console.log(gpioPin);
                 point1IsOutput = false;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1090,8 +1041,8 @@ RHLab.Widgets.Breadboard = function() {
                 // check if led is on top half or bottom half
                 if(point1.x === wireX){
                     if(led._onTopHalf){
-                        if((point1.y - wireY) <= 4*13){
-                            if((led._vertical && (point1.y - wireY) >= 0) || (!led._vertical && point1.y <= 271 && point1.y > 271 - 5*13)){
+                        if((point1.y - wireY) <= 4*VISIR_SQUARE_SIZE){
+                            if((led._vertical && (point1.y - wireY) >= 0) || (!led._vertical && point1.y <= 271 && point1.y > 271 - 5*VISIR_SQUARE_SIZE)){
                                 //success
                                 point1IsOutput = false;
                                 point1Code = "d" + ledCount.toString();
@@ -1100,8 +1051,8 @@ RHLab.Widgets.Breadboard = function() {
                         }
                     }
                     else{
-                        if((wireY - point1.y) <= 4*13){
-                            if((led._vertical && (wireY - point1.y) >= 0) || (!led._vertical && point1.y >= 300 && point1.y < 300 + 5*13)){
+                        if((wireY - point1.y) <= 4*VISIR_SQUARE_SIZE){
+                            if((led._vertical && (wireY - point1.y) >= 0) || (!led._vertical && point1.y >= 300 && point1.y < 300 + 5*VISIR_SQUARE_SIZE)){
                                 //success
                                 point1IsOutput = false;
                                 point1Code = "d" + ledCount.toString();
@@ -1125,6 +1076,8 @@ RHLab.Widgets.Breadboard = function() {
             }
             var isVirtualOutput = OUTPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualOutput){
+                gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
+                console.log(gpioPin);
                 point1IsOutput = true;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1218,6 +1171,8 @@ RHLab.Widgets.Breadboard = function() {
             gpioPin = finder.FindGpioPin(point2);
             isVirtualInput = INPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualInput){
+                gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
+                console.log(gpioPin);
                 point2IsOutput = false;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1282,8 +1237,8 @@ RHLab.Widgets.Breadboard = function() {
                 // check if led is on top half or bottom half
                 if(point2.x === wireX){
                     if(led._onTopHalf){
-                        if((point2.y - wireY) <= 4*13){
-                            if((led._vertical && (point2.y - wireY) >= 0) || (!led._vertical && point2.y <= 271 && point2.y > 271 - 5*13)){
+                        if((point2.y - wireY) <= 4*VISIR_SQUARE_SIZE){
+                            if((led._vertical && (point2.y - wireY) >= 0) || (!led._vertical && point2.y <= 271 && point2.y > 271 - 5*VISIR_SQUARE_SIZE)){
                                 //success
                                 point2IsOutput = false;
                                 point2Code = "d" + ledCount.toString();
@@ -1292,8 +1247,8 @@ RHLab.Widgets.Breadboard = function() {
                         }
                     }
                     else{
-                        if((wireY - point2.y) <= 4*13){
-                            if((led._vertical && (wireY - point2.y) >= 0) || (!led._vertical && point2.y >= 300 && point2.y < 300 + 5*13)){
+                        if((wireY - point2.y) <= 4*VISIR_SQUARE_SIZE){
+                            if((led._vertical && (wireY - point2.y) >= 0) || (!led._vertical && point2.y >= 300 && point2.y < 300 + 5*VISIR_SQUARE_SIZE)){
                                 //success
                                 point2IsOutput = false;
                                 point2Code = "d" + ledCount.toString();
@@ -1317,6 +1272,8 @@ RHLab.Widgets.Breadboard = function() {
             }
             isVirtualOutput = OUTPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualOutput){
+                gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
+                console.log(gpioPin);
                 point2IsOutput = true;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1933,7 +1890,7 @@ RHLab.Widgets.Breadboard = function() {
         }
         // LED is horizontal
         else {
-            return this._leftPosition - 2*13;
+            return this._leftPosition - 2*VISIR_SQUARE_SIZE;
         }
     }
 
@@ -1942,9 +1899,9 @@ RHLab.Widgets.Breadboard = function() {
         this.setPinLocation(this._objVisir.GetPos().x, this._objVisir.GetPos().y);
         if(this._vertical){
             if (this._onTopHalf) 
-                return this._topPosition + 2*13;
+                return this._topPosition + 2*VISIR_SQUARE_SIZE;
             else
-                return this._topPosition - 2*13;
+                return this._topPosition - 2*VISIR_SQUARE_SIZE;
             }
         // LED is horizontal
         else {
@@ -1960,10 +1917,10 @@ RHLab.Widgets.Breadboard = function() {
         var xPos = this.GetWireX();
         if(this._vertical){
             if(this._onTopHalf){
-                yPos = yPos - 4*13;
+                yPos = yPos - 4*VISIR_SQUARE_SIZE;
             }
             else{
-                yPos = yPos + 4*13;
+                yPos = yPos + 4*VISIR_SQUARE_SIZE;
             }
 
             if (xPos >= 177 && xPos < 541) {
@@ -1974,7 +1931,7 @@ RHLab.Widgets.Breadboard = function() {
             }
         }
         else{
-            xPos = xPos + 4*13;
+            xPos = xPos + 4*VISIR_SQUARE_SIZE;
             if(this._onTopHalf){
                 if(point.x == xPos && point.y > 159 && point.y < 261){
                     isGround = false;
@@ -2075,12 +2032,12 @@ RHLab.Widgets.Breadboard = function() {
 
     Breadboard.Switch.prototype.GetLeftX = function(){
         this.SetSwitchLocation(this._objVisir.GetPos().x, this._objVisir.GetPos().y);
-        return this._leftPosition - 13;
+        return this._leftPosition - VISIR_SQUARE_SIZE;
     }
 
     Breadboard.Switch.prototype.GetRightX = function() {
         this.SetSwitchLocation(this._objVisir.GetPos().x, this._objVisir.GetPos().y);
-        return this._leftPosition + 13;
+        return this._leftPosition + VISIR_SQUARE_SIZE;
     }
     // The getter function that obtains the x value coordinates of where the wire should be
     Breadboard.Switch.prototype.GetWireX = function () {

@@ -6,41 +6,18 @@
 using namespace std;
 
 void ButterflySimulation::initialize(){
-    this->targetDevice->initializeSimulation(18, 2);
+    this->targetDevice->initializeSimulation(SIM_OUTPUT_GPIO_NUM, SIM_INPUT_GPIO_NUM);
     // this->targetDevice.setGpio(0, true); //first output gpio
     // this->targetDevice.getGpio(0);  // first input gpio, which is different
 
-    // Initialize the structs for that simulates gpio
-    gpio_input my_inputs = {
-        false,  // g31
-        false   // g32
-    };
-    gpio_output my_outputs = {
-        false,  // g06
-        false,  // g07
-        false,  // g08
-        false,  // g09
-        false,  // g10
-        false,  // g13
-        false,  // g14
-        false,  // g15
-        false,  // g16
-        false,  // g17
-        false,  // g18
-        false,  // g19
-        false,  // g20
-        false,  // g21
-        false,  // g22
-        false,  // g23
-        false,  // g24
-        false  // g25
-    };
-    gpio_header my_header = {
-        my_inputs,
-        my_outputs
-    };
+    for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
+        this->output_gpio_tracker[i] = false;
+    }
 
-    this->my_header = my_header;
+    for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
+        this->input_gpio_tracker[i] = this->targetDevice->getGpio(i);
+    }
+
 
     // My buffer
     for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
@@ -55,29 +32,16 @@ void ButterflySimulation::initialize(){
 }
 
 void ButterflySimulation::print_gpio_header_states(){
+    
     this->log() << "----- Input -----" << endl;
-    this->log() << "g31: " << this->my_header.input.g31 << endl;
-    this->log() << "g32: " << this->my_header.input.g32 << endl;
+    for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
+        this->log() << "g" << i << ": " << this->input_gpio_tracker[i] << endl;
+    }
 
     this->log() << "----- Output -----" << endl;
-    this->log() << "g06: " << this->my_header.output.g06 << endl;
-    this->log() << "g07: " << this->my_header.output.g07 << endl;
-    this->log() << "g08: " << this->my_header.output.g08 << endl;
-    this->log() << "g09: " << this->my_header.output.g09 << endl;
-    this->log() << "g10: " << this->my_header.output.g10 << endl;
-    this->log() << "g13: " << this->my_header.output.g13 << endl;
-    this->log() << "g14: " << this->my_header.output.g14 << endl;
-    this->log() << "g15: " << this->my_header.output.g15 << endl;
-    this->log() << "g16: " << this->my_header.output.g16 << endl;
-    this->log() << "g17: " << this->my_header.output.g17 << endl;
-    this->log() << "g18: " << this->my_header.output.g18 << endl;
-    this->log() << "g19: " << this->my_header.output.g19 << endl;
-    this->log() << "g20: " << this->my_header.output.g20 << endl;
-    this->log() << "g21: " << this->my_header.output.g21 << endl;
-    this->log() << "g22: " << this->my_header.output.g22 << endl;
-    this->log() << "g23: " << this->my_header.output.g23 << endl;
-    this->log() << "g24: " << this->my_header.output.g24 << endl;
-    this->log() << "g25: " << this->my_header.output.g25 << endl;
+    for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
+        this->log() << "g" << i << ": " << this->output_gpio_tracker[i] << endl;
+    }
 
 }
 
@@ -106,123 +70,22 @@ int ButterflySimulation::read_switch_logic(string s){
 }
 
 bool ButterflySimulation::read_gpio_logic(string s){
+    
     char char_array[IS_GPIO_NEXT_CHAR_SIZE + 1];
     strcpy(char_array, s.c_str());
-    switch(atoi(char_array)){
-        // inputs
-        case 31:
-            return this->my_header.input.g31;
-        case 32:
-            return this->my_header.input.g32;
-        // outputs
-        case 06:
-            return this->my_header.output.g06;
-        case 07:
-            return this->my_header.output.g07;
-        case 8:
-            return this->my_header.output.g08;
-        case 9:
-            return this->my_header.output.g09;
-        case 10:
-            return this->my_header.output.g10;
-        case 13:
-            return this->my_header.output.g13;
-        case 14:
-            return this->my_header.output.g14;
-        case 15:
-            return this->my_header.output.g15;
-        case 16:
-            return this->my_header.output.g16;
-        case 17:
-            return this->my_header.output.g17;
-        case 18:
-            return this->my_header.output.g18;
-        case 19:
-            return this->my_header.output.g19;
-        case 20:
-            return this->my_header.output.g20;
-        case 21:
-            return this->my_header.output.g21;
-        case 22:
-            return this->my_header.output.g22;
-        case 23:
-            return this->my_header.output.g23;
-        case 24:
-            return this->my_header.output.g24;
-        case 25:
-            return this->my_header.output.g25;
-        default:
-            return false;
-    }
+    int index = atoi(char_array);
+    this->input_gpio_tracker[index] = this->targetDevice->getGpio(index);
+    return this->targetDevice->getGpio(index);
 }
 
 void ButterflySimulation::update_gpio_logic(string s, int o){
+    
     char char_array[IS_GPIO_NEXT_CHAR_SIZE + 1];
     strcpy(char_array, s.c_str());
-    switch(atoi(char_array)){
-        case 31:
-            this->my_header.input.g31 = (bool)o;
-            break;
-        case 32:
-            this->my_header.input.g32 = (bool)o;
-            break;
-        case 06:
-            this->my_header.output.g06 = (bool)o;
-            break;
-        case 07:
-            this->my_header.output.g07 = (bool)o;
-            break;
-        case 8:
-            this->my_header.output.g08 = (bool)o;
-            break;
-        case 9:
-            this->my_header.output.g09 = (bool)o;
-            break;
-        case 10:
-            this->my_header.output.g10 = (bool)o;
-            break;
-        case 13:
-            this->my_header.output.g13 = (bool)o;
-            break;
-        case 14:
-            this->my_header.output.g14 = (bool)o;
-            break;
-        case 15:
-            this->my_header.output.g15 = (bool)o;
-            break;
-        case 16:
-            this->my_header.output.g16 = (bool)o;
-            break;
-        case 17:
-            this->my_header.output.g17 = (bool)o;
-            break;
-        case 18:
-            this->my_header.output.g18 = (bool)o;
-            break;
-        case 19:
-            this->my_header.output.g19 = (bool)o;
-            break;
-        case 20:
-            this->my_header.output.g20 = (bool)o;
-            break;
-        case 21:
-            this->my_header.output.g21 = (bool)o;
-            break;
-        case 22:
-            this->my_header.output.g22 = (bool)o;
-            break;
-        case 23:
-            this->my_header.output.g23 = (bool)o;
-            break;
-        case 24:
-            this->my_header.output.g24 = (bool)o;
-            break;
-        case 25:
-            this->my_header.output.g25 = (bool)o;
-            break;
-        default:
-            break;
-    }
+    int index = atoi(char_array);
+    this->output_gpio_tracker[index] = (bool)o;
+    this->targetDevice->setGpio(index, (bool)o);
+
 }
 
 int ButterflySimulation::read_buffer_logic(string s){
@@ -397,35 +260,27 @@ int ButterflySimulation::read_logic_gate(string substring){
     return start_index;
 }
 
-bool ButterflySimulation::check_if_same(gpio_header h2, bool buffer_copy[]){
+bool ButterflySimulation::check_if_same(bool input_gpio_copy[], bool output_gpio_copy[], bool buffer_copy[]){
+    
+    for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
+        if(input_gpio_copy[i] != this->input_gpio_tracker[i]){
+            return false;
+        }
+    }
+
+    for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
+        if(output_gpio_copy[i] != this->output_gpio_tracker[i]){
+            return false;
+        }
+    }
+    
+    
     // check if buffer states are the same:
     for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
         if(buffer_copy[i] != this->buffer[i]){
             return false;
         }
     }
-
-    // check if h1 and h2 are the same
-    if(this->my_header.input.g31 != h2.input.g31)    return false;
-    if(this->my_header.input.g32 != h2.input.g32)    return false;
-    if(this->my_header.output.g06 != h2.output.g06)  return false;
-    if(this->my_header.output.g07 != h2.output.g07)  return false;
-    if(this->my_header.output.g08 != h2.output.g08)  return false;
-    if(this->my_header.output.g09 != h2.output.g09)  return false;
-    if(this->my_header.output.g10 != h2.output.g10)  return false;
-    if(this->my_header.output.g13 != h2.output.g13)  return false;
-    if(this->my_header.output.g14 != h2.output.g14)  return false;
-    if(this->my_header.output.g15 != h2.output.g15)  return false;
-    if(this->my_header.output.g16 != h2.output.g16)  return false;
-    if(this->my_header.output.g17 != h2.output.g17)  return false;
-    if(this->my_header.output.g18 != h2.output.g18)  return false;
-    if(this->my_header.output.g19 != h2.output.g19)  return false;
-    if(this->my_header.output.g20 != h2.output.g20)  return false;
-    if(this->my_header.output.g21 != h2.output.g21)  return false;
-    if(this->my_header.output.g22 != h2.output.g22)  return false;
-    if(this->my_header.output.g23 != h2.output.g23)  return false;
-    if(this->my_header.output.g24 != h2.output.g24)  return false;
-    if(this->my_header.output.g25 != h2.output.g25)  return false;
 
     return true;
 }
@@ -445,18 +300,38 @@ void ButterflySimulation::update(double delta){
     int saturation_itr_counter = 0;
 
     // Create copies of the header states and buffer states
-    gpio_header my_header_copy = this->my_header;
     bool buffer_copy[BUFFER_ARRAY_SIZE];
     for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
         buffer_copy[i] = this->buffer[i];
     }
 
+    
+    bool gpio_input_copy[SIM_INPUT_GPIO_NUM];
+    for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
+        gpio_input_copy[i] = this->input_gpio_tracker[i];
+    }
+
+    bool gpio_output_copy[SIM_OUTPUT_GPIO_NUM];
+    for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
+        gpio_output_copy[i] = this->output_gpio_tracker[i];
+    }
+    
+
     while((saturation_itr_counter < NUM_SATURATION_ITR)){
 
-        my_header_copy = this->my_header;
+        // my_header_copy = this->my_header;
         for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
             buffer_copy[i] = this->buffer[i];
         }
+
+        for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
+            gpio_input_copy[i] = this->input_gpio_tracker[i];
+        }
+
+        for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
+            gpio_output_copy[i] = this->output_gpio_tracker[i];
+        }
+        
 
         this->log() << endl << "===== GPIO STATES =====" << endl;
         print_gpio_header_states();
@@ -468,6 +343,7 @@ void ButterflySimulation::update(double delta){
 
         this->log() << "===== STRING PROTOCOL =====" << endl;
         while(my_string[index] != '\n' || index > my_string_length){
+            this->log() << "My string: " << my_string << endl;
             this->log() << "Iter " << while_loop_counter << " : " << my_string.substr(index, my_string_length - index);
             while_loop_counter++;
             index += read_logic_gate(my_string.substr(index, my_string_length - index));
@@ -479,7 +355,7 @@ void ButterflySimulation::update(double delta){
         index = 0;
         while_loop_counter = 1;
 
-        if(check_if_same(my_header_copy, buffer_copy)){
+        if(check_if_same(gpio_input_copy, gpio_output_copy, buffer_copy)){
             saturation_itr_counter++;
         }
     }
@@ -492,8 +368,8 @@ void ButterflySimulation::update(double delta){
     print_led_states();
     this->log() << mState.serialize() << endl;
 
-    this->log() << "gpio[0] is " << this->targetDevice->getGpio(0) << endl;
-    this->targetDevice->setGpio(0, this->targetDevice->getGpio(0));
+    // this->log() << "gpio[0] is " << this->targetDevice->getGpio(0) << endl;
+    // this->targetDevice->setGpio(0, this->targetDevice->getGpio(0));
 
     requestReportState();
 }
