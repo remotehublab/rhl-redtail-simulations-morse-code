@@ -98,17 +98,7 @@
             breadboard.Update();
             b.disabled = true;
         }
-
-        window.addEventListener("message", (event) => {
-                if (event.data.messageType != "sim2web")
-                    return;
-                if (event.source != parent) {
-                    console.log("Message from somewhere other than the parent window", event);
-                    return;
-                }
-
-                document.getElementById("sim2web").innerText = event.data.value;
-        }, false);
+        
     </script>
     <script src="static/logic_gates/client_capture.js"></script>
     <script src="static/iframeResizer.contentWindow.min.js"></script>
