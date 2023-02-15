@@ -245,6 +245,22 @@ int ButterflySimulation::read_logic_gate(string substring){
             handle_output(substring, start_index, my_output);
         }
     }
+    else if(substring[start_index] == 'x'){
+        // Handle input portion
+        start_index++;
+        my_input_1 = handle_input(substring, start_index);
+        my_input_2 = handle_input(substring, start_index);
+
+        // Compute boolean logic
+        my_output = my_input_1 ^ my_input_2;
+
+        // Handle output portion
+        handle_output(substring, start_index, my_output);
+        while(substring[start_index] == ','){
+            start_index++;
+            handle_output(substring, start_index, my_output);
+        }
+    }
     else if(substring[start_index] == 'y'){
         // Handle input portion
         start_index++;

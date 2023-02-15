@@ -78,6 +78,7 @@ RHLab.Widgets.Breadboard = function() {
         this._notGate = []; // not gate
         this._andGate = []; //and gate
         this._orGate = []; //or gate
+        this._xorGate = []  //xor gate ***newly added***
         this._errors = [];  //potential errors
         this._changedSwitches = [];
         // this._numberOfSwitches = numberOfSwitches || DEFAULT_NUMBER_OF_SWITCHES;
@@ -147,6 +148,7 @@ RHLab.Widgets.Breadboard = function() {
                 self._notGate = [];
                 self._andGate = [];
                 self._orGate = [];
+                self._xorGate = []; //***newly added */
                 self._leds = [];
                 self._outputs = [];
 
@@ -186,6 +188,13 @@ RHLab.Widgets.Breadboard = function() {
                     $.each(self._orGate, function(position, gate){
                         if(gate._objVisir._$circle){
                             self._orGate.splice(position, 1);
+                            return false;
+                        }
+                    });
+                    //***newly added */
+                    $.each(self._xorGate, function(position, gate){
+                        if(gate._objVisir._$circle){
+                            self._xorGate.splice(position, 1);
                             return false;
                         }
                     });
@@ -261,6 +270,12 @@ RHLab.Widgets.Breadboard = function() {
                             var or0 = new RHLab.Widgets.Breadboard.OrGate("OG1", imageBase, xPos, yPos, comp_obj); // 456, 261
                             breadboard._orGate.push(or0);
                             breadboard.AddComponent(or0);
+                        }
+                        /***newly added */
+                        else if(comp_obj._value == "XOR"){
+                            var xor0 = new RHLab.Widgets.Breadboard.XorGate("XG1", imageBase, xPos, yPos, comp_obj); // 456, 261
+                            breadboard._xorGate.push(xor0);
+                            breadboard.AddComponent(xor0);
                         }
                     }
                     else if(comp_obj._type == "LED"){
@@ -537,7 +552,8 @@ RHLab.Widgets.Breadboard = function() {
         this.gateTypes = {
             "n": "not",
             "a": "and",
-            "o": "or"
+            "o": "or",
+            "x": "xor"  //***newly added */
         };
     }
 
@@ -899,6 +915,17 @@ RHLab.Widgets.Breadboard = function() {
         return "o";
     }
 
+    //***newly added */
+    Breadboard.XorStatus = function(){
+        Breadboard.XorStatus.parent.constructor.apply(this)
+    }
+
+    extend(Breadboard.XorStatus, Breadboard.QuadDualInputGateStatus);
+
+    Breadboard.XorStatus.prototype.getLogicGateCodeName = function(){
+        return "x";
+    }
+
     // Big function in the javascript code, used to update the entirely of the breadboard layout
     Breadboard.prototype.Update = function() {
         // Initialize self variables used for checking throughout the update process
@@ -961,6 +988,16 @@ RHLab.Widgets.Breadboard = function() {
             var orStatus = new Breadboard.OrStatus();
             componentStatus.orStatus.push(orStatus);
         }
+        //***newly added */
+        var _xorGate = this._xorGate;
+        componentStatus.xorStatus = [];
+        for(var i = 0; i < _xorGate.length; i++){
+            if(_xorGate[i]._topPosition != 261){
+                errors.push("[!] Error");
+            }
+            var xorStatus = new Breadboard.XorStatus();
+            componentStatus.xorStatus.push(xorStatus);
+        }
 
         var nonGateLeftovers = [];
         var _leds = this._leds;
@@ -974,9 +1011,11 @@ RHLab.Widgets.Breadboard = function() {
             var componentCounterNot1 = 0;
             var componentCounterAnd1 = 0;
             var componentCounterOr1 = 0;
+            var componentCounterXor1 = 0; //***newly added */
             var componentCounterNot2 = 0;
             var componentCounterAnd2 = 0;
             var componentCounterOr2 = 0;
+            var componentCounterXor2 = 0; //***newly added */
             var componentCounterLocal = 0;
             // Sweep through the different wires
             var wire = wires[i];
@@ -1051,6 +1090,23 @@ RHLab.Widgets.Breadboard = function() {
                 inputPoint1GateNum = orPinInput[1];
                 inputPoint1InputNum = orPinInput[2];
                 point1Code = "o";
+            }
+            //***newly added */
+            var xorPinInput = [false, -1, -1]; // if in gate, gate location, input num
+            componentCounterLocal = 0;
+            $.each(_xorGate, function(pos, gate){
+                xorPinInput = gate.CheckIfInput(point1);
+                if(xorPinInput[0]){
+                    componentCounterXor1 = componentCounterLocal;
+                    return false;
+                }
+                componentCounterLocal += 1;
+            });
+            if(xorPinInput[0]){
+                point1IsOutput = false;
+                inputPoint1GateNum = xorPinInput[1];
+                inputPoint1InputNum = xorPinInput[2];
+                point1Code = "x";
             }
             var ledCount = 0;
             $.each(_leds, function(pos, led){
@@ -1179,6 +1235,22 @@ RHLab.Widgets.Breadboard = function() {
                 outputPoint1GateNum = orPinOutput[1];
                 point1Code = "o";
             }
+            //***newly added */
+            var xorPinOutput = [false, -1]; // if in gate, gate num
+            componentCounterLocal = 0;
+            $.each(_xorGate, function(pos, gate){
+                xorPinOutput = gate.CheckIfOutput(point1);
+                if(xorPinOutput[0]){
+                    componentCounterXor1 = componentCounterLocal;
+                    return false;
+                }
+                componentCounterLocal += 1;
+            });
+            if(xorPinOutput[0]){
+                point1IsOutput = true;
+                outputPoint1GateNum = xorPinOutput[1];
+                point1Code = "x";
+            }
             // ======================= Marks the end of Point 1 =================================
             // ======================= Marks the start of Point 2 ===============================
             // check if point2 is a virtual output or a virtual input
@@ -1247,6 +1319,22 @@ RHLab.Widgets.Breadboard = function() {
                 inputPoint2GateNum = orPinInput[1];
                 inputPoint2InputNum = orPinInput[2];
                 point2Code = "o";
+            }
+            //***newly added */
+            componentCounterLocal = 0;
+            $.each(_xorGate, function(pos, gate){
+                xorPinInput = gate.CheckIfInput(point2);
+                if(xorPinInput[0]){
+                    componentCounterXor2 = componentCounterLocal;
+                    return false;
+                }
+                componentCounterLocal += 1;
+            });
+            if(xorPinInput[0]){
+                point2IsOutput = false;
+                inputPoint2GateNum = xorPinInput[1];
+                inputPoint2InputNum = xorPinInput[2];
+                point2Code = "x";
             }
             ledCount = 0;
             $.each(_leds, function(pos, led){
@@ -1371,6 +1459,21 @@ RHLab.Widgets.Breadboard = function() {
                 outputPoint2GateNum = orPinOutput[1];
                 point2Code = "o";
             }
+            //***newly added */
+            componentCounterLocal = 0;
+            $.each(_xorGate, function(pos, gate){
+                xorPinOutput = gate.CheckIfOutput(point2);
+                if(xorPinOutput[0]){
+                    componentCounterXor2 = componentCounterLocal;
+                    return false;
+                }
+                componentCounterLocal += 1;
+            });
+            if(xorPinOutput[0]){
+                point2IsOutput = true;
+                outputPoint2GateNum = xorPinOutput[1];
+                point2Code = "x";
+            }
 
             // Check to see if gates are properly powered
             // not gate
@@ -1380,6 +1483,7 @@ RHLab.Widgets.Breadboard = function() {
             var componentCounterNot = 0;
             var componentCounterAnd = 0;
             var componentCounterOr = 0;
+            var componentCounterXor = 0; //***newly added */
             var notPowered = null;
             // check point 1
             var ledGrounded = [null, null];
@@ -1579,6 +1683,46 @@ RHLab.Widgets.Breadboard = function() {
                 continue;
             }
 
+            //***newly added */
+            // xor gate
+            var xorPowered = null;
+            componentCounterLocal = 0;
+            $.each(_xorGate, function(pos, gate){
+                xorPowered = gate.CheckIfPower(point1);
+                if(xorPowered != null){
+                    componentCounterXor = componentCounterLocal;
+                    return false;
+                }
+                componentCounterLocal += 1;
+            });
+            if(xorPowered === true && finder.IsPower(point2)){
+                componentStatus.xorStatus[componentCounterXor].connectedToPower = true;
+                continue;
+            }
+            else if(xorPowered === false && finder.IsGround(point2)){
+                componentStatus.xorStatus[componentCounterXor].connectedToGround = true;
+                continue;
+            }
+            // point 2 is on gate
+            xorPowered = null;
+            componentCounterLocal = 0;
+            $.each(_xorGate, function(pos, gate){
+                xorPowered = gate.CheckIfPower(point2);
+                if(xorPowered != null){
+                    componentCounterXor = componentCounterLocal;
+                    return false;
+                }
+                componentCounterLocal += 1;
+            });
+            if(xorPowered === true && finder.IsPower(point1)){
+                componentStatus.xorStatus[componentCounterXor].connectedToPower = true;
+                continue;
+            }
+            else if(xorPowered === false && finder.IsGround(point1)){
+                componentStatus.xorStatus[componentCounterXor].connectedToGround = true;
+                continue;
+            }
+
             var inputPoint;
             var inputPointPinNum;
             var outputPoint;
@@ -1616,12 +1760,15 @@ RHLab.Widgets.Breadboard = function() {
                 var tempNot = componentCounterNot1;
                 var tempAnd = componentCounterAnd1;
                 var tempOr = componentCounterOr1;
+                var tempXor = componentCounterXor1; //***newly added */
                 componentCounterNot1 = componentCounterNot2;
                 componentCounterAnd1 = componentCounterAnd2;
                 componentCounterOr1 = componentCounterOr2;
+                componentCounterXor1 = componentCounterXor2; //***newly added */
                 componentCounterNot2 = tempNot;
                 componentCounterAnd2 = tempAnd;
                 componentCounterOr2 = tempOr;
+                componentCounterXor2 = tempXor; //***newly added */
             }
             else if(!point1IsOutput && !point2IsOutput){
                 // both are inputs. For now, we will return error
@@ -1659,6 +1806,11 @@ RHLab.Widgets.Breadboard = function() {
                         componentStatus.orStatus[componentCounterOr1].connectInput("b"+bufferCounter, whatGate[1], point1InputNum);
                         
                     }
+                    //***newly added */
+                    else if(whatGate[0] == "xor"){
+                        componentStatus.xorStatus[componentCounterXor1].connectInput("b"+bufferCounter, whatGate[1], point1InputNum);
+                        
+                    }
                 }
                 whatGate = helper.ParseGate(newPoint2Code, outputPointPinNum);
                 if(whatGate[0] != null){
@@ -1671,6 +1823,11 @@ RHLab.Widgets.Breadboard = function() {
                     }
                     else if(whatGate[0] == "or"){
                         componentStatus.orStatus[componentCounterOr2].connectOutput("b"+bufferCounter, whatGate[1], point1InputNum);
+                        
+                    }
+                    //***newly added */
+                    else if(whatGate[0] == "xor"){
+                        componentStatus.xorStatus[componentCounterXor2].connectOutput("b"+bufferCounter, whatGate[1], point1InputNum);
                         
                     }
                 }
@@ -1690,6 +1847,10 @@ RHLab.Widgets.Breadboard = function() {
                     else if(whatGate[0] == "or"){
                         componentStatus.orStatus[componentCounterOr1].connectInput(newPoint2Code, whatGate[1], point1InputNum);
                     }
+                    //***newly added */
+                    else if(whatGate[0] == "xor"){
+                        componentStatus.xorStatus[componentCounterXor1].connectInput(newPoint2Code, whatGate[1], point1InputNum);
+                    }
                     else{
                         // not a gate
                         leftOversMessage = "y" + newPoint2Code;
@@ -1707,6 +1868,10 @@ RHLab.Widgets.Breadboard = function() {
                     }
                     else if(whatGate[0] == "or"){
                         componentStatus.orStatus[componentCounterOr2].connectOutput(newPoint1Code, whatGate[1]);
+                    }
+                    //***newly added */
+                    else if(whatGate[0] == "xor"){
+                        componentStatus.xorStatus[componentCounterXor2].connectOutput(newPoint1Code, whatGate[1]);
                     }
                     else{
                         // only append to the end portion if the first part was also called
@@ -1746,7 +1911,7 @@ RHLab.Widgets.Breadboard = function() {
                 }
             });
         });
-        
+
         if(errors.length > 0){
             return errors[0];
         }
@@ -2073,6 +2238,162 @@ RHLab.Widgets.Breadboard = function() {
         else
             return 211;
     }
+
+    //************************newly added */
+    // The or gate functionality of the breadboard
+    Breadboard.XorGate = function(identifier, imageBase, leftPosition, topPosition, objVisir){
+        var self = this;
+
+        // Obtain the or gate image from the static folder to be placed on the breadbaord
+        var image1 = imageBase + "xor_gate.png";
+        // Breadboard.Component.call(this, identifier, leftPosition, topPosition, image1);
+
+        this._leftPosition = leftPosition - 20;
+        this._topPosition = topPosition - 15;
+
+        this._objVisir = objVisir;
+
+        // Array that stores each of the 7 pin locations of the logic gate
+        this._pin_location = [
+            leftPosition + 7,
+            leftPosition + 20,
+            leftPosition + 33,
+            leftPosition + 46,
+            leftPosition + 59,
+            leftPosition + 72,
+            leftPosition + 85
+        ];
+    
+        // Array value that stores the states of each pin of the or gate
+        this._array_value = [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ];
+
+        this._protocol = [
+            null, null,
+            null, null,
+            null, null,
+            null, null,
+            null, null,
+            null, null
+        ];
+    }
+
+    Breadboard.XorGate.prototype = Object.create(Breadboard.Component.prototype);
+
+    Breadboard.XorGate.prototype.SetPinLocation = function(leftPosition, topPosition) {
+        leftPosition = leftPosition - 20;
+        topPosition = topPosition - 15;
+        this._pin_location = [
+            leftPosition + 7,
+            leftPosition + 20,
+            leftPosition + 33,
+            leftPosition + 46,
+            leftPosition + 59,
+            leftPosition + 72,
+            leftPosition + 85
+        ];
+        this._leftPosition = leftPosition;
+        this._topPosition = topPosition;
+    }
+
+    // the getter function that obtains the pin location for each pin
+    Breadboard.XorGate.prototype.GetPinLocation = function () {
+        this.SetPinLocation(this._objVisir.GetPos().x, this._objVisir.GetPos().y);
+        return this._pin_location;
+    }
+
+    // [true, 3, 1]
+    // this means: true, there is an input
+    //             the gate number
+    //             the input number for that particular gate
+    Breadboard.XorGate.prototype.CheckIfInput = function(pin){
+        var pinLocation = this.GetPinLocation();
+        // top half
+        if(pin.y < this._topPosition && pin.y > 159){
+            for(var i = 1; i < pinLocation.length; i++){
+                if(pin.x === pinLocation[i]){
+                    if(i != 3 && i != 6){
+                        // return [true, i < 3 ? 3 : 4, i < 3 ? i - 3 : i];
+                        return [true, i < 3 ? 3 : 4, i < 3 ? i : i - 3];
+                    }
+                }
+            }
+            return [false, -1, -1];
+        }
+        // bottom half
+        else if(pin.y >= this._topPosition && pin.y < 406) {
+            for(var i = 0; i < pinLocation.length - 1; i++){
+                if(pin.x === pinLocation[i]){
+                    if(i != 2 && i != 5){
+                        return [true, i < 2 ? 1 : 2, i < 2 ? i + 1 : i - 2];
+                    }
+                }
+            }
+            return [false, -1, -1];
+
+        }
+        return [false, -1, -1];
+    }
+
+    Breadboard.XorGate.prototype.CheckIfOutput = function(pin){
+        var pinLocation = this.GetPinLocation();
+        // top half
+        if(pin.y < this._topPosition && pin.y > 159){
+            if(pin.x === pinLocation[3]){
+                return [true, 3];
+            }
+            else if(pin.x === pinLocation[6]){
+                return [true, 4]
+            }
+            return [false, -1];
+        }
+        // bottom half
+        else if(pin.y >= this._topPosition && pin.y < 406) {
+            if(pin.x === pinLocation[2]){
+                return [true, 1];
+            }
+            else if(pin.x === pinLocation[5]){
+                return [true, 2];
+            }
+            return [false, -1];
+
+        }
+        return [false, -1];
+    }
+
+    Breadboard.XorGate.prototype.CheckIfPower = function(pin){
+        var pinLocation = this.GetPinLocation();
+        // top half
+        if(pin.y < this._topPosition && pin.y > 159){
+            if(pin.x === pinLocation[0]){
+                // This is a Vcc pin
+                return true;
+            }
+        }
+        else if(pin.y >= this._topPosition && pin.y < 406){
+            if(pin.x === pinLocation[6]){
+                // This is a GND pin
+                return false;
+            }
+
+        }
+    }
+    //***************end of newly added */
+
     
     // The or gate functionality of the breadboard
     Breadboard.OrGate = function(identifier, imageBase, leftPosition, topPosition, objVisir){
