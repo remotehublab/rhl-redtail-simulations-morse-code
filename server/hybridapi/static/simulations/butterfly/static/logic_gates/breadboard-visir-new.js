@@ -637,11 +637,13 @@ RHLab.Widgets.Breadboard = function() {
         this.gates[whichGate-1]["output"].push( outputPoint);
     }
 
-    Breadboard.NotStatus.prototype.buildProtocolBlocks = function() {
+    Breadboard.NotStatus.prototype.buildProtocolBlocks = function(errors) {
         if(!this.connectedToGround){
+            errors.push(ERROR_MESSAGES["component-power"]);
             return [];
         }
         if(!this.connectedToPower){
+            errors.push(ERROR_MESSAGES["component-power"]);
             return [];
         }
 
@@ -836,11 +838,13 @@ RHLab.Widgets.Breadboard = function() {
         this.gates[whichGate-1]["output"].push(outputPoint);
     }
 
-    Breadboard.QuadDualInputGateStatus.prototype.buildProtocolBlocks = function(){
+    Breadboard.QuadDualInputGateStatus.prototype.buildProtocolBlocks = function(errors){
         if(!this.connectedToGround){
+            errors.push(ERROR_MESSAGES["component-power"]);
             return [];
         }
         if(!this.connectedToPower){
+            errors.push(ERROR_MESSAGES["component-power"]);
             return [];
         }
 
@@ -1584,8 +1588,8 @@ RHLab.Widgets.Breadboard = function() {
             var point1InputNum;
             var point2InputNum;
             if(point1IsOutput == null || point2IsOutput == null){
-                errors.push("[!] Error");
-                console.log("Both are null error");
+                errors.push(ERROR_MESSAGES["null"]);
+                console.log(ERROR_MESSAGES["null"]);
             }
 
             if(!point1IsOutput && point2IsOutput){
@@ -1621,17 +1625,17 @@ RHLab.Widgets.Breadboard = function() {
             }
             else if(!point1IsOutput && !point2IsOutput){
                 // both are inputs. For now, we will return error
-                errors.push("[!] Error");
-                console.log("Both are inputs error");
+                errors.push(ERROR_MESSAGES["inputs"]);
+                console.log(ERROR_MESSAGES["inputs"]);
             }
             else{
                 // both are outputs. Also error
-                errors.push("[!] Error");
-                console.log("Both are outputs error");
+                errors.push(ERROR_MESSAGES["outputs"]);
+                console.log(ERROR_MESSAGES["outputs"]);
             }
 
             if(errors.length > 0){
-                return "Error in design";
+                return errors[0];
             }
             // From this point on, we know that circuit is now within the valid state
 
@@ -1719,24 +1723,21 @@ RHLab.Widgets.Breadboard = function() {
         }
         for(var i = 0; i < switchStatus.length; i++){
             if(switchStatus[i].connectedToGround == false || switchStatus[i].connectedToPower == false){
-                errors.push("[!] Error");
-                console.log("Switch not properly hooked up");
+                errors.push(ERROR_MESSAGES["switches"]);
+                console.log(ERROR_MESSAGES["switches"]);
             }
         }
         for(var i = 0; i < ledStatus.length; i++){
             if(ledStatus[i].connectedToGround == false){
-                errors.push("[!] Error");
-                console.log("LED not properly hooked up");
+                errors.push(ERROR_MESSAGES["leds"]);
+                console.log(ERROR_MESSAGES["leds"]);
             }
-        }
-        if(errors.length > 0){
-            return "Error in design";
         }
 
         var messages = [];
         $.each(componentStatus, function(pos, particularComponentStatus){
             $.each(particularComponentStatus, function(pos, gate){
-                var currentMessages = gate.buildProtocolBlocks();
+                var currentMessages = gate.buildProtocolBlocks(errors);
                 for(var i = 0; i < currentMessages.length; i++){
                     var currentMessage = currentMessages[i];
                     if(!messages.includes(currentMessage)){
@@ -1745,6 +1746,10 @@ RHLab.Widgets.Breadboard = function() {
                 }
             });
         });
+        
+        if(errors.length > 0){
+            return errors[0];
+        }
         
         var wiringProtocolMessage = messages.join(";");
         if(nonGateLeftovers){
@@ -2519,12 +2524,12 @@ RHLab.Widgets.Breadboard = function() {
 
     // All potential error messages that a user may experience
     var ERROR_MESSAGES = {
-        "no-gpio": "Error: Every wire must be connected to one GPIO",
-        "two-gpio": "Error: Every wire can only be connected to one GPIO",
-        "gpio-not-supported": "Error: That GPIO pin is not supported",
-        "gpio-already-used": "Error: That GPIO is used by two wires",
-        "input-not-led": "Error: Input GPIO's must be connected to LED's",
-        "output-not-switch-gnd": "Error: Output GPIO's must be connected to switches or power supply",
+        "null": "Error: Every wire must be connected to a component",
+        "inputs": "Error: Both ends of a wire are connected to an input",
+        "outputs": "Error: Both ends of a wire are connected to an output",
+        "leds": "Error: A virtual LED is not properly wired",
+        "switches": "Error: A virtual switch is not properly wired",
+        "component-power": "Error: A component is not properly powered",
         "ready": "Ready"
     };
 
