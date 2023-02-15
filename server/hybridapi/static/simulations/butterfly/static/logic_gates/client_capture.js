@@ -2,14 +2,19 @@
  function printLog(){
     var myString = breadboard.Update();
     
-    // document.getElementById("protocol").innerHTML = myString;
-    // console.log(myString);
+    if(myString.includes("Error")){
+        document.getElementById("protocol").innerHTML = myString;
+    }
+    else{
+        document.getElementById("protocol").innerHTML = "";
+        parent.postMessage({
+            messageType: "web2sim",
+            version: "1.0",
+            value: myString
+        });
 
-    parent.postMessage({
-        messageType: "web2sim",
-        version: "1.0",
-        value: myString
-    });
+    }
+    // console.log(myString);
 
 }
 
@@ -45,3 +50,14 @@ window.addEventListener("message", (event) => {
         }
     }
 }, false);
+
+function closeIt()
+{
+    var myString = "yLFd0,d1,d2,d3,d4;\n";
+    parent.postMessage({
+        messageType: "web2sim",
+        version: "1.0",
+        value: myString
+    });
+}
+window.onbeforeunload = closeIt;

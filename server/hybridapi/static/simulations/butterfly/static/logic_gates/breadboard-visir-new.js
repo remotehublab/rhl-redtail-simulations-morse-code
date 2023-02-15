@@ -149,6 +149,13 @@ RHLab.Widgets.Breadboard = function() {
                 self._orGate = [];
                 self._leds = [];
                 self._outputs = [];
+
+                var myString = "yLFd0,d1,d2,d3,d4;\n";
+                parent.postMessage({
+                    messageType: "web2sim",
+                    version: "1.0",
+                    value: myString
+                });
 			}
 		});
 
@@ -157,6 +164,7 @@ RHLab.Widgets.Breadboard = function() {
         $element.find('.delete').click(function () {
             if (!visir.Config.Get("readOnly"))
             {
+                var myString = "";
                 if (self._breadboard._selectedWire !== null) {
                     self._breadboard._RemoveWire(self._breadboard._wires[self._breadboard._selectedWire]);
                     self._breadboard.SelectWire(null);
@@ -183,6 +191,7 @@ RHLab.Widgets.Breadboard = function() {
                     });
                     $.each(self._leds, function(position, led){
                         if(led._objVisir._$circle){
+                            myString = "yLFd" + position.toString() + "\n";
                             self._leds.splice(position, 1);
                             return false;
                         }
@@ -198,6 +207,11 @@ RHLab.Widgets.Breadboard = function() {
                 }
             }
             console.log("I hit the trash can");
+            parent.postMessage({
+                messageType: "web2sim",
+                version: "1.0",
+                value: myString
+            });
             // example of changing img
             // self._experiment[0]._$elem.find("img").attr("src", "/static/visir/instruments/breadboard/images/butterfly-led-on.png");
             self.Update();

@@ -28,7 +28,7 @@ void ButterflySimulation::initialize(){
         mState.virtual_led[i] = false;
     }
 
-    // setReportWhenMarked(true);
+    setReportWhenMarked(false);
 }
 
 void ButterflySimulation::print_gpio_header_states(){
@@ -101,7 +101,7 @@ void ButterflySimulation::update_buffer_logic(string s, int o){
 void ButterflySimulation::update_led_logic(string s, int o){
     int index = stoi(s);
     mState.virtual_led[index] = (bool)o;
-    requestReportState();
+    // requestReportState();
 }
 
 int ButterflySimulation::read_gate_input(char c){
@@ -255,6 +255,10 @@ int ButterflySimulation::read_logic_gate(string substring){
 
         // Handle output portion
         handle_output(substring, start_index, my_output);
+        while(substring[start_index] == ','){
+            start_index++;
+            handle_output(substring, start_index, my_output);
+        }
     }
 
     return start_index;
@@ -298,6 +302,15 @@ void ButterflySimulation::update(double delta){
     int my_string_length = my_string.length();
     int while_loop_counter = 1;
     int saturation_itr_counter = 0;
+
+    if(my_string_length < 2){
+        return;
+    }
+
+    // for(int i = 0; i < LED_ARRAY_SIZE; i++){
+    //     mState.virtual_led[i] = false;
+    // }
+    // reportUpdate();
 
     // Create copies of the header states and buffer states
     bool buffer_copy[BUFFER_ARRAY_SIZE];
@@ -368,8 +381,6 @@ void ButterflySimulation::update(double delta){
     print_led_states();
     this->log() << mState.serialize() << endl;
 
-    // this->log() << "gpio[0] is " << this->targetDevice->getGpio(0) << endl;
-    // this->targetDevice->setGpio(0, this->targetDevice->getGpio(0));
-
-    requestReportState();
+    // requestReportState();
+    reportUpdate();
 }
