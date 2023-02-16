@@ -965,7 +965,7 @@ RHLab.Widgets.Breadboard = function() {
         componentStatus.notStatus = [];
         for(var i = 0; i < _notGate.length; i++){
             if(_notGate[i]._topPosition != 261){
-                errors.push("[!] Error");
+                errors.push(ERROR_MESSAGES["component-placement"]);
             }
             var notStatus = new Breadboard.NotStatus();
             componentStatus.notStatus.push(notStatus);
@@ -974,7 +974,7 @@ RHLab.Widgets.Breadboard = function() {
         componentStatus.andStatus = [];
         for(var i = 0; i < _andGate.length; i++){
             if(_andGate[i]._topPosition != 261){
-                errors.push("[!] Error");
+                errors.push(ERROR_MESSAGES["component-placement"]);
             }
             var andStatus = new Breadboard.AndStatus();
             componentStatus.andStatus.push(andStatus);
@@ -983,7 +983,7 @@ RHLab.Widgets.Breadboard = function() {
         componentStatus.orStatus = [];
         for(var i = 0; i < _orGate.length; i++){
             if(_orGate[i]._topPosition != 261){
-                errors.push("[!] Error");
+                errors.push(ERROR_MESSAGES["component-placement"]);
             }
             var orStatus = new Breadboard.OrStatus();
             componentStatus.orStatus.push(orStatus);
@@ -993,7 +993,7 @@ RHLab.Widgets.Breadboard = function() {
         componentStatus.xorStatus = [];
         for(var i = 0; i < _xorGate.length; i++){
             if(_xorGate[i]._topPosition != 261){
-                errors.push("[!] Error");
+                errors.push(ERROR_MESSAGES["component-placement"]);
             }
             var xorStatus = new Breadboard.XorStatus();
             componentStatus.xorStatus.push(xorStatus);
@@ -2851,6 +2851,7 @@ RHLab.Widgets.Breadboard = function() {
         "leds": "Error: A virtual LED is not properly wired",
         "switches": "Error: A virtual switch is not properly wired",
         "component-power": "Error: A component is not properly powered",
+        "component-placement": "Error: Illegal placement of a component",
         "ready": "Ready"
     };
 
