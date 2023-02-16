@@ -69,9 +69,9 @@
                                 {% for n in range(config['SIMULATION_CONFIG']['gpios']['dut2sim']['number']) %}
                                 <th>
                                     gpio-dut2sim-{{ n }}
-                                    {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'] %}
+                                    {% if config['SIMULATION_CONFIG']['gpios']['dut2sim']['labels'] %}
                                         <br>
-                                        <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'][n] }})</tt></small>
+                                        <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['dut2sim']['labels'][n] }})</tt></small>
                                     {% endif %}
                                 </th>
                                 {% endfor %}
