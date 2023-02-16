@@ -31,7 +31,12 @@
                         <thead>
                             <tr>
                                 {% for n in range(config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']) %}
-                                <th>gpio-sim2dut-{{ n }}</th>
+                                <th>gpio-sim2dut-{{ n }}
+                                {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'] %}
+                                    <br>
+                                    <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'][n] }})</tt></small>
+                                {% endif %}
+                                </th>
                                 {% endfor %}
                             </tr>
                         </thead>
@@ -62,7 +67,13 @@
                         <thead>
                             <tr>
                                 {% for n in range(config['SIMULATION_CONFIG']['gpios']['dut2sim']['number']) %}
-                                <th>gpio-dut2sim-{{ n }}</th>
+                                <th>
+                                    gpio-dut2sim-{{ n }}
+                                    {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'] %}
+                                        <br>
+                                        <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'][n] }})</tt></small>
+                                    {% endif %}
+                                </th>
                                 {% endfor %}
                             </tr>
                         </thead>
