@@ -1924,6 +1924,7 @@ RHLab.Widgets.Breadboard = function() {
         // Link appropriate css that makes the mouse become a pointer
         if(objVisir){
             this._objVisir._$elem.css({'cursor': 'pointer'});
+            this._objVisir._$elem.find("img").attr("src", "static/visir/instruments/breadboard/images/butterfly-switch-right-small.jpg");
 
             this._value = false;
             this._objVisir._$elem.find('img').click(function () {
