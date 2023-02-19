@@ -1,7 +1,7 @@
-name: Watertank
-description: This is a watertank simulation
+name: Parking
+description: This is a parking simulation
 iframe:
-  url: https://ll-static-apps.s3.eu-central-1.amazonaws.com/simulations/watertank/index.html
+  url: https://ll-static-apps.s3.eu-central-1.amazonaws.com/simulations/parking/index.html
   height: 500
 gpios:
   sim2dut:
