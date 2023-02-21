@@ -124,7 +124,7 @@ RHLab.Widgets.Breadboard = function() {
 				// me._DrawWires();
                 self._breadboard.Clear();
 
-                self._breadboard.LoadCircuit(getOriginalWires(self._numberOfSwitches));
+                self._breadboard.LoadMyCircuit(getOriginalWires(self._numberOfSwitches));
                 self._originalNumberOfWires = self._breadboard._wires.length;
                 console.log(me._wires.length);
 
@@ -280,8 +280,101 @@ RHLab.Widgets.Breadboard = function() {
             });
         });
 
+        visir.Breadboard.prototype.LoadMyCircuit = function(circuit)
+        {
+            this.Clear();
+            var me = this;
+            if (!this._$library) {
+                this._onLibraryLoaded = function() { me.LoadMyCircuit(circuit); }
+                return; // we have to wait until the library is loaded
+            }
 
-        this._breadboard.LoadCircuit(getOriginalWires(this._numberOfSwitches));
+            var offx = -44;
+            var offy = 3;
+            
+            var $xml = $(circuit);
+            $xml.find("component").each(function() {
+                var t = $(this).text();
+                var args = t.split(" ");
+                switch(args[0]) {
+                    case "W":
+                        var c = parseInt(args[1], 10);
+                        var x1 = parseInt(args[2], 10);
+                        var y1 = parseInt(args[3], 10);
+                        var x2 = parseInt(args[4], 10);
+                        var y2 = parseInt(args[5], 10);
+                        var x3 = parseInt(args[6], 10);
+                        var y3 = parseInt(args[7], 10);
+
+                        var hex = Number(c).toString(16);
+                        hex = "#" + "000000".substr(0, 6 - hex.length) + hex;
+
+                        //trace("wire: " + hex)
+
+                        var nWire = new visir.Wire(hex); // XXX
+                        me._wires.push(nWire);
+                        nWire._start.x = x1 + offx;
+                        nWire._start.y = y1 + offy;
+                        nWire._mid.x = x2 + offx;
+                        nWire._mid.y = y2 + offy;
+                        nWire._end.x = x3 + offx;
+                        nWire._end.y = y3 + offy;
+
+                        me._DrawWires();
+
+                    break;
+                    default:
+                        var x = parseInt(args[2], 10);
+                        var y = parseInt(args[3], 10);
+                        var rot = parseInt(args[4], 10);
+                        var comp = me.CreateComponent(args[0], args[1]);
+                        comp.Move(x + offx, y + offy);
+                        comp.Rotate(rot);
+                        var xPos = comp.GetPos().x;
+                        var yPos = comp.GetPos().y;
+                        if(comp._type == "Gate"){
+                            if(comp._value == "NOT"){
+                                var not0 = new RHLab.Widgets.Breadboard.NotGate("NG1", imageBase, xPos, yPos, comp); //274, 261
+                                self._notGate.push(not0);
+                                self.AddComponent(not0);
+                            }
+                            else if(comp._value == "AND"){
+                                var and0 = new RHLab.Widgets.Breadboard.AndGate("AG1", imageBase, xPos, yPos, comp);
+                                breadboard._andGate.push(and0);
+                                breadboard.AddComponent(and0);
+                            }
+                            else if(comp._value == "OR"){
+                                var or0 = new RHLab.Widgets.Breadboard.OrGate("OG1", imageBase, xPos, yPos, comp); // 456, 261
+                                breadboard._orGate.push(or0);
+                                breadboard.AddComponent(or0);
+                            }
+                            /***newly added */
+                            else if(comp._value == "XOR"){
+                                var xor0 = new RHLab.Widgets.Breadboard.XorGate("XG1", imageBase, xPos, yPos, comp); // 456, 261
+                                breadboard._xorGate.push(xor0);
+                                breadboard.AddComponent(xor0);
+                            }
+                        }
+                        else if(comp._type == "LED"){
+                            var led0 = new RHLab.Widgets.Breadboard.LEDs("LED1", imageBase, xPos, yPos, comp);
+                            breadboard._leds.push(led0);
+                            breadboard.AddComponent(led0);
+                            // breadboard._experiment.push(comp_obj);
+                        }
+                        else if(comp._type == "Switch"){
+                            var switch0 = new RHLab.Widgets.Breadboard.Switch("Switch1", imageBase, xPos, yPos, comp);
+                            breadboard._outputs.push(switch0);
+                            breadboard.AddComponent(switch0);
+                        }
+
+                    break;
+                }
+                //trace("xxx: " + $(this).text());
+            });
+        }
+
+
+        this._breadboard.LoadMyCircuit(getOriginalWires(this._numberOfSwitches));
         this._originalNumberOfWires = this._breadboard._wires.length;
 
         if (visir.FIXES === undefined) {
@@ -314,8 +407,9 @@ RHLab.Widgets.Breadboard = function() {
             if (!self._insideClear) {
                 visir.FIXES.oldClear.bind(this)();
                 self._insideClear = true;
-                self._breadboard.LoadCircuit(getOriginalWires(self._numberOfSwitches));
-                self._originalNumberOfWires = self._breadboard._wires.length;
+                // self._breadboard.LoadMyCircuit(getOriginalWires(self._numberOfSwitches));
+                // self._originalNumberOfWires = self._breadboard._wires.length;
+                self._originalNumberOfWires = 5;
                 self._insideClear = false;
             }
         }
@@ -342,16 +436,61 @@ RHLab.Widgets.Breadboard = function() {
                     $wire.text("W " + c + " " + s.x + " " + s.y + " " + m.x + " " + m.y + " " + e.x + " " + e.y);
                     $cirlist.append($wire);
             }
+
+            for(var i=0;i<self._notGate.length; i++) {
+                var c = self._notGate[i]._objVisir;
+                var $comp = $("<component/>");
+                var p = c.GetPos().Add(offp);
+                $comp.text(c._type + " " + c._value + " " + p.x + " " + p.y + " " + c.GetRotation());
+                $cirlist.append($comp);
+            }
+            for(var i=0;i<self._andGate.length; i++) {
+                var c = self._andGate[i]._objVisir;
+                var $comp = $("<component/>");
+                var p = c.GetPos().Add(offp);
+                $comp.text(c._type + " " + c._value + " " + p.x + " " + p.y + " " + c.GetRotation());
+                $cirlist.append($comp);
+            }
+            for(var i=0;i<self._orGate.length; i++) {
+                var c = self._orGate[i]._objVisir;
+                var $comp = $("<component/>");
+                var p = c.GetPos().Add(offp);
+                $comp.text(c._type + " " + c._value + " " + p.x + " " + p.y + " " + c.GetRotation());
+                $cirlist.append($comp);
+            }
+            for(var i=0;i<self._xorGate.length; i++) {
+                var c = self._xorGate[i]._objVisir;
+                var $comp = $("<component/>");
+                var p = c.GetPos().Add(offp);
+                $comp.text(c._type + " " + c._value + " " + p.x + " " + p.y + " " + c.GetRotation());
+                $cirlist.append($comp);
+            }
+            for(var i=0;i<self._leds.length; i++) {
+                var c = self._leds[i]._objVisir;
+                var $comp = $("<component/>");
+                var p = c.GetPos().Add(offp);
+                $comp.text(c._type + " " + c._value + " " + p.x + " " + p.y + " " + c.GetRotation());
+                $cirlist.append($comp);
+            }
+            for(var i=0;i<self._outputs.length; i++) {
+                var c = self._outputs[i]._objVisir;
+                var $comp = $("<component/>");
+                var p = c.GetPos().Add(offp);
+                $comp.text(c._type + " " + c._value + " " + p.x + " " + p.y + " " + c.GetRotation());
+                $cirlist.append($comp);
+            }
             // Save all components to the .xml equivalence for later
             return $("<root />").append($xml).html();
         }
+
+        
 
         window._dbgGlobalBreadboard = this;
     }
 
     // Loads existing circuit from the .xml file
     Breadboard.prototype.LoadCircuit = function (circuit) {
-        this._breadboard.LoadCircuit(circuit);
+        this._breadboard.LoadMyCircuit(circuit);
         this.Update();
     }
     
@@ -770,7 +909,6 @@ RHLab.Widgets.Breadboard = function() {
         var switchStatus = [];
         var ledStatus = [];
         var wires = this._breadboard._wires;
-        console.log(this._breadboard._wires.length);
         var bufferCounter = 0;
 
         for(var i = 0; i < this._leds.length; i++){
@@ -823,12 +961,11 @@ RHLab.Widgets.Breadboard = function() {
         var nonGateLeftovers = [];
         var _leds = this._leds;
 
-        // console.log(_notGate);
         console.log(componentStatus);
-        console.log(switchStatus);
-        console.log(ledStatus);
-        // for (var i = this._originalNumberOfWires; i < wires.length; i++) {
-        for (var i = 10; i < wires.length; i++) {
+        console.log(wires.length);
+        console.log(this._originalNumberOfWires)
+        for (var i = this._originalNumberOfWires; i < wires.length; i++) {
+        // for (var i = 10; i < wires.length; i++) {
             var componentCounterNot1 = 0;
             var componentCounterAnd1 = 0;
             var componentCounterOr1 = 0;
@@ -852,7 +989,6 @@ RHLab.Widgets.Breadboard = function() {
             var point1Code = "";
             if(isVirtualInput){
                 gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
-                console.log(gpioPin);
                 point1IsOutput = false;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -972,7 +1108,6 @@ RHLab.Widgets.Breadboard = function() {
             var isVirtualOutput = OUTPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualOutput){
                 gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
-                console.log(gpioPin);
                 point1IsOutput = true;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1083,7 +1218,6 @@ RHLab.Widgets.Breadboard = function() {
             isVirtualInput = INPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualInput){
                 gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
-                console.log(gpioPin);
                 point2IsOutput = false;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1200,7 +1334,6 @@ RHLab.Widgets.Breadboard = function() {
             isVirtualOutput = OUTPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualOutput){
                 gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
-                console.log(gpioPin);
                 point2IsOutput = true;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
