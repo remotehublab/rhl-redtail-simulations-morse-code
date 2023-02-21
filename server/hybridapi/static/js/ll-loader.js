@@ -44,13 +44,13 @@ function requestWeb2SimMessages() {
 
 function requestSim2WebMessages() {
     $.get(window.BASE_URL + "/messages/sim2web/?previous_response=" + encodeURIComponent(window.SIM2WEB_STATUS)).done(function (data) {
-        if (window.SIM2WEB_STATUS != data.value) {
+        if (window.SIM2WEB_STATUS !== data.value) {
             console.log("Sending data with postMessage");
             $("#simulation-iframe")[0].contentWindow.postMessage({
                 messageType: "sim2web",
                 version: "1.0",
                 value: data.value
-            });
+            }, "*");
         }
         window.SIM2WEB_STATUS = data.value;
         $("#sim2web-messages").text(data.value);
