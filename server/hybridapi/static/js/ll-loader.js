@@ -102,15 +102,27 @@ function initializeMessages() {
     });
 
 
+    console.debug("Added event listener for messages from iframe");
+
+    /**
+     * Listen for incoming messages from the visualization iframe.
+     */
     window.addEventListener("message", (event) => {
+
+        console.debug("Received message from iframe: ", event.data);
+
         var simulationIframe = $("#simulation-iframe")[0];
-        if (event.data.messageType != "web2sim") {
+        if (event.data.messageType !== "web2sim") {
             return;
         }
-        if (event.source != event.source == simulationIframe.contentWindow) {
+
+        const expectedOrigin = new URL(simulationIframe.src).origin;
+
+        if (event.origin !== expectedOrigin) {
             console.log("Message from somewhere other than the iframe", event);
             return;
         }
+
         $.ajax({
             'url': window.BASE_URL + "/messages/web2sim/",
             'method': 'POST',
