@@ -7,7 +7,7 @@
         document.getElementById("protocol").innerHTML = myString;
     }
     else{
-        document.getElementById("protocol").innerHTML = "";
+        document.getElementById("protocol").innerHTML = "Ready";
         parent.postMessage({
             messageType: "web2sim",
             version: "1.0",

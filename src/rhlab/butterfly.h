@@ -27,40 +27,9 @@ using namespace std;
 #define LED_ARRAY_SIZE      5
 #define NUM_SATURATION_ITR  5
 #define MAX_CHAR_ARRAY_SIZE 1024
+
 #define SIM_OUTPUT_GPIO_NUM 5
-#define SIM_INPUT_GPIO_NUM  6
-
-// GPIO structs
-struct gpio_input {
-    bool g31;
-    bool g32;
-};
-
-struct gpio_output {
-    bool g06;
-    bool g07;
-    bool g08;
-    bool g09;
-    bool g10;
-    bool g13;
-    bool g14;
-    bool g15;
-    bool g16;
-    bool g17;
-    bool g18;
-    bool g19;
-    bool g20;
-    bool g21;
-    bool g22;
-    bool g23;
-    bool g24;
-    bool g25;
-};
-
-struct gpio_header {
-    gpio_input input;
-    gpio_output output;
-};
+#define SIM_INPUT_GPIO_NUM  7
 
 // struct that receives the string
 struct ButterflyRequest : public BaseInputDataType {

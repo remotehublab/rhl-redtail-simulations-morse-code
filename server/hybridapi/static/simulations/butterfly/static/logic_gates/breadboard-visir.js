@@ -47,8 +47,9 @@ RHLab.Widgets.Breadboard = function() {
         39: 'GPIO34',
         36: 'GPIO31',
         38: 'GPIO33',
+        40: 'GPIO35',
     };
-    var OUTPUTS_BY_PIN_ARRAY = [31, 32, 37, 39, 36, 38];
+    var OUTPUTS_BY_PIN_ARRAY = [31, 32, 37, 39, 36, 38, 40];
 
     // // Define the inputs from the 40-pin GPIO for the DE1-SoC
     // var INPUTS_BY_PIN = {
@@ -146,7 +147,6 @@ RHLab.Widgets.Breadboard = function() {
 
                 self._breadboard.LoadMyCircuit(getOriginalWires(self._numberOfSwitches));
                 self._originalNumberOfWires = self._breadboard._wires.length;
-                console.log(me._wires.length);
 
                 self._notGate = [];
                 self._andGate = [];
@@ -218,7 +218,6 @@ RHLab.Widgets.Breadboard = function() {
                     self._breadboard.SelectComponent(null);
                 }
             }
-            console.log("I hit the trash can");
             parent.postMessage({
                 messageType: "web2sim",
                 version: "1.0",
@@ -920,7 +919,7 @@ RHLab.Widgets.Breadboard = function() {
     Breadboard.prototype.Update = function() {
         // Initialize self variables used for checking throughout the update process
         console.log("Updating...");
-        console.log(this);
+        // console.log(this);
         var myString = this.CalculateWiringProtocolMessage();
         // console.log(myString);
         if(myString.includes("Error")){
@@ -1002,9 +1001,8 @@ RHLab.Widgets.Breadboard = function() {
         var nonGateLeftovers = [];
         var _leds = this._leds;
 
-        console.log(componentStatus);
-        console.log(wires.length);
-        console.log(this._originalNumberOfWires)
+        // console.log(componentStatus);
+
         for (var i = this._originalNumberOfWires; i < wires.length; i++) {
         // for (var i = 10; i < wires.length; i++) {
             var componentCounterNot1 = 0;
@@ -2095,8 +2093,6 @@ RHLab.Widgets.Breadboard = function() {
 
         this._leftPosition = leftPosition;
         this._rightPosition = topPosition;
-        console.log(this._leftPosition);
-        console.log(this._topPosition);
         // Breadboard.Component.call(this, identifier, leftPosition, topPosition, image1, image2);
 
         // Link appropriate css that makes the mouse become a pointer
@@ -2106,7 +2102,6 @@ RHLab.Widgets.Breadboard = function() {
 
             this._value = false;
             this._objVisir._$elem.find('img').click(function () {
-                console.log("switch pressed");
                 self._Change();
             });
         }

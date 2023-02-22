@@ -10,5 +10,5 @@ gpios:
     # labels: [ gpio28, gpio29, gpio23, gpio24, gpio25 ]
   dut2sim:
     # FPGA outputs
-    number: 6
+    number: 7
     # labels: [ gpio26, gpio27, gpio32, gpio34, gpio31, gpio33 ]
