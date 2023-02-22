@@ -27,8 +27,8 @@ using namespace std;
 #define LED_ARRAY_SIZE      5
 #define NUM_SATURATION_ITR  5
 #define MAX_CHAR_ARRAY_SIZE 1024
-#define SIM_OUTPUT_GPIO_NUM 18
-#define SIM_INPUT_GPIO_NUM  2
+#define SIM_OUTPUT_GPIO_NUM 5
+#define SIM_INPUT_GPIO_NUM  6
 
 // GPIO structs
 struct gpio_input {
@@ -94,7 +94,6 @@ struct ButterflyData : public BaseOutputDataType {
 
 class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
     private:
-        gpio_header my_header;
         bool buffer[BUFFER_ARRAY_SIZE];
         bool output_gpio_tracker[SIM_OUTPUT_GPIO_NUM];
         bool input_gpio_tracker[SIM_INPUT_GPIO_NUM];

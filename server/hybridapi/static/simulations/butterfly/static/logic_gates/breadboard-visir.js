@@ -32,35 +32,55 @@ if(typeof(RHLab.Widgets) === "undefined") {
 RHLab.Widgets.Breadboard = function() {
 
     var VISIR_SQUARE_SIZE = 13;
-    var DEFAULT_NUMBER_OF_SWITCHES = 0;
+    // var DEFAULT_NUMBER_OF_SWITCHES = 0;
 
     // Define the outputs from the 40-pin GPIO for the DE1-SoC
+    // var OUTPUTS_BY_PIN = {
+    //     31: 'V_LED0', // GPIO26
+    //     32: 'V_LED1', // GPIO27
+    // };
+
     var OUTPUTS_BY_PIN = {
-        31: 'V_LED0', // GPIO26
-        32: 'V_LED1', // GPIO27
+        31: 'GPIO26', // GPIO26
+        32: 'GPIO27', // GPIO27
+        37: 'GPIO32',
+        39: 'GPIO34',
+        36: 'GPIO31',
+        38: 'GPIO33',
     };
+    var OUTPUTS_BY_PIN_ARRAY = [31, 32, 37, 39, 36, 38];
+
+    // // Define the inputs from the 40-pin GPIO for the DE1-SoC
+    // var INPUTS_BY_PIN = {
+    //     06: 'V_SW1',  // GPIO6 //PC1
+    //     07: 'V_SW2',  // GPIO7
+    //     08: 'V_SW3',  // GPIO8
+    //     09: 'V_SW4',  // GPIO9
+    //     10: 'PA1', //PA1
+    //     13: 'V_SW5',  // GPIO10
+    //     14: 'V_SW6',  // GPIO11
+    //     15: 'V_SW7',  // GPIO12
+    //     16: 'V_SW8',  // GPIO13
+    //     17: 'V_SW9',  // GPIO14
+    //     18: 'V_SW10', // GPIO15
+    //     19: 'V_SW11', // GPIO16
+    //     20: 'V_SW12', // GPIO17
+    //     21: 'PB1', // GPIO18  //PB1
+    //     22: 'V_SW14', // GPIO19
+    //     23: 'V_SW15', // GND
+    //     24: 'V_SW16', // GPIO21
+    //     25: 'V_SW17', // GPIO22
+    // };
 
     // Define the inputs from the 40-pin GPIO for the DE1-SoC
     var INPUTS_BY_PIN = {
-        06: 'V_SW1',  // GPIO6 //PC1
-        07: 'V_SW2',  // GPIO7
-        08: 'V_SW3',  // GPIO8
-        09: 'V_SW4',  // GPIO9
-        10: 'PA1', //PA1
-        13: 'V_SW5',  // GPIO10
-        14: 'V_SW6',  // GPIO11
-        15: 'V_SW7',  // GPIO12
-        16: 'V_SW8',  // GPIO13
-        17: 'V_SW9',  // GPIO14
-        18: 'V_SW10', // GPIO15
-        19: 'V_SW11', // GPIO16
-        20: 'V_SW12', // GPIO17
-        21: 'PB1', // GPIO18  //PB1
-        22: 'V_SW14', // GPIO19
-        23: 'V_SW15', // GND
-        24: 'V_SW16', // GPIO21
-        25: 'V_SW17', // GPIO22
+        33: 'GPIO28',  // GPIO6 //PC1
+        34: 'GPIO29',  // GPIO7
+        26: 'GPIO23',  // GPIO8
+        27: 'GPIO24',  // GPIO9
+        28: 'GPIO25',      //PA1
     };
+    var INPUTS_BY_PIN_ARRAY = [33, 34, 26, 27, 28];
 
     // Function called by template.html for flask that initalizes a <div> for the breadboard
     function Breadboard($element, endpointBase, numberOfSwitches, imageBase, enableNetwork) {
@@ -262,9 +282,16 @@ RHLab.Widgets.Breadboard = function() {
                         }
                     }
                     else if(comp_obj._type == "LED"){
-                        var led0 = new RHLab.Widgets.Breadboard.LEDs("LED1", imageBase, xPos, yPos, comp_obj);
-                        breadboard._leds.push(led0);
-                        breadboard.AddComponent(led0);
+                        if(breadboard._leds.length < 5){
+                            var led0 = new RHLab.Widgets.Breadboard.LEDs("LED1", imageBase, xPos, yPos, comp_obj);
+                            breadboard._leds.push(led0);
+                            breadboard.AddComponent(led0);
+                        }
+                        else{
+                            comp_obj.remove();
+                            return;
+                        }
+                        
                         // breadboard._experiment.push(comp_obj);
                     }
                     else if(comp_obj._type == "Switch"){
@@ -556,8 +583,11 @@ RHLab.Widgets.Breadboard = function() {
             this._outputs.push(switchComponent);
             this.AddComponent(switchComponent);
         }
-        var jp1Image = this._imageBase + "connections_40.png";
-        var jp1 = new Breadboard.Component('JP1', 221, 22, jp1Image, null, 0);
+        
+        // var jp1Image = this._imageBase + "connections_40.png";
+        // var jp1 = new Breadboard.Component('JP1', 221, 22, jp1Image, null, 0);
+        var jp1Image = this._imageBase + "de1_soc_connection.png";
+        var jp1 = new Breadboard.Component('JP1', 192, 13, jp1Image, null, 0);
         this.AddComponent(jp1);
     }
 
@@ -988,7 +1018,8 @@ RHLab.Widgets.Breadboard = function() {
             var isVirtualInput = INPUTS_BY_PIN[gpioPin] !== undefined;
             var point1Code = "";
             if(isVirtualInput){
-                gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
+                // gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
+                gpioPin = INPUTS_BY_PIN_ARRAY.indexOf(gpioPin);
                 point1IsOutput = false;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1107,7 +1138,8 @@ RHLab.Widgets.Breadboard = function() {
             }
             var isVirtualOutput = OUTPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualOutput){
-                gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
+                // gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
+                gpioPin = OUTPUTS_BY_PIN_ARRAY.indexOf(gpioPin);
                 point1IsOutput = true;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1217,7 +1249,8 @@ RHLab.Widgets.Breadboard = function() {
             gpioPin = finder.FindGpioPin(point2);
             isVirtualInput = INPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualInput){
-                gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
+                // gpioPin = Object.keys(INPUTS_BY_PIN).indexOf(gpioPin.toString());
+                gpioPin = INPUTS_BY_PIN_ARRAY.indexOf(gpioPin);
                 point2IsOutput = false;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
@@ -1333,7 +1366,8 @@ RHLab.Widgets.Breadboard = function() {
             }
             isVirtualOutput = OUTPUTS_BY_PIN[gpioPin] !== undefined;
             if(isVirtualOutput){
-                gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
+                // gpioPin = Object.keys(OUTPUTS_BY_PIN).indexOf(gpioPin.toString());
+                gpioPin = OUTPUTS_BY_PIN_ARRAY.indexOf(gpioPin);
                 point2IsOutput = true;
                 if(gpioPin < 10){
                     // i.e. g07 or g09. Add a '0' string to have 2 numbers after g
