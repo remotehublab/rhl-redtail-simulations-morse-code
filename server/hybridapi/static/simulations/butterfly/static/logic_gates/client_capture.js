@@ -28,7 +28,7 @@ window.addEventListener("message", (event) => {
         return;
     }
 
-    document.getElementById("sim2web").innerText = event.data.value;
+    // document.getElementById("sim2web").innerText = event.data.value;
     console.log(event.data.value);
     var str = event.data.value;
     var tokens = str.split('&');

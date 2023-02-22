@@ -923,6 +923,13 @@ RHLab.Widgets.Breadboard = function() {
         console.log(this);
         var myString = this.CalculateWiringProtocolMessage();
         // console.log(myString);
+        if(myString.includes("Error")){
+            document.getElementById("protocol").innerHTML = myString;
+        }
+        else{
+            document.getElementById("protocol").innerHTML = ERROR_MESSAGES["ready"];
+    
+        }
         return myString;
     }
 
@@ -953,6 +960,7 @@ RHLab.Widgets.Breadboard = function() {
         var _notGate = this._notGate;
         componentStatus.notStatus = [];
         for(var i = 0; i < _notGate.length; i++){
+            _notGate[i].GetPinLocation();
             if(_notGate[i]._topPosition != 261){
                 errors.push(ERROR_MESSAGES["component-placement"]);
             }
@@ -962,6 +970,7 @@ RHLab.Widgets.Breadboard = function() {
         var _andGate = this._andGate;
         componentStatus.andStatus = [];
         for(var i = 0; i < _andGate.length; i++){
+            _andGate[i].GetPinLocation();
             if(_andGate[i]._topPosition != 261){
                 errors.push(ERROR_MESSAGES["component-placement"]);
             }
@@ -971,6 +980,7 @@ RHLab.Widgets.Breadboard = function() {
         var _orGate = this._orGate;
         componentStatus.orStatus = [];
         for(var i = 0; i < _orGate.length; i++){
+            _orGate[i].GetPinLocation();
             if(_orGate[i]._topPosition != 261){
                 errors.push(ERROR_MESSAGES["component-placement"]);
             }
@@ -981,6 +991,7 @@ RHLab.Widgets.Breadboard = function() {
         var _xorGate = this._xorGate;
         componentStatus.xorStatus = [];
         for(var i = 0; i < _xorGate.length; i++){
+            _xorGate[i].GetPinLocation();
             if(_xorGate[i]._topPosition != 261){
                 errors.push(ERROR_MESSAGES["component-placement"]);
             }
@@ -2777,7 +2788,7 @@ RHLab.Widgets.Breadboard = function() {
 
     // All potential error messages that a user may experience
     var ERROR_MESSAGES = {
-        "null": "Error: Every wire must be connected to a component",
+        "null": "Error: Every wire must be connected to a valid component or valid GPIO",
         "inputs": "Error: Both ends of a wire are connected to an input",
         "outputs": "Error: Both ends of a wire are connected to an output",
         "leds": "Error: A virtual LED is not properly wired",
