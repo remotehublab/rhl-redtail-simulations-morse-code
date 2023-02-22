@@ -915,6 +915,83 @@ RHLab.Widgets.Breadboard = function() {
         return "x";
     }
 
+    Breadboard.prototype.checkLEDConnection = function(errors){
+        var _leds = this._leds;
+        var _notGate = this._notGate;
+        var _andGate = this._andGate;
+        var _orGate = this._orGate;
+        var _xorGate = this._xorGate;       //***newly added */
+        var _switches = this._outputs;
+        for(var i = 0; i < _leds.length; i++){
+            var ledPos = {};
+            ledPos.x = _leds[i].GetWireX();
+            ledPos.y = _leds[i].GetWireYBase();
+            var checkGate = null;
+            for(var ii = 0; ii < _notGate.length; ii++){
+                checkGate = _notGate[ii].CheckIfInput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+                checkGate = _notGate[ii].CheckIfOutput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+            }
+            checkGate = null;
+            for(var ii = 0; ii < _andGate.length; ii++){
+                checkGate = _andGate[ii].CheckIfInput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+                checkGate = _andGate[ii].CheckIfOutput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+            }
+            checkGate = null;
+            for(var ii = 0; ii < _orGate.length; ii++){
+                checkGate = _orGate[ii].CheckIfInput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+                checkGate = _orGate[ii].CheckIfOutput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+            }
+            //***newly added */
+            checkGate = null;
+            for(var ii = 0; ii < _xorGate.length; ii++){
+                checkGate = _xorGate[ii].CheckIfInput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+                checkGate = _xorGate[ii].CheckIfOutput(ledPos);
+                if(checkGate[0] === true){
+                    errors.push(ERROR_MESSAGES["led-position"]);
+                    return;
+                }
+            }
+            for(var ii = 0; ii < _switches.length; ii++){
+                var wireX = _switches[ii].GetWireX();
+                var wireYBase = _switches[ii].GetWireYBase();
+                if(ledPos.y >= wireYBase && ledPos.y <= (wireYBase + 4*VISIR_SQUARE_SIZE)){
+                    if(ledPos.x === wireX){
+                        errors.push(ERROR_MESSAGES["led-position"]);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     // Big function in the javascript code, used to update the entirely of the breadboard layout
     Breadboard.prototype.Update = function() {
         // Initialize self variables used for checking throughout the update process
@@ -1000,6 +1077,7 @@ RHLab.Widgets.Breadboard = function() {
 
         var nonGateLeftovers = [];
         var _leds = this._leds;
+        this.checkLEDConnection(errors);
 
         // console.log(componentStatus);
 
@@ -2787,6 +2865,7 @@ RHLab.Widgets.Breadboard = function() {
         "inputs": "Error: Both ends of a wire are connected to an input",
         "outputs": "Error: Both ends of a wire are connected to an output",
         "leds": "Error: A virtual LED is not properly wired",
+        "led-position": "Error: Invalid LED position. Move to different location on breadboard",
         "switches": "Error: A virtual switch is not properly wired",
         "component-power": "Error: A component is not properly powered",
         "component-placement": "Error: Illegal placement of a component",
