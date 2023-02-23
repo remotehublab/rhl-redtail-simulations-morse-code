@@ -1,0 +1,3 @@
+[submodule "server/hybridapi/static/simulations/butterfly/static/visir"]
+	path = server/hybridapi/static/simulations/butterfly/static/visir
+	url = https://github.com/JohanZackrisson/visir_html5

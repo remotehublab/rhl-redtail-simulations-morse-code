@@ -1,0 +1,107 @@
+<components>
+	<component type="Gate" value="NOT" pins="14">
+		<rotations>
+			<rotation ox="-18" oy ="-13" image="butterfly_not_gate.png" rot="0">
+				<pins>
+					<pin x="-13" y="26" />
+					<pin x="0" y="26" />
+					<pin x="13" y="26" />
+					<pin x="26" y="26" />
+					<pin x="39" y="26" />
+					<pin x="52" y="26" />
+					<pin x="65" y="26" />
+					<pin x="65" y="-13" />
+					<pin x="52" y="-13" />
+					<pin x="39" y="-13" />
+					<pin x="26" y="-13" />
+					<pin x="13" y="-13" />
+					<pin x="0" y="-13" />
+					<pin x="-13" y="-13" />
+				</pins>
+			</rotation>
+		</rotations>
+	</component>
+	<component type="Gate" value="AND" pins="14">
+		<rotations>
+			<rotation ox="-18" oy ="-14" image="butterfly_and_gate.png" rot="0">
+				<pins>
+					<pin x="-13" y="26" />
+					<pin x="0" y="26" />
+					<pin x="13" y="26" />
+					<pin x="26" y="26" />
+					<pin x="39" y="26" />
+					<pin x="52" y="26" />
+					<pin x="65" y="26" />
+					<pin x="65" y="-13" />
+					<pin x="52" y="-13" />
+					<pin x="39" y="-13" />
+					<pin x="26" y="-13" />
+					<pin x="13" y="-13" />
+					<pin x="0" y="-13" />
+					<pin x="-13" y="-13" />
+				</pins>
+			</rotation>
+		</rotations>
+	</component>
+	<component type="Gate" value="OR" pins="14">
+		<rotations>
+			<rotation ox="-18" oy ="-14" image="butterfly_or_gate.png" rot="0">
+				<pins>
+					<pin x="-13" y="26" />
+					<pin x="0" y="26" />
+					<pin x="13" y="26" />
+					<pin x="26" y="26" />
+					<pin x="39" y="26" />
+					<pin x="52" y="26" />
+					<pin x="65" y="26" />
+					<pin x="65" y="-13" />
+					<pin x="52" y="-13" />
+					<pin x="39" y="-13" />
+					<pin x="26" y="-13" />
+					<pin x="13" y="-13" />
+					<pin x="0" y="-13" />
+					<pin x="-13" y="-13" />
+				</pins>
+			</rotation>
+		</rotations>
+	</component>
+	<component type="Gate" value="XOR" pins="14">
+		<rotations>
+			<rotation ox="-18" oy ="-13" image="butterfly_xor_gate.png" rot="0">
+				<pins>
+					<pin x="-13" y="26" />
+					<pin x="0" y="26" />
+					<pin x="13" y="26" />
+					<pin x="26" y="26" />
+					<pin x="39" y="26" />
+					<pin x="52" y="26" />
+					<pin x="65" y="26" />
+					<pin x="65" y="-13" />
+					<pin x="52" y="-13" />
+					<pin x="39" y="-13" />
+					<pin x="26" y="-13" />
+					<pin x="13" y="-13" />
+					<pin x="0" y="-13" />
+					<pin x="-13" y="-13" />
+				</pins>
+			</rotation>
+		</rotations>
+	</component>
+	<component type="LED" value="" pins="2">
+		<rotations>
+			<rotation ox="-6" oy ="-26" image="butterfly-led-off.png" rot="0">
+				<pins><pin x="0" y="0" /><pin x="0"  y="26" /></pins>
+			</rotation>
+			<rotation ox="-26" oy ="-6" image="butterfly-led-off.png" rot="90">
+				<pins><pin x="0" y="0" /><pin x="26"  y="0" /></pins>
+			</rotation>
+		</rotations>
+	</component>
+	<component type="Switch" value="" pins="2">
+		<rotations>
+			<rotation ox="-20" oy ="-8" image="butterfly-switch-right-small.jpg" rot="0">
+				<pins><pin x="0" y="-26" /><pin x="0"  y="26" /></pins>
+			</rotation>
+		</rotations>
+	</component>
+</components>
