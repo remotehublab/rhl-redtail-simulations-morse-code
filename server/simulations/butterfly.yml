@@ -6,9 +6,9 @@ iframe:
 gpios:
   sim2dut:
     # FPGA inputs
-    number: 5
-    # labels: [ gpio28, gpio29, gpio23, gpio24, gpio25 ]
+    # number: 5
+    labels: [ gpio28, gpio29, gpio23, gpio24, gpio25 ]
   dut2sim:
     # FPGA outputs
-    number: 7
-    # labels: [ gpio26, gpio27, gpio32, gpio34, gpio31, gpio33 ]
+    # number: 7
+    labels: [ gpio26, gpio27, gpio32, gpio34, gpio31, gpio33, gpio35 ]
