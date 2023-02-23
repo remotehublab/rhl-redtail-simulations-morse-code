@@ -44,13 +44,13 @@ function requestWeb2SimMessages() {
 
 function requestSim2WebMessages() {
     $.get(window.BASE_URL + "/messages/sim2web/?previous_response=" + encodeURIComponent(window.SIM2WEB_STATUS)).done(function (data) {
-        if (window.SIM2WEB_STATUS != data.value) {
+        if (window.SIM2WEB_STATUS !== data.value) {
             console.log("Sending data with postMessage");
             $("#simulation-iframe")[0].contentWindow.postMessage({
                 messageType: "sim2web",
                 version: "1.0",
                 value: data.value
-            });
+            }, "*");
         }
         window.SIM2WEB_STATUS = data.value;
         $("#sim2web-messages").text(data.value);
@@ -102,15 +102,27 @@ function initializeMessages() {
     });
 
 
+    console.debug("Added event listener for messages from iframe");
+
+    /**
+     * Listen for incoming messages from the visualization iframe.
+     */
     window.addEventListener("message", (event) => {
+
+        console.debug("Received message from iframe: ", event.data);
+
         var simulationIframe = $("#simulation-iframe")[0];
-        if (event.data.messageType != "web2sim") {
+        if (event.data.messageType !== "web2sim") {
             return;
         }
-        if (event.source != event.source == simulationIframe.contentWindow) {
+
+        const expectedOrigin = new URL(simulationIframe.src).origin;
+
+        if (event.origin !== expectedOrigin) {
             console.log("Message from somewhere other than the iframe", event);
             return;
         }
+
         $.ajax({
             'url': window.BASE_URL + "/messages/web2sim/",
             'method': 'POST',

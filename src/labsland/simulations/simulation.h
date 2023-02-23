@@ -9,6 +9,8 @@
 #define HYBRIDAPI_SIMULATION_H
 
 #include <iostream>
+#include <map>
+#include <vector>
 
 #include "../utils/timemanager.h"
 #include "utils/communicator.h"
@@ -31,6 +33,54 @@ struct BaseInputDataType {
      * Load the string in the struct. Return true if it succeeded, false if it did not.
      */
     virtual bool deserialize(std::string const & input) = 0;
+
+    /*
+     * Given a string with the following formats, creates the map that appears on the right:
+     *
+     *    ""                 => {}
+     *    "foo=bar"          => {"foo": "bar"}
+     *    "foo&bar"          => {"foo": "1", "bar": "1"}
+     *    "foo=1&bar=2"      => {"foo": "1", "bar", "2"}
+     *    "foo=FOO&bar=baz"  => {"foo": "FOO", "bar": "baz"}
+     */
+    std::map<std::string, std::string> parseQueryArgs(std::string const & input) {
+        std::map<std::string, std::string> result;
+
+        std::string currentVariable; // always things like "foo=bar"
+        std::string inputRemainder(input);
+
+        while(inputRemainder.size() > 0) {
+            size_t posAnd = inputRemainder.find('&');
+            if (posAnd == std::string::npos) {
+                currentVariable = inputRemainder;                    
+                inputRemainder = "";
+            } else {
+                currentVariable = inputRemainder.substr(0, posAnd);
+                inputRemainder.erase(0, posAnd + 1);
+            }
+
+            size_t posEquals = currentVariable.find('=');
+            if (posEquals == std::string::npos) {
+                // foo&bar means that foo=1 and bar=1
+                result[currentVariable] = "1";
+            } else {
+                result[currentVariable.substr(0, posEquals)] = currentVariable.substr(posEquals+1, currentVariable.size());
+            }
+        };
+
+        return result;
+    }
+
+    /*
+     * Given a map like the one explained in the previous function, return if all the required variables
+     * are present or not.
+     */
+    bool checkVariablesInArgs(std::map<std::string, std::string> const & args, std::vector<std::string> const requiredVariables) {
+        for (std::string requiredVariable : requiredVariables)
+            if (args.count(requiredVariable) == 0)
+                return false;
+        return true;
+    }
 };
 
 

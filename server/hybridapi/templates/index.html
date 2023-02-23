@@ -31,7 +31,12 @@
                         <thead>
                             <tr>
                                 {% for n in range(config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']) %}
-                                <th>gpio-sim2dut-{{ n }}</th>
+                                <th>gpio-sim2dut-{{ n }}
+                                {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'] %}
+                                    <br>
+                                    <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'][n] }})</tt></small>
+                                {% endif %}
+                                </th>
                                 {% endfor %}
                             </tr>
                         </thead>
@@ -62,7 +67,13 @@
                         <thead>
                             <tr>
                                 {% for n in range(config['SIMULATION_CONFIG']['gpios']['dut2sim']['number']) %}
-                                <th>gpio-dut2sim-{{ n }}</th>
+                                <th>
+                                    gpio-dut2sim-{{ n }}
+                                    {% if config['SIMULATION_CONFIG']['gpios']['dut2sim']['labels'] %}
+                                        <br>
+                                        <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['dut2sim']['labels'][n] }})</tt></small>
+                                    {% endif %}
+                                </th>
                                 {% endfor %}
                             </tr>
                         </thead>
@@ -114,15 +125,17 @@
         <div class="row">
             <h2>Simulation iframe</h2>
 
-            <ul>
-                <li>Location: {{ url_for('static', filename='simulations/' + config['SIMULATION_CONFIG']['iframe']['url']) }}</li>
-                <li>Note: please use relative URLs inside your simulation</li>
-            </ul>
             {% if config['SIMULATION_CONFIG']['iframe']['url'].startswith(('http://', 'https://')) %}
                 {% set iframe_src = config['SIMULATION_CONFIG']['iframe']['url'] %}
             {% else %}
                 {% set iframe_src = url_for('static', filename='simulations/') + config['SIMULATION_CONFIG']['iframe']['url'] %}
             {% endif %}
+
+            <ul>
+                <li>Location: {{ iframe_src }}</li>
+                <li>Note: please use relative URLs inside your simulation</li>
+            </ul>
+
             {% set initial_height = config['SIMULATION_CONFIG']['iframe'].get('height', '500') %}
             <iframe id="simulation-iframe" src="{{ iframe_src }}" width="100%" height="{{ initial_height }}" style="border: 1px solid black"></iframe>
         </div>

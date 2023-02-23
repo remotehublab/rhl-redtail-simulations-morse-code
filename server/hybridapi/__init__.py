@@ -44,9 +44,34 @@ def create_app(config_name: str = 'default'):
     app.config['SIMULATION_CONFIG'].setdefault('name', "Simulation")
     app.config['SIMULATION_CONFIG'].setdefault('description', "Simulation description")
     app.config['SIMULATION_CONFIG']['gpios']['dut2sim'].setdefault('file', 'input-gpios.txt')
-    app.config['SIMULATION_CONFIG']['gpios']['dut2sim'].setdefault('number', 10)
+    dut2sim_data = app.config['SIMULATION_CONFIG']['gpios']['dut2sim']
+    if dut2sim_data.get('number') is None:
+        if dut2sim_data.get('labels') is None:
+            dut2sim_data['number'] = 10
+            dut2sim_data['labels'] = []
+        else:
+            dut2sim_data['number'] = len(dut2sim_data['labels'])
+    else:
+        if dut2sim_data.get('labels') is None:
+            dut2sim_data['labels'] = []
+        else:
+            if len(dut2sim_data['labels']) != dut2sim_data['number']:
+                raise Exception(f"In {simulation_config_full_path}, dut2sim declares labels and numbers with different size")
+
     app.config['SIMULATION_CONFIG']['gpios']['sim2dut'].setdefault('file', 'output-gpios.txt')
-    app.config['SIMULATION_CONFIG']['gpios']['sim2dut'].setdefault('number', 10)
+    sim2dut_data = app.config['SIMULATION_CONFIG']['gpios']['sim2dut']
+    if sim2dut_data.get('number') is None:
+        if sim2dut_data.get('labels') is None:
+            sim2dut_data['number'] = 10
+            sim2dut_data['labels'] = []
+        else:
+            sim2dut_data['number'] = len(sim2dut_data['labels'])
+    else:
+        if sim2dut_data.get('labels') is None:
+            sim2dut_data['labels'] = []
+        else:
+            if len(sim2dut_data['labels']) != sim2dut_data['number']:
+                raise Exception(f"In {simulation_config_full_path}, sim2dut declares labels and numbers with different size")
     app.config['SIMULATION_CONFIG']['messages']['web2sim'].setdefault('file', "input-messages.txt")
     app.config['SIMULATION_CONFIG']['messages']['sim2web'].setdefault('file', "output-messages.txt")
 
