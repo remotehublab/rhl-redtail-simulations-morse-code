@@ -160,7 +160,7 @@ RHLab.Widgets.Breadboard = function() {
                     messageType: "web2sim",
                     version: "1.0",
                     value: myString
-                });
+                }, '*');
 			}
 		});
 
@@ -222,7 +222,7 @@ RHLab.Widgets.Breadboard = function() {
                 messageType: "web2sim",
                 version: "1.0",
                 value: myString
-            });
+            }, '*');
             // example of changing img
             // self._experiment[0]._$elem.find("img").attr("src", "/static/visir/instruments/breadboard/images/butterfly-led-on.png");
             self.Update();

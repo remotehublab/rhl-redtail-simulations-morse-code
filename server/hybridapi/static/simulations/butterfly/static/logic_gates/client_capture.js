@@ -12,7 +12,7 @@
             messageType: "web2sim",
             version: "1.0",
             value: myString
-        });
+        }, '*');
 
     }
     // console.log(myString);
@@ -59,6 +59,6 @@ function closeIt()
         messageType: "web2sim",
         version: "1.0",
         value: myString
-    });
+    }, '*');
 }
 window.onbeforeunload = closeIt;
