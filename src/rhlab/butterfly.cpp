@@ -28,7 +28,7 @@ void ButterflySimulation::initialize(){
         mState.virtual_led[i] = false;
     }
 
-    setReportWhenMarked(false);
+    setReportWhenMarked(true);
 }
 
 void ButterflySimulation::print_gpio_header_states(){
@@ -397,6 +397,6 @@ void ButterflySimulation::update(double delta){
     print_led_states();
     this->log() << mState.serialize() << endl;
 
-    // requestReportState();
-    reportUpdate();
+    requestReportState();
+    // reportUpdate();
 }
