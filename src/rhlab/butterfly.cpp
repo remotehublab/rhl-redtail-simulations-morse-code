@@ -280,89 +280,24 @@ int ButterflySimulation::read_logic_gate(string substring){
     return start_index;
 }
 
-bool ButterflySimulation::check_if_same(bool input_gpio_copy[], bool output_gpio_copy[], bool buffer_copy[]){
-    
-    for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
-        if(input_gpio_copy[i] != this->input_gpio_tracker[i]){
-            return false;
-        }
-    }
-
-    for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
-        if(output_gpio_copy[i] != this->output_gpio_tracker[i]){
-            return false;
-        }
-    }
-    
-    
-    // check if buffer states are the same:
-    for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
-        if(buffer_copy[i] != this->buffer[i]){
-            return false;
-        }
-    }
-
-    return true;
-}
-
 void ButterflySimulation::update(double delta){
 
     ButterflyRequest request;
     bool requestWasRead = readRequest(request);
-    if(!requestWasRead) {
-        return;
+    if(requestWasRead) {
+        this->my_string = string(request.my_string);
     }
-    string my_string = string(request.my_string);
+    string my_string = this->my_string;
 
     int index = 0;
     int my_string_length = my_string.length();
     int while_loop_counter = 1;
-    int saturation_itr_counter = 0;
 
     if(my_string_length < 2){
         return;
     }
 
-    // for(int i = 0; i < LED_ARRAY_SIZE; i++){
-    //     mState.virtual_led[i] = false;
-    // }
-    // reportUpdate();
-
-    // Create copies of the header states and buffer states
-    bool buffer_copy[BUFFER_ARRAY_SIZE];
-    for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
-        buffer_copy[i] = this->buffer[i];
-    }
-
-    
-    bool gpio_input_copy[SIM_INPUT_GPIO_NUM];
-    for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
-        gpio_input_copy[i] = this->input_gpio_tracker[i];
-    }
-
-    bool gpio_output_copy[SIM_OUTPUT_GPIO_NUM];
-    for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
-        gpio_output_copy[i] = this->output_gpio_tracker[i];
-    }
-    
-
-    while((saturation_itr_counter < NUM_SATURATION_ITR)){
-
-        // my_header_copy = this->my_header;
-        for(int i = 0; i < BUFFER_ARRAY_SIZE; i++){
-            buffer_copy[i] = this->buffer[i];
-        }
-
-        for(int i = 0; i < SIM_INPUT_GPIO_NUM; i++){
-            gpio_input_copy[i] = this->input_gpio_tracker[i];
-        }
-
-        for(int i = 0; i < SIM_OUTPUT_GPIO_NUM; i++){
-            gpio_output_copy[i] = this->output_gpio_tracker[i];
-        }
-        
-
-        this->log() << endl << "===== GPIO STATES =====" << endl;
+    this->log() << endl << "===== GPIO STATES =====" << endl;
         print_gpio_header_states();
         this->log() << endl << "===== BUFFER STATES =====" << endl;
         print_buffer_states();
@@ -383,11 +318,6 @@ void ButterflySimulation::update(double delta){
 
         index = 0;
         while_loop_counter = 1;
-
-        if(check_if_same(gpio_input_copy, gpio_output_copy, buffer_copy)){
-            saturation_itr_counter++;
-        }
-    }
 
     this->log() << endl << "===== GPIO STATES =====" << endl;
     print_gpio_header_states();

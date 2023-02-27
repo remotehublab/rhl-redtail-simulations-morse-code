@@ -23,9 +23,8 @@ using namespace std;
 #define IS_SWITCH_NEXT_CHAR_SIZE  1
 #define IS_LED_NEXT_CHAR_SIZE     1
 
-#define BUFFER_ARRAY_SIZE   5
+#define BUFFER_ARRAY_SIZE   10
 #define LED_ARRAY_SIZE      5
-#define NUM_SATURATION_ITR  5
 #define MAX_CHAR_ARRAY_SIZE 1024
 
 #define SIM_OUTPUT_GPIO_NUM 5
@@ -66,7 +65,7 @@ class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
         bool buffer[BUFFER_ARRAY_SIZE];
         bool output_gpio_tracker[SIM_OUTPUT_GPIO_NUM];
         bool input_gpio_tracker[SIM_INPUT_GPIO_NUM];
-        string my_string;
+        string my_string = "";
     public:
 
         ButterflySimulation() = default;
