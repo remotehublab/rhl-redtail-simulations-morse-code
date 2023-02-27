@@ -77,11 +77,11 @@ RHLab.Widgets.Breadboard = function() {
     var INPUTS_BY_PIN = {
         33: 'GPIO28',  // GPIO6 //PC1
         34: 'GPIO29',  // GPIO7
+        35: 'GPIO30',  // GPIO30
         26: 'GPIO23',  // GPIO8
         27: 'GPIO24',  // GPIO9
-        28: 'GPIO25',      //PA1
     };
-    var INPUTS_BY_PIN_ARRAY = [33, 34, 26, 27, 28];
+    var INPUTS_BY_PIN_ARRAY = [33, 34, 35, 26, 27];
 
     // Function called by template.html for flask that initalizes a <div> for the breadboard
     function Breadboard($element, endpointBase, numberOfSwitches, imageBase, enableNetwork) {
