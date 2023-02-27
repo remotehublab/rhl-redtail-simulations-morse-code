@@ -306,12 +306,12 @@ void ButterflySimulation::update(double delta){
         this->log() << mState.serialize() << endl;
 
         this->log() << "===== STRING PROTOCOL =====" << endl;
-        while(my_string[index] != '\n' || index > my_string_length){
+        while(index < my_string_length){
             this->log() << "My string: " << my_string << endl;
             this->log() << "Iter " << while_loop_counter << " : " << my_string.substr(index, my_string_length - index);
             while_loop_counter++;
             index += read_logic_gate(my_string.substr(index, my_string_length - index));
-            if(my_string[index] == ';'){
+            if(my_string[index] == ';' || my_string[index] == '\n'){
                 index = index + 1;
             }
         }
