@@ -44,26 +44,47 @@
 
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
-
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 
     <script>
+        function injectScript(src) {
+            var def = $.Deferred();
+            var head=document.getElementsByTagName('head')[0];
+            var script=document.createElement('script');
+            script.type= 'text/javascript';
+            script.onreadystatechange= function () {
+                if (this.readyState == 'complete') {
+                    //trace("readystate: " + src);
+                    def.resolve();
+                }
+            }
+            script.onload = function() {
+                //trace("onload: " + src);
+                def.resolve();
+            }
+            script.src = baseurl + src;
+            head.appendChild(script);
+            return def.promise();
+        }
+
         window.visir = window.visir || {};
         window.visir.BaseLocation = "static/visir/";
-    </script>
+        window.endpointBase = "does.not.exist/";
+        window.imageBase = "static/resources/images/";
+        window.numberOfSwitches = 0;
 
-    <script src="static/gen/visir.d9bff6ef.min.js"></script>
-    <script src="static/logic_gates/breadboard-visir.js"></script>
-    <script>
-        var endpointBase = "does.not.exist/";
-        var imageBase = "static/resources/images/";
-        var numberOfSwitches = 0;
-        visir.Config.Set("libraryXml", "static/logic_gates/library.xml");
-        var breadboard = new RHLab.Widgets.Breadboard($("#breadboard"), endpointBase, numberOfSwitches, imageBase, false);
+        // version.js is a tiny script, make sure that it is always retrieved without caching
+        injectScript("version.js?cacheBuster=" + Math.random()).done(function () {
+            injectScript("static/gen/visir.d9bff6ef.min.js?cacheBuster=" + window.cacheBuster).done(function () {
+                injectScript("static/logic_gates/breadboard-visir.js?cacheBuster=" + window.cacheBuster).done(function () {
+                    window.visir.Config.Set("libraryXml", "static/logic_gates/library.xml?cacheBuster" + window.cacheBuster);
+                    window.breadboard = new RHLab.Widgets.Breadboard($("#breadboard"), endpointBase, numberOfSwitches, imageBase, false);
+
+                    injectScript("static/logic_gates/client_capture.js?cacheBuster=" + window.cacheBuster );
+                    injectScript("static/iframeResizer.contentWindow.min.js?cacheBuster=" + window.cacheBuster);
+                })
+            })
+        });
     </script>
-   
-    <script src="static/logic_gates/client_capture.js"></script>
-    <script src="static/iframeResizer.contentWindow.min.js"></script>
 </body>
 </html>
