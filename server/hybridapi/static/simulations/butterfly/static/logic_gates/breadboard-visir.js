@@ -2145,7 +2145,7 @@ RHLab.Widgets.Breadboard = function() {
                 yPos = yPos + 4*VISIR_SQUARE_SIZE;
             }
 
-            if (xPos >= 177 && xPos < 541) {
+            if (xPos >= 177 && xPos < 554) {
                 if (yPos == 406 || yPos == 159) {
                     isGround = false;
                     requiresPoint = false;
