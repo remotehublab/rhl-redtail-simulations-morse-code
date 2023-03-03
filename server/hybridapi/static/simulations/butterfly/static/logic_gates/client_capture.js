@@ -19,6 +19,18 @@
 
 }
 
+function saveConfig(){
+    breadboard.Update();
+    var circuitInfo = breadboard.SaveCircuit();
+    var circuitInfoJson = JSON.stringify({circuit: circuitInfo});
+    console.log(circuitInfoJson);
+    // parent.postMessage({
+    //     messageType: "web2config",
+    //     version: "1.0",
+    //     value: circuitInfoJson
+    // }, '*');
+}
+
 window.addEventListener("message", (event) => {
     console.log(event.data.value);
     if (event.data.messageType != "sim2web")

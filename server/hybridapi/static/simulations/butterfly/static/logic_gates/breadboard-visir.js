@@ -32,6 +32,7 @@ if(typeof(RHLab.Widgets) === "undefined") {
 RHLab.Widgets.Breadboard = function() {
 
     var VISIR_SQUARE_SIZE = 13;
+    var ORIGINAL_WIRES_LENGTH = 5;
     // var DEFAULT_NUMBER_OF_SWITCHES = 0;
 
     // Define the outputs from the 40-pin GPIO for the DE1-SoC
@@ -146,7 +147,7 @@ RHLab.Widgets.Breadboard = function() {
                 self._breadboard.Clear();
 
                 self._breadboard.LoadMyCircuit(getOriginalWires(self._numberOfSwitches));
-                self._originalNumberOfWires = self._breadboard._wires.length;
+                self._originalNumberOfWires = ORIGINAL_WIRES_LENGTH;
 
                 self._notGate = [];
                 self._andGate = [];
@@ -398,10 +399,20 @@ RHLab.Widgets.Breadboard = function() {
                 //trace("xxx: " + $(this).text());
             });
         }
-
-
-        this._breadboard.LoadMyCircuit(getOriginalWires(this._numberOfSwitches));
-        this._originalNumberOfWires = this._breadboard._wires.length;
+        var saveBreadboardConfigValue = "";
+        // postMessage({
+        //     messageType: "config2web",
+        //     value: 
+        // });
+        this._originalNumberOfWires = ORIGINAL_WIRES_LENGTH;
+        if(saveBreadboardConfigValue){
+            this._breadboard.LoadMyCircuit(saveBreadboardConfigValue);
+        }
+        else{
+            this._breadboard.LoadMyCircuit(getOriginalWires(this._numberOfSwitches));
+        }
+        
+        // this._breadboard.LoadMyCircuit("<circuit><circuitlist><component>W 16711680 156 143 190 142 221 143</component><component>W 0 156 156 188 155 221 156</component><component>W 16711680 637 416 613 414 585 416</component><component>W 0 585 403 611 402 637 403</component><component>W 0 156 156 275 -43 338 39</component><component>W 16711680 299 143 252.2 184.6 247 247</component><component>W 0 325 312 343.2 357.5 325 403</component><component>W 16711680 455 143 414.7 187.2 416 247</component><component>W 0 494 312 512.2 357.5 494 403</component><component>W 16711680 260 403 271.7 354.9 247 312</component><component>W 16776960 260 312 338 280.8 416 312</component><component>W 255 455 416 462.8 358.8 429 312</component><component>W 255 442 312 469.3 248.3 533 221</component><component>Gate NOT 260 273 0</component><component>Gate AND 429 273 0</component><component>LED  533 182 0</component></circuitlist></circuit>")
 
         if (visir.FIXES === undefined) {
             visir.FIXES = {};
@@ -435,12 +446,12 @@ RHLab.Widgets.Breadboard = function() {
                 self._insideClear = true;
                 // self._breadboard.LoadMyCircuit(getOriginalWires(self._numberOfSwitches));
                 // self._originalNumberOfWires = self._breadboard._wires.length;
-                self._originalNumberOfWires = 5;
+                self._originalNumberOfWires = ORIGINAL_WIRES_LENGTH;
                 self._insideClear = false;
             }
         }
 
-        visir.Breadboard.prototype.SaveCircuitWithoutWires = function(circuit)
+        visir.Breadboard.prototype.SaveCircuitWithOriginalWires = function(circuit)
         {
             // Whenever SaveCircuit, only save wires which were not already there
             var offp = new visir.Point(44, -3);
@@ -451,7 +462,8 @@ RHLab.Widgets.Breadboard = function() {
             $cirlist = $xml.find("circuitlist");
 
             // Sweeps through the number of original, hardcoded wires in the breadboard
-            for(var i=self._originalNumberOfWires;i<this._wires.length; i++) {
+            for(var i=0;i<this._wires.length; i++) {
+            // for(var i=self._originalNumberOfWires;i<this._wires.length; i++) {
                     var w = this._wires[i];
                     var $wire = $("<component/>");
                     var c = this._ColorToNum(w._color);
@@ -522,7 +534,7 @@ RHLab.Widgets.Breadboard = function() {
     
     // Saves current circuit to the .xml file
     Breadboard.prototype.SaveCircuit = function () {
-        return this._breadboard.SaveCircuitWithoutWires();
+        return this._breadboard.SaveCircuitWithOriginalWires();
     }
 
     // Visir contains a bunch of Instruments, which is unimportant here. We can hide these
@@ -2133,7 +2145,7 @@ RHLab.Widgets.Breadboard = function() {
                 yPos = yPos + 4*VISIR_SQUARE_SIZE;
             }
 
-            if (xPos >= 177 && xPos < 541) {
+            if (xPos >= 177 && xPos < 554) {
                 if (yPos == 406 || yPos == 159) {
                     isGround = false;
                     requiresPoint = false;
@@ -2181,6 +2193,19 @@ RHLab.Widgets.Breadboard = function() {
             this._value = false;
             this._objVisir._$elem.find('img').click(function () {
                 self._Change();
+                var newStringToSend = self._breadboard.Update();
+                if(newStringToSend.includes("Error")){
+                    document.getElementById("protocol").innerHTML = newStringToSend;
+                }
+                else{
+                    document.getElementById("protocol").innerHTML = "Ready";
+                    parent.postMessage({
+                        messageType: "web2sim",
+                        version: "1.0",
+                        value: newStringToSend
+                    }, '*');
+            
+                }
             });
         }
         
