@@ -30,6 +30,8 @@ using namespace std;
 #define SIM_OUTPUT_GPIO_NUM 5
 #define SIM_INPUT_GPIO_NUM  7
 
+#define USE_VECTOR  1
+
 // struct that receives the string
 struct ButterflyRequest : public BaseInputDataType {
     char my_string[MAX_CHAR_ARRAY_SIZE];
@@ -62,9 +64,15 @@ struct ButterflyData : public BaseOutputDataType {
 
 class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
     private:
+        #ifdef USE_VECTOR
+        vector<bool> buffer;
+        vector<bool> output_gpio_tracker;
+        vector<bool> input_gpio_tracker;
+        #else
         bool buffer[BUFFER_ARRAY_SIZE];
         bool output_gpio_tracker[SIM_OUTPUT_GPIO_NUM];
         bool input_gpio_tracker[SIM_INPUT_GPIO_NUM];
+        #endif
         string my_string = "";
     public:
 
@@ -72,22 +80,34 @@ class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
         virtual void update(double delta) override;
         virtual void initialize() override;
 
+        // virtual int getNumberOfSimulationInputs(void) const = 0;        
+        // virtual int getNumberOfSimulationOutputs(void) const = 0;
+
         void print_gpio_header_states();
         void print_buffer_states();
         void print_led_states();
-        int read_literal_logic(string s);
-        int read_switch_logic(string s);
+        bool read_literal_logic(string s);
+        bool read_switch_logic(string s);
         bool read_gpio_logic(string s);
         void update_gpio_logic(string s, int o);
-        int read_buffer_logic(string s);
+        bool read_buffer_logic(string s);
         void update_buffer_logic(string s, int o);
         void update_led_logic(string s, int o);
         int read_gate_input(char c);
         int read_gate_output(char c);
-        int handle_input(string substring, int &start_index);
+        bool handle_input(string substring, int &start_index);
         void handle_output(string substring, int &start_index, int my_output);
         int read_logic_gate(string substring);
-        bool check_if_same(bool input_gpio_copy[], bool output_gpio_copy[], bool buffer_copy[]);
 };
+
+// class DE1SoC_ButterflySimulation: public ButterflySimulation {
+//      public:
+//         virtual int getNumberOfSimulationInputs(void) override {
+//             return 7;
+//         };
+//         virtual int getNumberOfSimulationOutputs(void) override {
+//             return 5;
+//         };
+// };
 
 #endif
