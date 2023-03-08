@@ -411,8 +411,6 @@ RHLab.Widgets.Breadboard = function() {
         else{
             this._breadboard.LoadMyCircuit(getOriginalWires(this._numberOfSwitches));
         }
-        
-        // this._breadboard.LoadMyCircuit("<circuit><circuitlist><component>W 16711680 156 143 190 142 221 143</component><component>W 0 156 156 188 155 221 156</component><component>W 16711680 637 416 613 414 585 416</component><component>W 0 585 403 611 402 637 403</component><component>W 0 156 156 275 -43 338 39</component><component>W 16711680 299 143 252.2 184.6 247 247</component><component>W 0 325 312 343.2 357.5 325 403</component><component>W 16711680 455 143 414.7 187.2 416 247</component><component>W 0 494 312 512.2 357.5 494 403</component><component>W 16711680 260 403 271.7 354.9 247 312</component><component>W 16776960 260 312 338 280.8 416 312</component><component>W 255 455 416 462.8 358.8 429 312</component><component>W 255 442 312 469.3 248.3 533 221</component><component>Gate NOT 260 273 0</component><component>Gate AND 429 273 0</component><component>LED  533 182 0</component></circuitlist></circuit>")
 
         if (visir.FIXES === undefined) {
             visir.FIXES = {};
@@ -528,6 +526,12 @@ RHLab.Widgets.Breadboard = function() {
 
     // Loads existing circuit from the .xml file
     Breadboard.prototype.LoadCircuit = function (circuit) {
+        this._notGate = [];
+        this._andGate = [];
+        this._orGate = [];
+        this._xorGate = []; //***newly added */
+        this._leds = [];
+        this._outputs = [];
         this._breadboard.LoadMyCircuit(circuit);
         this.Update();
     }
