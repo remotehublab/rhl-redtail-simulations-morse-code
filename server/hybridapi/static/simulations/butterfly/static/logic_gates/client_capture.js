@@ -29,6 +29,7 @@ function saveConfig(){
         value: circuitInfoJson,
         simulation: "butterfly",
     }, '*');
+    document.getElementById("protocol").innerHTML = "Breadboard configuration saved";
 }
 
 window.addEventListener("message", (event) => {
