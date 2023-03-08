@@ -149,12 +149,7 @@ RHLab.Widgets.Breadboard = function() {
                 self._breadboard.LoadMyCircuit(getOriginalWires(self._numberOfSwitches));
                 self._originalNumberOfWires = ORIGINAL_WIRES_LENGTH;
 
-                self._notGate = [];
-                self._andGate = [];
-                self._orGate = [];
-                self._xorGate = []; //***newly added */
-                self._leds = [];
-                self._outputs = [];
+                self.ClearComponentArrays();
 
                 var myString = "yLFd0,d1,d2,d3,d4;\n";
                 parent.postMessage({
@@ -399,18 +394,8 @@ RHLab.Widgets.Breadboard = function() {
                 //trace("xxx: " + $(this).text());
             });
         }
-        var saveBreadboardConfigValue = "";
-        // postMessage({
-        //     messageType: "config2web",
-        //     value: 
-        // });
-        this._originalNumberOfWires = ORIGINAL_WIRES_LENGTH;
-        if(saveBreadboardConfigValue){
-            this._breadboard.LoadMyCircuit(saveBreadboardConfigValue);
-        }
-        else{
-            this._breadboard.LoadMyCircuit(getOriginalWires(this._numberOfSwitches));
-        }
+
+        this._breadboard.LoadMyCircuit(getOriginalWires(this._numberOfSwitches));
 
         if (visir.FIXES === undefined) {
             visir.FIXES = {};
@@ -524,14 +509,18 @@ RHLab.Widgets.Breadboard = function() {
         window._dbgGlobalBreadboard = this;
     }
 
-    // Loads existing circuit from the .xml file
-    Breadboard.prototype.LoadCircuit = function (circuit) {
+    Breadboard.prototype.ClearComponentArrays = function () {
         this._notGate = [];
         this._andGate = [];
         this._orGate = [];
         this._xorGate = []; //***newly added */
         this._leds = [];
         this._outputs = [];
+    }
+
+    // Loads existing circuit from the .xml file
+    Breadboard.prototype.LoadCircuit = function (circuit) {
+        this.ClearComponentArrays();
         this._breadboard.LoadMyCircuit(circuit);
         this.Update();
     }
