@@ -62,7 +62,8 @@
                 //trace("onload: " + src);
                 def.resolve();
             }
-            script.src = baseurl + src;
+            // script.src = baseurl + src;
+            script.src = src;
             head.appendChild(script);
             return def.promise();
         }
