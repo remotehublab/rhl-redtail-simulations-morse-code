@@ -1101,6 +1101,11 @@ RHLab.Widgets.Breadboard = function() {
             var wire = wires[i];
             var point1 = wire._start;
             var point2 = wire._end;
+            
+            // ignore the blank points
+            if(point1.x == point2.x && point1.y == point2.y){
+                continue;
+            }
 
             // check if point1 is a virtual output or a virtual input
             var point1IsOutput = null;
