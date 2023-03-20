@@ -81,7 +81,12 @@
                     window.visir.Config.Set("libraryXml", "static/logic_gates/library.xml?cacheBuster" + window.cacheBuster);
                     window.breadboard = new RHLab.Widgets.Breadboard($("#breadboard"), endpointBase, numberOfSwitches, imageBase, false);
 
-                    injectScript("static/logic_gates/client_capture.js?cacheBuster=" + window.cacheBuster );
+                    injectScript("static/logic_gates/client_capture.js?cacheBuster=" + window.cacheBuster).done(function () {
+                        notifySimulationLoaded();
+                        setTimeout(function () {
+                            notifySimulationLoaded();
+                        }, 1000);
+                    });
                     injectScript("static/iframeResizer.contentWindow.min.js?cacheBuster=" + window.cacheBuster);
                 })
             })

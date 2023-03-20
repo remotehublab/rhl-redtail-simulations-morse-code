@@ -88,10 +88,12 @@ window.addEventListener("message", (event) => {
    
 }, false);
 
-parent.postMessage({
-    messageType: "web2loader",
-    version: "1.0",
-}, '*');
+function notifySimulationLoaded() {
+    parent.postMessage({
+        messageType: "web2loader",
+        version: "1.0",
+    }, '*');
+}
 
 function closeIt()
 {
