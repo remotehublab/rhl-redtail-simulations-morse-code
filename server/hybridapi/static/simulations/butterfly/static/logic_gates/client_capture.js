@@ -43,8 +43,6 @@ function saveConfig(){
 
 window.addEventListener("message", (event) => {
     console.log(event.data.value);
-    if (event.data.messageType != "sim2web" && event.data.messageType != "config2web" )
-        return;
     if (event.source != parent) {
         console.log("Message from somewhere other than the parent window", event);
         return;
@@ -82,7 +80,6 @@ window.addEventListener("message", (event) => {
             document.getElementById("configSave").innerHTML = "Failed to save circuit. Move a wire to retry...";
         }
     }
-   
 }, false);
 
 function notifySimulationLoaded() {
