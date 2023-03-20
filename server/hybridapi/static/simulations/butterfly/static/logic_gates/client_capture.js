@@ -19,6 +19,15 @@
 
 }
 
+window.LAST_SAVED = "";
+setInterval(function () {
+    var serializedCircuit = breadboard.SaveCircuit();
+    if(serializedCircuit != window.LAST_SAVED){
+        window.LAST_SAVED = serializedCircuit;
+        saveConfig();
+    }
+}, 500)
+
 function saveConfig(){
     breadboard.Update();
     var circuitInfo = breadboard.SaveCircuit();
@@ -29,7 +38,7 @@ function saveConfig(){
         value: circuitInfoJson,
         simulation: "butterfly",
     }, '*');
-    document.getElementById("protocol").innerHTML = "Breadboard configuration saved";
+    // document.getElementById("protocol").innerHTML = "Breadboard configuration saved";
 }
 
 window.addEventListener("message", (event) => {
