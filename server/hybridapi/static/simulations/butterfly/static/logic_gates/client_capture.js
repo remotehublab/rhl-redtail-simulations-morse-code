@@ -1,7 +1,7 @@
 
  function printLog(){
     var myString = breadboard.Update();
-    console.log(breadboard.SaveCircuit());
+    console.log(myString);
     
     if(myString.includes("Error")){
         document.getElementById("protocol").innerHTML = myString;
