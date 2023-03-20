@@ -19,15 +19,6 @@
 
 }
 
-window.LAST_SAVED = "";
-setInterval(function () {
-    var serializedCircuit = breadboard.SaveCircuit();
-    if(serializedCircuit != window.LAST_SAVED){
-        window.LAST_SAVED = serializedCircuit;
-        saveConfig();
-    }
-}, 500)
-
 function saveConfig(){
     breadboard.Update();
     var circuitInfo = breadboard.SaveCircuit();

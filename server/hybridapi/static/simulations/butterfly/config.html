@@ -92,6 +92,16 @@
             })
         });
     </script>
+    <script>
+        window.LAST_SAVED = "";
+        setInterval(function () {
+            var serializedCircuit = breadboard.SaveCircuit();
+            if(serializedCircuit != window.LAST_SAVED){
+                window.LAST_SAVED = serializedCircuit;
+                saveConfig();
+            }
+        }, 500)
+    </script>
 
 </body>
 </html>
