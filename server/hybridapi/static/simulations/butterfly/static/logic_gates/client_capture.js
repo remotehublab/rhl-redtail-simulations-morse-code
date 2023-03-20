@@ -20,19 +20,11 @@
 }
 
 window.LAST_SAVED = "";
-var saveConfigIteration = 0;
 setInterval(function () {
     var serializedCircuit = breadboard.SaveCircuit();
     if(serializedCircuit != window.LAST_SAVED){
-        saveConfigIteration = 0;
         window.LAST_SAVED = serializedCircuit;
         saveConfig();
-    }
-    else{
-        saveConfigIteration += 1;
-        if(saveConfigIteration > 3){
-            document.getElementById("configSave").innerHTML = "Saved";
-        }
     }
 }, 500)
 
@@ -81,9 +73,14 @@ window.addEventListener("message", (event) => {
                 breadboard._leds[key]._Change(result[key]);
             }
         }
-    }
-    else if(event.data.messageType == "config2web"){
+    } else if (event.data.messageType == "config2web"){
         breadboard.LoadCircuit(JSON.parse(event.data.value)["circuit"]);
+    } else if (event.data.messageType == "web2configResponse") {
+        if (event.data.success) {
+            document.getElementById("configSave").innerHTML = "Saved";
+        } else {
+            document.getElementById("configSave").innerHTML = "Failed to save circuit. Move a wire to retry...";
+        }
     }
    
 }, false);
