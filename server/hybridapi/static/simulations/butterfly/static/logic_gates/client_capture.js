@@ -63,7 +63,15 @@ window.addEventListener("message", (event) => {
             }
         }
     } else if (event.data.messageType == "config2web"){
-        breadboard.LoadCircuit(JSON.parse(event.data.value)["circuit"]);
+        if (event.data.value) {
+            if (event.data.programmed) {
+                // when programmed, call "submit()" automatically
+                printLog();
+            } else {
+                // when just configuring, load the circuit
+                breadboard.LoadCircuit(JSON.parse(event.data.value)["circuit"]);
+            }
+        }
     } else if (event.data.messageType == "web2configResponse") {
         if (event.data.success) {
             document.getElementById("configSave").innerHTML = "Saved";
