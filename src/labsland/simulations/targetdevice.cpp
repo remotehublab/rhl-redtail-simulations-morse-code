@@ -1,6 +1,14 @@
+/*
+ * Copyright (C) 2023 onwards LabsLand, Inc.
+ * All rights reserved.
+ *
+ * This software is licensed as described in the file LICENSE, which
+ * you should have received as part of this distribution.
+ */
 #include "targetdevice.h"
 #include <algorithm>
 
+using namespace std;
 using namespace LabsLand::Utils;
 using namespace LabsLand::Protocols;
 
@@ -17,20 +25,47 @@ TargetDeviceConfiguration::TargetDeviceConfiguration(int outputGpios, int inputG
     this->secondI2CSlaveConfig = secondI2CSlaveConfig;
 }
 
+TargetDeviceConfiguration::TargetDeviceConfiguration(vector<string> outputGpios, vector<string> inputGpios, I2CSlaveConfiguration * firstI2CSlaveConfig, I2CSlaveConfiguration * secondI2CSlaveConfig) {
+    this->outputGpios = outputGpios.size();
+    this->outputLabels = outputGpios;
+    this->inputGpios = inputGpios.size();
+    this->inputLabels = inputGpios;
+    this->firstI2CSlaveConfig = firstI2CSlaveConfig;
+    this->secondI2CSlaveConfig = secondI2CSlaveConfig;
+}
+
 void TargetDeviceConfiguration::setOutputGpios(int outputGpios) {
     this->outputGpios = outputGpios;
+}
+
+void TargetDeviceConfiguration::setOutputGpios(vector<string> outputGpios) {
+    this->outputGpios = outputGpios.size();
+    this->outputLabels = outputGpios;
 }
 
 int TargetDeviceConfiguration::getOutputGpios() const {
     return this->outputGpios;
 }
 
+vector<string> TargetDeviceConfiguration::getOutputLabels() const {
+    return this->outputLabels;
+}
+
 void TargetDeviceConfiguration::setInputGpios(int inputGpios) {
     this->inputGpios = inputGpios;
 }
 
+void TargetDeviceConfiguration::setInputGpios(vector<string> inputGpios) {
+    this->inputGpios = inputGpios.size();
+    this->inputLabels = inputGpios;
+}
+
 int TargetDeviceConfiguration::getInputGpios() const {
     return this->inputGpios;
+}
+
+vector<string> TargetDeviceConfiguration::getInputLabels() const {
+    return this->inputLabels;
 }
 
 void TargetDeviceConfiguration::setFirstI2CSlaveConfig(I2CSlaveConfiguration * firstI2CSlaveConfig) {
@@ -72,7 +107,7 @@ TargetDeviceConfiguration::~TargetDeviceConfiguration() {
 
 /*
  *
- * TargetDevicde basic implementation
+ * TargetDevice basic implementation
  *
  */
 

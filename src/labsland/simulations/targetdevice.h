@@ -59,37 +59,7 @@ namespace LabsLand::Utils {
      *
      * Important: simulations will be able to know in advance if a target device works or not.
      */
-    class TargetDeviceConfiguration {
-            int outputGpios = 0;
-            int inputGpios = 0;
-
-            // there can be up to 2 I2C slaves. You can initialize one, the other or both.
-            // Note the destructor of this class will delete these objects
-            LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0;
-            LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0;
-
-        public:
-            TargetDeviceConfiguration(int outputGpios = 0, int inputGpios = 0, LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0, LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0);
-
-            void setOutputGpios(int outputGpios);
-            int getOutputGpios() const;
-            void setInputGpios(int inputGpios);
-
-            int getInputGpios() const;
-
-            void setFirstI2CSlaveConfig(LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig);
-            void setFirstI2CSlaveConfig(LabsLand::Protocols::i2cSlaveCallback * callback, int address);
-
-            LabsLand::Protocols::I2CSlaveConfiguration * getFirstI2CSlaveConfig() const;
-
-            void setSecondI2CSlaveConfig(LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig);
-
-            void setSecondI2CSlaveConfig(LabsLand::Protocols::i2cSlaveCallback * callback, int address);
-
-            LabsLand::Protocols::I2CSlaveConfiguration * getSecondI2CSlaveConfig() const;
-
-            ~TargetDeviceConfiguration();
-    };
+    class TargetDeviceConfiguration;
 
     class TargetDevice {
         private:
@@ -184,6 +154,46 @@ namespace LabsLand::Utils {
             virtual void resetGpio(LabsLand::Protocols::NamedGpio outputPosition) = 0;
             virtual bool getGpio(LabsLand::Protocols::NamedGpio inputPosition) = 0;
     };
+
+    class TargetDeviceConfiguration {
+            int outputGpios = 0;
+            int inputGpios = 0;
+            std::vector<std::string> inputLabels;
+            std::vector<std::string> outputLabels;
+
+            // there can be up to 2 I2C slaves. You can initialize one, the other or both.
+            // Note the destructor of this class will delete these objects
+            LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0;
+            LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0;
+
+        public:
+            TargetDeviceConfiguration(int outputGpios = 0, int inputGpios = 0, LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0, LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0);
+            TargetDeviceConfiguration(std::vector<std::string> outputGpios, std::vector<std::string> inputGpios, LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0, LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0);
+
+            void setOutputGpios(int outputGpios);
+            void setOutputGpios(std::vector<std::string> outputGpios);
+            int getOutputGpios() const;
+            std::vector<std::string> getOutputLabels() const;
+
+            void setInputGpios(int inputGpios);
+            void setInputGpios(std::vector<std::string> inputGpios);
+            int getInputGpios() const;
+            std::vector<std::string> getInputLabels() const;
+
+            void setFirstI2CSlaveConfig(LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig);
+            void setFirstI2CSlaveConfig(LabsLand::Protocols::i2cSlaveCallback * callback, int address);
+
+            LabsLand::Protocols::I2CSlaveConfiguration * getFirstI2CSlaveConfig() const;
+
+            void setSecondI2CSlaveConfig(LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig);
+
+            void setSecondI2CSlaveConfig(LabsLand::Protocols::i2cSlaveCallback * callback, int address);
+
+            LabsLand::Protocols::I2CSlaveConfiguration * getSecondI2CSlaveConfig() const;
+
+            ~TargetDeviceConfiguration();
+    };
+
 }
 
 #endif
