@@ -12,16 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "labsland/protocols.h"
+
 namespace LabsLand::Utils {
-
-
-    enum NamedGpio {
-        // custom serial
-        customSerialLatch,
-        customSerialDataOut,
-        customSerialPulse,
-        // other custom protocols
-    };
 
     /**
      *
@@ -141,9 +134,9 @@ namespace LabsLand::Utils {
             /**
              * Same, but using custom names
              */
-            virtual void setGpio(NamedGpio outputPosition, bool value = true) = 0;
-            virtual void resetGpio(NamedGpio outputPosition) = 0;
-            virtual bool getGpio(NamedGpio inputPosition) = 0;
+            virtual void setGpio(LabsLand::Protocols::NamedGpio outputPosition, bool value = true) = 0;
+            virtual void resetGpio(LabsLand::Protocols::NamedGpio outputPosition) = 0;
+            virtual bool getGpio(LabsLand::Protocols::NamedGpio inputPosition) = 0;
     };
 }
 

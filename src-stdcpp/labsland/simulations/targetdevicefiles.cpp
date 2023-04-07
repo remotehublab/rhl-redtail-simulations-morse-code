@@ -13,6 +13,7 @@
 
 using namespace std;
 using namespace LabsLand::Utils;
+using namespace LabsLand::Protocols;
 
 TargetDeviceFiles::TargetDeviceFiles(string outputFilename, string inputFilename, int numberOfOutputs, int numberOfInputs): inputFilename(inputFilename), outputFilename(outputFilename), numberOfOutputs(numberOfOutputs), numberOfInputs(numberOfInputs) {
 

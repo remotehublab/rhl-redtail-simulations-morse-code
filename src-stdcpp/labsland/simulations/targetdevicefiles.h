@@ -68,9 +68,9 @@ namespace LabsLand::Utils {
             /**
              * Same, but using custom names
              */
-            virtual void setGpio(NamedGpio outputPosition, bool value = true);
-            virtual void resetGpio(NamedGpio outputPosition);
-            virtual bool getGpio(NamedGpio inputPosition);
+            virtual void setGpio(LabsLand::Protocols::NamedGpio outputPosition, bool value = true);
+            virtual void resetGpio(LabsLand::Protocols::NamedGpio outputPosition);
+            virtual bool getGpio(LabsLand::Protocols::NamedGpio inputPosition);
     };
 }
 
