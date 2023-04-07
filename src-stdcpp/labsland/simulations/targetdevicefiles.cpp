@@ -19,16 +19,17 @@ TargetDeviceFiles::TargetDeviceFiles(string outputFilename, string inputFilename
 
 }
 
-bool TargetDeviceFiles::checkSimulationSupport(int outputGpios, int inputGpios) {
-    return outputGpios <= this->numberOfOutputs && inputGpios <= this->numberOfInputs;
+bool TargetDeviceFiles::checkSimulationSupport(TargetDeviceConfiguration * configuration) {
+    return configuration->getOutputGpios() <= this->numberOfOutputs && configuration->getInputGpios() <= this->numberOfInputs;
 }
 
-bool TargetDeviceFiles::initializeSimulation(int outputGpios, int inputGpios) {
-    if (!checkSimulationSupport(outputGpios, inputGpios))
+bool TargetDeviceFiles::initializeSimulation(TargetDeviceConfiguration * configuration) {
+    if (!checkSimulationSupport(configuration))
         return false;
 
-    this->numberOfSimulationOutputs = outputGpios;
-    this->numberOfSimulationInputs = inputGpios;
+    this->numberOfSimulationOutputs = configuration->getOutputGpios();
+    this->numberOfSimulationInputs = configuration->getInputGpios();
+    this->configuration = configuration;
 
     // Initialize the file
     ofstream ofile(this->outputFilename);

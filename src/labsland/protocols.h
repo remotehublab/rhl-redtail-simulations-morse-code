@@ -5,8 +5,8 @@
  * This software is licensed as described in the file LICENSE, which
  * you should have received as part of this distribution.
  */
-#ifndef LL_PROTOCOLS
-#define LL_PROTOCOLS
+#ifndef LL_PROTOCOLS_H
+#define LL_PROTOCOLS_H
 
 /*
  * In this file we keep utilities for interacting with certain protocols, such as
@@ -49,7 +49,16 @@ namespace LabsLand::Protocols {
         other // to be completed in the future if more states appear
     };
 
-    typedef void (*i2c_slave_callback)(I2C_IO_Wrapper * i2cWrapper, I2CEventType event);
+    typedef void (*i2cSlaveCallback)(I2C_IO_Wrapper * i2cWrapper, I2CEventType event);
+
+    class I2CSlaveConfiguration {
+         // there can be up to 2 I2C slaves. You can initialize one, the other or both.
+        const i2cSlaveCallback * callback = 0;
+        const unsigned int address = 0;
+
+        public:
+            I2CSlaveConfiguration(i2cSlaveCallback * callback, int address): callback(callback), address(address) {}
+    };
 }
 
 #endif

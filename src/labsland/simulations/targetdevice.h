@@ -59,24 +59,70 @@ namespace LabsLand::Utils {
      *
      * Important: simulations will be able to know in advance if a target device works or not.
      */
+    class TargetDeviceConfiguration {
+            int outputGpios = 0;
+            int inputGpios = 0;
+
+            // there can be up to 2 I2C slaves. You can initialize one, the other or both.
+            // Note the destructor of this class will delete these objects
+            LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0;
+            LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0;
+
+        public:
+            TargetDeviceConfiguration(int outputGpios = 0, int inputGpios = 0, LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig = 0, LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig = 0);
+
+            void setOutputGpios(int outputGpios);
+            int getOutputGpios() const;
+            void setInputGpios(int inputGpios);
+
+            int getInputGpios() const;
+
+            void setFirstI2CSlaveConfig(LabsLand::Protocols::I2CSlaveConfiguration * firstI2CSlaveConfig);
+            void setFirstI2CSlaveConfig(LabsLand::Protocols::i2cSlaveCallback * callback, int address);
+
+            LabsLand::Protocols::I2CSlaveConfiguration * getFirstI2CSlaveConfig() const;
+
+            void setSecondI2CSlaveConfig(LabsLand::Protocols::I2CSlaveConfiguration * secondI2CSlaveConfig);
+
+            void setSecondI2CSlaveConfig(LabsLand::Protocols::i2cSlaveCallback * callback, int address);
+
+            LabsLand::Protocols::I2CSlaveConfiguration * getSecondI2CSlaveConfig() const;
+
+            ~TargetDeviceConfiguration();
+    };
+
     class TargetDevice {
         private:
             std::vector<std::string> inputLabels;
             std::vector<std::string> outputLabels;
+
+        protected:
+            // Note: the destructor of the target device will destroy this
+            TargetDeviceConfiguration * configuration = 0;
         public:
+            virtual ~TargetDevice();
             /*
              * Does it support this number of inputs and outputs?
+             *
+             * Note: it does not store configuration
              */
-            virtual bool checkSimulationSupport(int outputGpios, int inputGpios) = 0;
+            virtual bool checkSimulationSupport(TargetDeviceConfiguration * configuration) = 0;
+            // simplified version
+            virtual bool checkSimulationSupport(int outputGpios, int inputGpios);
+
 
             /*
              * Allocate a set of outputs and inputs, in whichever order the device defines.
              *
+             * Note: it DOES store configuration
+             *
              * It returns true/false if possible.
              */
-            virtual bool initializeSimulation(int outputGpios, int inputGpios) = 0;
+            virtual bool initializeSimulation(TargetDeviceConfiguration * configuration) = 0;
+            // simplified version
+            virtual bool initializeSimulation(int outputGpios, int inputGpios);
 
-           /*
+            /*
              * Allocate a set of outputs and inputs, in whichever order the device defines.
              *
              * It is the same as calling initializeSimulation, but providing strings. Internally
