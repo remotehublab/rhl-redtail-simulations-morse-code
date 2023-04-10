@@ -69,8 +69,10 @@ vector<string> TargetDeviceConfiguration::getInputLabels() const {
 }
 
 void TargetDeviceConfiguration::setFirstI2CSlaveConfig(I2CSlaveConfiguration * firstI2CSlaveConfig) {
-    if (this->firstI2CSlaveConfig != 0)
+    if (this->firstI2CSlaveConfig != 0) {
         delete this->firstI2CSlaveConfig;
+        this->firstI2CSlaveConfig = 0;
+    }
 
     this->firstI2CSlaveConfig = firstI2CSlaveConfig;
 }
@@ -84,8 +86,10 @@ I2CSlaveConfiguration * TargetDeviceConfiguration::getFirstI2CSlaveConfig() cons
 }
 
 void TargetDeviceConfiguration::setSecondI2CSlaveConfig(I2CSlaveConfiguration * secondI2CSlaveConfig) {
-    if (this->secondI2CSlaveConfig != 0)
+    if (this->secondI2CSlaveConfig != 0) {
         delete this->secondI2CSlaveConfig;
+        this->secondI2CSlaveConfig = 0;
+    }
 
     this->secondI2CSlaveConfig = secondI2CSlaveConfig;
 }
@@ -99,10 +103,14 @@ I2CSlaveConfiguration * TargetDeviceConfiguration::getSecondI2CSlaveConfig() con
 }
 
 TargetDeviceConfiguration::~TargetDeviceConfiguration() {
-    if (this->firstI2CSlaveConfig != 0)
+    if (this->firstI2CSlaveConfig != 0) {
         delete this->firstI2CSlaveConfig;
-    if (this->secondI2CSlaveConfig != 0)
+        this->firstI2CSlaveConfig = 0;
+    }
+    if (this->secondI2CSlaveConfig != 0) {
         delete this->secondI2CSlaveConfig;
+        this->secondI2CSlaveConfig = 0;
+    }
 }
 
 /*
@@ -160,6 +168,8 @@ bool TargetDevice::getGpio(std::string inputPosition) {
 
 
 TargetDevice::~TargetDevice() {
-    if (this->configuration != 0)
+    if (this->configuration != 0) {
         delete this->configuration;
+        this->configuration = 0;
+    }
 }

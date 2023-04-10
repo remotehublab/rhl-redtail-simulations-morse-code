@@ -58,6 +58,9 @@ namespace LabsLand::Protocols {
 
         public:
             I2CSlaveConfiguration(i2cSlaveCallback * callback, int address): callback(callback), address(address) {}
+
+            const i2cSlaveCallback * getCallback() { return this->callback;  }
+            const unsigned int getAddress() { return this->address; }
     };
 }
 
