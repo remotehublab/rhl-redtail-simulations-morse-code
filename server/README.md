@@ -44,7 +44,7 @@ Messages are strings (simple, text messages with no newline) send and received f
 
 ## Running the simulation
 
-After compiling the simulation, it may be run:
+After compiling the simulation (see main README), it may be run:
 
 ```
 ./hybridapi watertank
