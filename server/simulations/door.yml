@@ -1,0 +1,10 @@
+name: Door
+description: This is a door simulation
+iframe:
+  url: door/index.html
+  height: 700
+gpios:
+  sim2dut:
+    labels: [ doorOpened, doorClosed, personSensor]
+  dut2sim:
+    labels: [ open, close]
