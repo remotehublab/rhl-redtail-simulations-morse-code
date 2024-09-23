@@ -13,7 +13,7 @@ add_executable(hybridapi
 
     src/labsland/simulations/targetdevice.cpp
     src/labsland/simulations/watertanksimulation.cpp
-    src/labsland/simulations/door.cpp
+    src/deusto/door.cpp
     src/rhlab/butterfly.cpp
 
 )

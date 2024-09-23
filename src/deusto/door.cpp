@@ -26,12 +26,14 @@ void DoorSimulation::update(double delta)
     this->log() << std::endl
                 << "Open door: " << mState.open << "; Close door: " << mState.close << std::endl;
 
-    this->log() << "Input:" << std::endl
-                << " Opened: " << request.doorOpened << "; Closed: " << request.doorClosed << "; Person waiting: " << request.personSensor << std::endl;
+    if (requestWasRead) {
+        this->log() << "Input:" << std::endl
+                    << " Opened: " << request.doorOpened << "; Closed: " << request.doorClosed << "; Person waiting: " << request.personSensor << std::endl;
 
-    this->targetDevice->setGpio("doorOpened", request.doorOpened);
-    this->targetDevice->setGpio("doorClosed", request.doorClosed);
-    this->targetDevice->setGpio("personSensor", request.personSensor);
+        this->targetDevice->setGpio("doorOpened", request.doorOpened);
+        this->targetDevice->setGpio("doorClosed", request.doorClosed);
+        this->targetDevice->setGpio("personSensor", request.personSensor);
+    }
 
     requestReportState();
 }
