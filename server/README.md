@@ -1,6 +1,18 @@
 # LabsLand Hybrid API Server
 
-If you want to test a new simulation, create file in `simulations` that contains something like:
+## Purpose
+
+The LabsLand Hybrid API Server is designed to help developers create and test their simulations.
+
+The main features are:
+- Runs both the *simulation* and the *visualization*.
+- Allows monitoring the communication messages between different components.
+- Allows sending specific messages to test & debug.
+
+
+## Configuration
+
+To test a new simulation, create file in `simulations` that contains something like:
 
 ```yaml
 name: Watertank
@@ -15,7 +27,6 @@ gpios:
 ```
 
 You may specify also "file", "messages -> web2sim -> file", etc.
-
 
 
 ## Communications
@@ -44,16 +55,31 @@ Messages are strings (simple, text messages with no newline) send and received f
 
 ## Running the simulation
 
-After compiling the simulation (see main README), it may be run:
+To run the simulation in the Hybrid API Server, you will first need to have successfully compiled the *simulation* itself, the C++ component.
+To do so, follow the README in the root folder. Then, you will need to run it in the background:
 
 ```
 ./hybridapi watertank
 ```
 
-To run the dev server you may in parallel run:
+Now, while the simulation itself is running in the background, you may run the dev server:
 
 ```
 $ . devrc
 $ export SIMULATION_CONFIG_FILE=watertank-test.yml
 $ flask run
 ```
+
+## Specific features
+
+In the GPIO sections:
+
+- In the 'Simulation to Device Under Test' section you can monitor the values that the simulation (C++ component) is sending to the hardware through the GPIOs. You cannot directly modify these, they are read-only in the dev server.
+- In the 'Device Under Test to Simulation' section you can edit the signals that the DUT would send to the simulation. There is no real DUT here, but it is precisely
+emulated by manually setting the signals in the dev server, for testing purposes. It is write-only in this case (since there is no DUT).
+
+
+In the Messages sections:
+- In the 'Simulation2web' section you can monitor the message that the simulation (C++ component) is sending to the Web. That is the message that is typically received
+eventually by the Visualization too. It is typically used to keep the Visualization synch'ed, so that it can show the various events at the right time, etc.
+- In the 'Web2Simulation' section there is a text box that shows the message that the *Visualization* is sending to the *Simulation* (C++ component). You can also send a specific message that the *Visualization* is not actually sending, for testing purposes. Therefore, this text box is both read and write.
