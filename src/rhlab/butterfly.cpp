@@ -7,14 +7,6 @@ using namespace std;
 
 void ButterflySimulation::initialize(){
 
-    #if defined(LABSLAND_TARGET_INTEL)
-    this->deviceType = "intel";
-    #elif defined(LABSLAND_TARGET_STM)
-    this->deviceType = "stm";
-    #else
-    this->deviceType = "other";
-    #endif
-
     // this->targetDevice.setGpio(0, true); //first output gpio
     // this->targetDevice.getGpio(0);  // first input gpio, which is different
 
@@ -361,17 +353,18 @@ void ButterflySimulation::update(double delta){
     // reportUpdate();
 }
 
-int ButterflySimulation::getNumberOfSimulationInputs() {
-    if (this->deviceType == "stm") {
-        return 6;
-    }
+int FPGA_DE1SoC_ButterflySimulation::getNumberOfSimulationInputs() {
     return 7;
 }
 
-int ButterflySimulation::getNumberOfSimulationOutputs() {
-    // intel: 5
-    // stm: 5
-    // others: 5
+int FPGA_DE1SoC_ButterflySimulation::getNumberOfSimulationOutputs() {
     return 5;
 }
 
+int STM32_WB55RG_ButterflySimulation::getNumberOfSimulationInputs() {
+    return 6;
+}
+
+int STM32_WB55RG_ButterflySimulation::getNumberOfSimulationOutputs() {
+    return 5;
+}

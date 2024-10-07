@@ -63,15 +63,14 @@ class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
         vector<bool> output_gpio_tracker;
         vector<bool> input_gpio_tracker;
         string my_string = "";
-        string deviceType = "";
     public:
 
         ButterflySimulation() = default;
         virtual void update(double delta) override;
         virtual void initialize() override;
 
-        virtual int getNumberOfSimulationInputs(void);
-        virtual int getNumberOfSimulationOutputs(void);
+        virtual int getNumberOfSimulationInputs(void) = 0;
+        virtual int getNumberOfSimulationOutputs(void) = 0;
 
         void print_gpio_header_states();
         void print_buffer_states();
@@ -88,6 +87,18 @@ class ButterflySimulation : public Simulation<ButterflyData, ButterflyRequest> {
         bool handle_input(string substring, int &start_index);
         void handle_output(string substring, int &start_index, bool my_output);
         int read_logic_gate(string substring);
+};
+
+class FPGA_DE1SoC_ButterflySimulation : public ButterflySimulation {
+    public:
+        virtual int getNumberOfSimulationInputs(void) override;
+        virtual int getNumberOfSimulationOutputs(void) override;
+};
+
+class STM32_WB55RG_ButterflySimulation : public ButterflySimulation {
+    public:
+        virtual int getNumberOfSimulationInputs(void) override;
+        virtual int getNumberOfSimulationOutputs(void) override;
 };
 
 #endif

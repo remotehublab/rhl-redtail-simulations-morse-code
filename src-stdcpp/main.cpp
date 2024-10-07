@@ -103,8 +103,10 @@ int main(int argc, char * argv[]) {
 
     if (simulation == "watertank") {
         runner = new ConcreteSimulationRunner<WatertankSimulation, WatertankData, WatertankRequest>(configuration, mode);
-    } else if (simulation == "butterfly") {
-        runner = new ConcreteSimulationRunner<ButterflySimulation, ButterflyData, ButterflyRequest>(configuration, mode);
+    } else if (simulation == "butterfly" || simulation == "butterfly-fpga-de1-soc" || simulation == "butterfly-fpga-de2-115") {
+        runner = new ConcreteSimulationRunner<FPGA_DE1SoC_ButterflySimulation, ButterflyData, ButterflyRequest>(configuration, mode);
+    } else if (simulation == "butterfly-stm32-wb55rg") {
+        runner = new ConcreteSimulationRunner<STM32_WB55RG_ButterflySimulation, ButterflyData, ButterflyRequest>(configuration, mode);
     } else if (simulation == "door") {
         runner = new ConcreteSimulationRunner<DoorSimulation, DoorData, DoorRequest>(configuration, mode);
     } else {
