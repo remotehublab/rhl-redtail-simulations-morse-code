@@ -1,0 +1,14 @@
+name: Parking
+description: This is a simulation of a LED Matrix
+iframe:
+  url: https://ll-static-apps.s3.eu-central-1.amazonaws.com/simulations/parking/index.html
+  height: 500
+gpios:
+  sim2dut:
+    # FPGA inputs
+    # number: 5
+    labels: [ gpio28, gpio29, gpio23, gpio24, gpio25 ]
+  dut2sim:
+    # FPGA outputs
+    # number: 7
+    labels: [ gpio26, gpio27, gpio32, gpio34, gpio31, gpio33, gpio35 ]

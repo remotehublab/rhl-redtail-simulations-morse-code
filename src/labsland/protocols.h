@@ -62,6 +62,44 @@ namespace LabsLand::Protocols {
             const i2cSlaveCallback * getCallback() { return this->callback;  }
             const unsigned int getAddress() { return this->address; }
     };
+
+    //
+    //    SPI
+    //
+
+    class SPI_IO_Wrapper {
+    public:
+        // Method to send a byte over MOSI
+        virtual void writeByte(unsigned char byte) = 0;
+
+        // Method to receive a byte from MISO
+        virtual unsigned char readByte() = 0;
+
+        // Might need further implementation: to handle chip select (CS/SS) control
+        virtual void setChipSelect(bool state) = 0;
+    };
+
+    enum SPIEventType {
+        spiSlaveTransmit,
+        spiSlaveReceive,
+        spiSlaveFinish,
+        spiOther // To be expanded for future states
+    };
+
+    typedef void (*spiSlaveCallback)(SPI_IO_Wrapper *spiWrapper, SPIEventType event);
+
+    class SPISlaveConfiguration {
+        // SPI slave can have different callbacks and chip select settings
+        const spiSlaveCallback *callback = 0;
+        const unsigned int chipSelectPin = 0;
+
+    public:
+        SPISlaveConfiguration(spiSlaveCallback *callback, unsigned int chipSelectPin)
+            : callback(callback), chipSelectPin(chipSelectPin) {}
+
+        const spiSlaveCallback *getCallback() const { return this->callback; }
+        unsigned int getChipSelectPin() const { return this->chipSelectPin; }
+    };
 }
 
 #endif

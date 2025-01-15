@@ -10,6 +10,7 @@
 #include <chrono>
 #include "labsland/simulations/watertanksimulation.h"
 #include "rhlab/butterfly.h"
+#include "rhlab/matrix.h"
 #include "deusto/door.h"
 #include "labsland/simulations/utils/communicatorfiles.h"
 #include "labsland/simulations/targetdevicefiles.h"
@@ -101,7 +102,9 @@ int main(int argc, char * argv[]) {
 
     SimulationRunner * runner = 0;
 
-    if (simulation == "watertank") {
+    if (simulation == "matrix") {
+        runner = new ConcreteSimulationRunner<MatrixSimulation, MatrixData, MatrixRequest>(configuration, mode);
+    } else if (simulation == "watertank") {
         runner = new ConcreteSimulationRunner<WatertankSimulation, WatertankData, WatertankRequest>(configuration, mode);
     } else if (simulation == "butterfly" || simulation == "butterfly-fpga-de1-soc" || simulation == "butterfly-fpga-de2-115") {
         runner = new ConcreteSimulationRunner<FPGA_DE1SoC_ButterflySimulation, ButterflyData, ButterflyRequest>(configuration, mode);

@@ -11,6 +11,7 @@
 #include <string>
 #include "labsland/simulations/targetdevice.h"
 #include "../protocols/i2ciowrapperfiles.h"
+#include "../protocols/spiiowrapperfiles.h"
 
 namespace LabsLand::Utils {
 
@@ -28,6 +29,10 @@ namespace LabsLand::Utils {
             const std::string secondOutputI2cFilename;
             const std::string secondSignalI2cFilename;
 
+            const std::string spiInputFilename;
+            const std::string spiOutputFilename;
+            const std::string spiSignalFilename;
+
             const int numberOfOutputs;
             const int numberOfInputs;
 
@@ -38,6 +43,8 @@ namespace LabsLand::Utils {
 
             LabsLand::Protocols::I2C_IO_WrapperFiles * firstI2cIoWrapper = 0;
             LabsLand::Protocols::I2C_IO_WrapperFiles * secondI2cIoWrapper = 0;
+
+            LabsLand::Protocols::SPI_IO_WrapperFiles * spiIoWrapper = nullptr;
 
         public:
             TargetDeviceFiles(
@@ -90,6 +97,13 @@ namespace LabsLand::Utils {
             virtual void setGpio(LabsLand::Protocols::NamedGpio outputPosition, bool value = true);
             virtual void resetGpio(LabsLand::Protocols::NamedGpio outputPosition);
             virtual bool getGpio(LabsLand::Protocols::NamedGpio inputPosition);
+
+            /**
+             * SPI-specific functionality
+             */
+            virtual void spiWriteByte(unsigned char byte);
+            virtual unsigned char spiReadByte();
+            virtual void setSpiChipSelect(bool state);
     };
 }
 
