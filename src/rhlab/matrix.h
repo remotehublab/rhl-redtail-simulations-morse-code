@@ -10,95 +10,76 @@
 
 using namespace std;
 
-// My constant defines
-#define IS_LITERAL  0
-#define IS_GPIO     1
-#define IS_BUFFER   2
-#define IS_SWITCH   3
-#define IS_LED      4
+namespace RHLab::LEDMatrix {
 
-#define IS_LITERAL_NEXT_CHAR_SIZE 1
-#define IS_GPIO_NEXT_CHAR_SIZE    2
-#define IS_BUFFER_NEXT_CHAR_SIZE  1
-#define IS_SWITCH_NEXT_CHAR_SIZE  1
-#define IS_LED_NEXT_CHAR_SIZE     1
+    // My constant defines
+    #define IS_LITERAL  0
+    #define IS_GPIO     1
+    #define IS_BUFFER   2
+    #define IS_SWITCH   3
+    #define IS_LED      4
 
-#define BUFFER_ARRAY_SIZE   10
-#define LED_ARRAY_SIZE      5
-#define MAX_CHAR_ARRAY_SIZE 1024
+    #define IS_LITERAL_NEXT_CHAR_SIZE 1
+    #define IS_GPIO_NEXT_CHAR_SIZE    2
+    #define IS_BUFFER_NEXT_CHAR_SIZE  1
+    #define IS_SWITCH_NEXT_CHAR_SIZE  1
+    #define IS_LED_NEXT_CHAR_SIZE     1
 
-// struct that receives the string
-struct MatrixRequest : public BaseInputDataType {
-    char my_string[MAX_CHAR_ARRAY_SIZE];
+    #define BUFFER_ARRAY_SIZE   10
+    #define LED_ARRAY_SIZE      5
+    #define MAX_CHAR_ARRAY_SIZE 1024
 
-    bool deserialize(std::string const & input) {
-        if (input.size() < MAX_CHAR_ARRAY_SIZE - 1) {
-            strcpy(my_string, input.c_str());
-            return true;
+
+    const int INPUTS = 3; // Latch, Pulse and "data out" (from the target device to the simulation)
+    const int OUTPUTS = 0; // No need for any data in
+
+    const int COLS = 16;
+    const int ROWS = 16;
+    const int BITS_PER_LED = 2; // 00 = off; 01 = green; 10 = red; 11 = yellow
+
+    // struct that receives the string; NOT USED FOR NOW
+    struct MatrixRequest : public BaseInputDataType {
+        bool deserialize(std::string const & input) {
+            return false;
         }
-        return false;
-    }
-};
+    };
 
-// struct that tracks the virtual LED states
-struct MatrixData : public BaseOutputDataType {
-    bool virtual_led[LED_ARRAY_SIZE];
+    // struct that tracks the virtual LED states
+    struct MatrixData : public BaseOutputDataType {
+        char leds[ROWS * COLS];
 
-    string serialize() const {
-        stringstream stream;
-        for(int i = 0; i < LED_ARRAY_SIZE; i++){
-            stream << "led" << i << "=" << virtual_led[i];
-            if(i < LED_ARRAY_SIZE - 1){
-                stream << "&";
+        public:
+            MatrixData() {
+                for (int row = 0; row < ROWS; row++) {
+                    for (int col = 0; col < COLS; col++){
+                        leds[row * COLS + col] = 'B';
+                    }
+                }
             }
-        }
 
-        return stream.str();
-    }
-};
+            string serialize() const {
+                stringstream stream;
 
-class MatrixSimulation : public Simulation<MatrixData, MatrixRequest> {
-    private:
-        vector<bool> buffer;
-        vector<bool> output_gpio_tracker;
-        vector<bool> input_gpio_tracker;
-        string my_string = "";
-    public:
+                for (int row = 0; row < ROWS; row++) {
+                    for (int col = 0; col < COLS; col++){
+                        stream << leds[row * COLS + col];
+                    }
+                    if(row < ROWS - 1){
+                        stream << ":";
+                    }
+                }
 
-        MatrixSimulation() = default;
-        virtual void update(double delta) override;
-        virtual void initialize() override;
+                return stream.str();
+            }
+    };
 
-        virtual int getNumberOfSimulationInputs(void) = 0;
-        virtual int getNumberOfSimulationOutputs(void) = 0;
+    class MatrixSimulation : public Simulation<MatrixData, MatrixRequest> {
+        public:
+            MatrixSimulation() = default;
+            void update(double delta) override;
+            void initialize() override;
 
-        void print_gpio_header_states();
-        void print_buffer_states();
-        void print_led_states();
-        bool read_literal_logic(string s);
-        bool read_switch_logic(string s);
-        bool read_gpio_logic(string s);
-        void update_gpio_logic(string s, bool o);
-        bool read_buffer_logic(string s);
-        void update_buffer_logic(string s, bool o);
-        void update_led_logic(string s, bool o);
-        int read_gate_input(string substring);
-        int read_gate_output(string substring);
-        bool handle_input(string substring, int &start_index);
-        void handle_output(string substring, int &start_index, bool my_output);
-        int read_logic_gate(string substring);
-};
-
-class FPGA_DE1SoC_MatrixSimulation : public MatrixSimulation {
-    public:
-        virtual int getNumberOfSimulationInputs(void) override;
-        virtual int getNumberOfSimulationOutputs(void) override;
-};
-
-class STM32_WB55RG_MatrixSimulation : public MatrixSimulation {
-    public:
-        virtual int getNumberOfSimulationInputs(void) override;
-        virtual int getNumberOfSimulationOutputs(void) override;
-};
+    };
+}
 
 #endif

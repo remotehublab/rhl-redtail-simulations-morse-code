@@ -103,7 +103,7 @@ int main(int argc, char * argv[]) {
     SimulationRunner * runner = 0;
 
     if (simulation == "matrix") {
-        runner = new ConcreteSimulationRunner<MatrixSimulation, MatrixData, MatrixRequest>(configuration, mode);
+        runner = new ConcreteSimulationRunner<RHLab::LEDMatrix::MatrixSimulation, RHLab::LEDMatrix::MatrixData, RHLab::LEDMatrix::MatrixRequest>(configuration, mode);
     } else if (simulation == "watertank") {
         runner = new ConcreteSimulationRunner<WatertankSimulation, WatertankData, WatertankRequest>(configuration, mode);
     } else if (simulation == "butterfly" || simulation == "butterfly-fpga-de1-soc" || simulation == "butterfly-fpga-de2-115") {

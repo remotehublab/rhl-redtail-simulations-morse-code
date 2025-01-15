@@ -101,9 +101,11 @@ namespace LabsLand::Utils {
             /**
              * SPI-specific functionality
              */
+            /*
             virtual void spiWriteByte(unsigned char byte);
             virtual unsigned char spiReadByte();
             virtual void setSpiChipSelect(bool state);
+            */
     };
 }
 
