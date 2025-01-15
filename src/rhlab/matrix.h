@@ -12,24 +12,14 @@ using namespace std;
 
 namespace RHLab::LEDMatrix {
 
-    // My constant defines
-    #define IS_LITERAL  0
-    #define IS_GPIO     1
-    #define IS_BUFFER   2
-    #define IS_SWITCH   3
-    #define IS_LED      4
+    bool readSerialCommunication(bool buffer[], int bits) {
+        // we read latch, if no communication, just return false
 
-    #define IS_LITERAL_NEXT_CHAR_SIZE 1
-    #define IS_GPIO_NEXT_CHAR_SIZE    2
-    #define IS_BUFFER_NEXT_CHAR_SIZE  1
-    #define IS_SWITCH_NEXT_CHAR_SIZE  1
-    #define IS_LED_NEXT_CHAR_SIZE     1
+        // if we read that number of bits, then true
+        return true;
+    }
 
-    #define BUFFER_ARRAY_SIZE   10
-    #define LED_ARRAY_SIZE      5
-    #define MAX_CHAR_ARRAY_SIZE 1024
-
-
+    
     const int INPUTS = 3; // Latch, Pulse and "data out" (from the target device to the simulation)
     const int OUTPUTS = 0; // No need for any data in
 
@@ -55,6 +45,13 @@ namespace RHLab::LEDMatrix {
                         leds[row * COLS + col] = 'B';
                     }
                 }
+            }
+
+            void setLed(int row, int col, char color) {
+                if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
+                    return;
+                }
+                leds[row * COLS + col] = color;
             }
 
             string serialize() const {
