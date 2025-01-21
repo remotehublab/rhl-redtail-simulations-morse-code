@@ -12,6 +12,23 @@ void MatrixSimulation::initialize(){
     setReportWhenMarked(true);
 }
 
+bool MatrixSimulation::readSerialCommunication(bool buffer[], int bits) {
+    for (int i = 0; i < bits; i += 2) {
+        // Wait for a rising edge on the pulse GPIO
+        while (this->targetDevice->getGpio("pulse") == 0) {}
+
+        // Read the data bit when the pulse is high
+        buffer[i] = this->targetDevice->getGpio("red");
+        buffer[i+1] = this->targetDevice->getGpio("green");
+
+        // Wait for the pulse to go low again before reading the next bit
+        while (this->targetDevice->getGpio("pulse") == 1) {}
+    }
+
+    // Return true to indicate successful reading
+    return true;
+}
+
 void MatrixSimulation::update(double delta) {
     // If latch is low, there's nothing to process.
     if (this->targetDevice->getGpio("latch") == 0) {
@@ -33,7 +50,7 @@ void MatrixSimulation::update(double delta) {
                 int bitIndex = (row * COLS + col) * BITS_PER_LED;
                 bool red = targetDeviceInputData[bitIndex];
                 bool green = targetDeviceInputData[bitIndex+1];
-                char color = '';
+                char color = ' ';
                 if (red && green) {
                     color = 'Y';
                 } else if (green) {
