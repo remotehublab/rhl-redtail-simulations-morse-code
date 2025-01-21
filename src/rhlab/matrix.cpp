@@ -7,27 +7,44 @@ using namespace std;
 using namespace RHLab::LEDMatrix;
 
 void MatrixSimulation::initialize(){
-    this->targetDevice->initializeSimulation({}, {"latch", "pulse", "data"});
+    this->targetDevice->initializeSimulation({}, {"latch", "pulse", "green", "red"});
 
     setReportWhenMarked(true);
 }
 
 void MatrixSimulation::update(double delta) {
-    if (this->targetDevice->getGpio("latch") == 0){
+    // If latch is low, there's nothing to process.
+    if (this->targetDevice->getGpio("latch") == 0) {
         return;
     }
 
-    // if latch is one, then wait until it becomes 0 and then start waiting for bits
+    // Number of bits to read from the device
     int bitsNumber = COLS * ROWS * BITS_PER_LED;
     bool targetDeviceInputData[bitsNumber];
 
+    // Wait for latch to become 0
+    while (this->targetDevice->getGpio("latch") == 1) {}
 
+    // Process the received data and update the matrix
     if (readSerialCommunication(targetDeviceInputData, bitsNumber)) {
-
-        // if we receive any communication, then we do this
-        this->mState.setLed(0, 0, 'R');
-
-        // and everything else
+        for (int row = 0; row < ROWS; ++row) {
+            for (int col = 0; col < COLS; ++col) {
+                // Map the received data to LED matrix states
+                int bitIndex = (row * COLS + col) * BITS_PER_LED;
+                bool red = targetDeviceInputData[bitIndex];
+                bool green = targetDeviceInputData[bitIndex+1];
+                char color = '';
+                if (red && green) {
+                    color = 'Y';
+                } else if (green) {
+                    color = 'G';
+                } else if (red) {
+                    color = 'R';
+                } else {
+                    color = 'B';
+                }
+                this->mState.setLed(row, col, color);
+            }
+        }
     }
-
 }

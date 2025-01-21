@@ -19,8 +19,25 @@ namespace RHLab::LEDMatrix {
         return true;
     }
 
+    bool MatrixSimulation::readSerialCommunication(bool buffer, int bits) {
+        for (int i = 0; i < bits; i += 2) {
+            // Wait for a rising edge on the pulse GPIO
+            while (this->targetDevice->getGpio("pulse") == 0) {}
+
+            // Read the data bit when the pulse is high
+            bufferGreen[i] = this->targetDevice->getGpio("red");
+            bufferRed[i+1] = this->targetDevice->getGpio("green");
+
+            // Wait for the pulse to go low again before reading the next bit
+            while (this->targetDevice->getGpio("pulse") == 1) {}
+        }
+
+        // Return true to indicate successful reading
+        return true;
+    }
+
     
-    const int INPUTS = 3; // Latch, Pulse and "data out" (from the target device to the simulation)
+    const int INPUTS = 4; // Latch, Pulse and data Green, data Red (from the target device to the simulation)
     const int OUTPUTS = 0; // No need for any data in
 
     const int COLS = 16;
