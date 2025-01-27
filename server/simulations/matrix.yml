@@ -1,7 +1,7 @@
 name: Parking
 description: This is a simulation of a LED Matrix
 iframe:
-  url: https://ll-static-apps.s3.eu-central-1.amazonaws.com/simulations/parking/index.html
+  url: "matrix/matrix.html"
   height: 500
 gpios:
   sim2dut:

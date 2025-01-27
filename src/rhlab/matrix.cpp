@@ -13,18 +13,23 @@ void MatrixSimulation::initialize(){
 }
 
 bool MatrixSimulation::readSerialCommunication(bool buffer[], int bits) {
-    for (int i = 0; i < bits; i += 2) {
-        // Wait for a rising edge on the pulse GPIO
-        while (this->targetDevice->getGpio("pulse") == 0) {}
+    try {
+        for (int i = 0; i < bits; i += 2) {
+            // Wait for a rising edge on the pulse GPIO
+            while (this->targetDevice->getGpio("pulse") == 0) {}
 
-        // Read the data bit when the pulse is high
-        buffer[i] = this->targetDevice->getGpio("red");
-        buffer[i+1] = this->targetDevice->getGpio("green");
+            // Read the data bit when the pulse is high
+            buffer[i] = this->targetDevice->getGpio("red");
+            buffer[i+1] = this->targetDevice->getGpio("green");
 
-        // Wait for the pulse to go low again before reading the next bit
-        while (this->targetDevice->getGpio("pulse") == 1) {}
+            // Wait for the pulse to go low again before reading the next bit
+            while (this->targetDevice->getGpio("pulse") == 1) {}
+        }
+    } catch (exception e) {
+        // TODO: add some form of exception dump or handling
+        return false;
     }
-
+    
     // Return true to indicate successful reading
     return true;
 }
