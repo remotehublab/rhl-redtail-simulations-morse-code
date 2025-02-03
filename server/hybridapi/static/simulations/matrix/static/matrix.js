@@ -9,7 +9,7 @@ kaboom({
 
 // Constants
 const GRID_PIXEL_DIMENSION = 320
-const GRID_SIZE = 3; // Number of pixels in each row and column
+const GRID_SIZE = 16; // Number of pixels in each row and column
 const PIXEL_SIZE = Math.floor(GRID_PIXEL_DIMENSION / GRID_SIZE); // Size of each pixel
 const BORDER_WIDTH = 4; // Thickness of the border
 const DISPLAY_OFFSET = BORDER_WIDTH; // Offset the grid inside the border
@@ -76,3 +76,23 @@ onKeyPress("enter", () => {
         alert(`Invalid input! Ensure it is in the ${GRID_SIZE}x${GRID_SIZE} format.`);
     }
 });
+
+window.addEventListener("message", (event) => {
+
+    console.log(event.data.value);
+    if (event.source != parent) {
+        console.log("Message from somewhere other than the parent window", event);
+        return;
+    }
+
+    if(event.data.messageType == "sim2web"){
+        var message = event.data.value; // GGGGGGGGGGGYYYYR:RRRRR...
+        console.log("sim2web message received: ", message);
+        const rows = message ? message.split(":") : [];
+        if (rows.length === GRID_SIZE && rows.every(row => row.length === GRID_SIZE)) {
+            drawGrid(message);
+        } else {
+            alert(`Invalid input! Ensure it is in the ${GRID_SIZE}x${GRID_SIZE} format.`);
+        }
+    }
+}, false);

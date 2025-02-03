@@ -72,6 +72,6 @@ void MatrixSimulation::update(double delta) {
             }
         }
         this->log() << "Reporting:" << this->mState.serialize() << endl;
-        reportUpdate();
+        requestReportState();
     }
 }
