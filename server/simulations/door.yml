@@ -1,7 +1,7 @@
 name: Door
 description: This is a door simulation
 iframe:
-  url: door/index.html
+  url: https://ll-static-apps.s3.eu-central-1.amazonaws.com/simulations/door/index.html
   height: 700
 gpios:
   sim2dut:
