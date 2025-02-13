@@ -12,3 +12,23 @@ gpios:
     # FPGA outputs
     # number: 7
     labels: [ latch, pulse, green, red ]
+
+serial-out:
+  matrix-binary:
+    name: Matrix binary
+    # We could assume that this is optional if there is a "latch". But I prefer explicit than implicit
+    latch: 0 # it could also be the label that we use for dut2sim (e.g., latch: latch)
+    pulse: 1 # it could be the label that we use for dut2sim (e.g., pulse: pulse)
+    # either inputs or outputs MUST be present
+    outputs: [ 2, 3] # optional (by default none). We could also say [green, red]
+    inputs: [] # optional (by default none)
+    size: 512
+    samples:
+      # Files must have the following format: "01001001" (or whatever)
+      startup_image: 
+        file: startup.txt
+        name: Startup image
+      house: 
+        file: house.txt
+        name: House
+  
