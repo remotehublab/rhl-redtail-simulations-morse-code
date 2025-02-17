@@ -10,9 +10,9 @@
 aws s3 sync --region eu-central-1 door s3://ll-static-apps/simulations/door
 
 
-aws s3 cp --region eu-central-1 door/Build/UnityDoor.data.gz s3://ll-static-apps/simulations/door/Build/UnityDoor.data.gz --content-encoding gzip --metadata-directive REPLACE
-aws s3 cp --region eu-central-1 door/Build/UnityDoor.framework.js.gz s3://ll-static-apps/simulations/door/Build/UnityDoor.framework.js.gz --content-encoding gzip --metadata-directive REPLACE
-aws s3 cp --region eu-central-1 door/Build/UnityDoor.wasm.gz s3://ll-static-apps/simulations/door/Build/UnityDoor.wasm.gz --content-encoding gzip --metadata-directive REPLACE
+aws s3 cp --region eu-central-1 door/Build/UnityDoorDeusto.data.gz s3://ll-static-apps/simulations/door/Build/UnityDoorDeusto.data.gz --content-encoding gzip --metadata-directive REPLACE
+aws s3 cp --region eu-central-1 door/Build/UnityDoorDeusto.framework.js.gz s3://ll-static-apps/simulations/door/Build/UnityDoorDeusto.framework.js.gz --content-encoding gzip --metadata-directive REPLACE
+aws s3 cp --region eu-central-1 door/Build/UnityDoorDeusto.wasm.gz s3://ll-static-apps/simulations/door/Build/UnityDoorDeusto.wasm.gz --content-encoding gzip --metadata-directive REPLACE
 
 
 # Invalidate cloudfront cache.
