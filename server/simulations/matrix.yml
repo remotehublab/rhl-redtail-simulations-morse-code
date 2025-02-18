@@ -1,8 +1,10 @@
-name: Parking
+name: Matrix
 description: This is a simulation of a LED Matrix
+
 iframe:
   url: "matrix/matrix.html"
   height: 500
+
 gpios:
   sim2dut:
     # FPGA inputs
@@ -13,22 +15,24 @@ gpios:
     # number: 7
     labels: [ latch, pulse, green, red ]
 
-serial-out:
-  matrix-binary:
-    name: Matrix binary
-    # We could assume that this is optional if there is a "latch". But I prefer explicit than implicit
-    latch: 0 # it could also be the label that we use for dut2sim (e.g., latch: latch)
-    pulse: 1 # it could be the label that we use for dut2sim (e.g., pulse: pulse)
-    # either inputs or outputs MUST be present
-    outputs: [ 2, 3] # optional (by default none). We could also say [green, red]
-    inputs: [] # optional (by default none)
-    size: 512
-    samples:
-      # Files must have the following format: "01001001" (or whatever)
-      startup_image: 
-        file: startup.txt
-        name: Startup image
-      house: 
-        file: house.txt
-        name: House
+serial-dut2sim:
+  # A serial communication scheme with numbered latch, pulse, inupt channels, and output channels
+  # There must be a "gpios" section to use this!
+
+  # Define Data
+  latch: 0 # Start sending data
+  pulse: 1 # Output data is valid
+  outputs: [2, 3] # List of GPIO output channels (optional)
+  inputs: [] # List of GPIO input channels (optional)
+  num_pulses: 216 # The number of pulses per latch
+
+  # Example File Inputs
+  samples:
+    # Files must have the following format: "01001001" (or whatever)
+    startup_image: 
+      file: startup.txt
+      name: Startup image
+    house: 
+      file: house.txt
+      name: House
   
