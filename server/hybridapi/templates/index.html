@@ -7,6 +7,60 @@
     <link href="{{ url_for('static', filename='vendor/bootstrap-5.2.3/css/bootstrap.min.css') }}" rel="stylesheet">
   </head>
   <body>
+    <script>
+        // Inject Flask config values into JavaScript
+        window.CONFIG = {
+            SIMULATION_CONFIG: {
+                gpios: {
+                    dut2sim: {
+                        labels: {{ config['SIMULATION_CONFIG']['gpios']['dut2sim'].get('labels', [])  | tojson }}
+                    }
+                },
+                serial: {
+                    dut2sim: {
+                        num_pulses: {{ config['SIMULATION_CONFIG']['serial']['dut2sim'].get('num_pulses', 0) }},
+                        outputs: {{ config['SIMULATION_CONFIG']['serial']['dut2sim'].get('outputs', []) | tojson }}
+                    }
+                }
+            }
+        };
+        // Define variables for text input
+        const numBitsdut2Sim = 
+            window?.CONFIG.SIMULATION_CONFIG.serial?.dut2sim?.num_pulses * 
+            window?.CONFIG.SIMULATION_CONFIG.serial?.dut2sim?.outputs?.length || 0;
+
+        function dut2SimSendSerial(serialText) {
+            var $latch;
+            var $pulse;
+            var $outputs = {}
+            for (var i = 0; i < window.CONFIG.SIMULATION_CONFIG.gpios.dut2sim.labels.length; i++) {
+                var gpio = window.CONFIG.SIMULATION_CONFIG.gpios.dut2sim.labels[i].trim();
+                if (gpio === "latch") {
+                    $latch = $("gpios-dut2sim-" + i);
+                } else if (gpio === "pulse") {
+                    $pulse = $("gpios-dut2sim-" + i);
+
+                } else {
+                    $outputs[gpio] = $("gpios-dut2sim-" + i);
+                }
+            }
+            setTimeout(function () { $latch.prop("checked", true).trigger("change"); }, 50); // 50 ms
+            setTimeout(function () { $pulse.prop("checked", false).trigger("change"); }, 100); // Set pulse as low
+            setTimeout(function () { $latch.prop("checked", false).trigger("change"); }, 100); // 100 ms
+            for (var i = 0; i < window.CONFIG.SIMULATION_CONFIG.serial.dut2sim.num_pulses; i++) {
+                var timeBetween = 150; // ms
+                var outputCount = 0;
+                for (const outputName in $outputs) {
+                    var output = $outputs[outputName];
+                    var checked = serialText.charAt(i * $outputs.length + outputCount) === '1' ? true : false;
+                    setTimeout(function () { output.prop("checked", true).trigger("change"); }, i * timeBetween + 15);
+                    console.log(i, ": ", outputName, ": ", checked);
+                }
+                setTimeout(function () { $pulse.prop("checked", true).trigger("change"); }, i * timeBetween + 15); // after putting the value, communicate that there is a new value
+                setTimeout(function () { $pulse.prop("checked", false).trigger("change"); }, i * timeBetween + 45); // some time later, finish and in the next you will show the next value
+            }
+        }
+    </script>
     <div class="container-fluid">
         <h2>LabsLand Simulation Runner</h2>
         
@@ -31,7 +85,7 @@
                         <h3>GPIOs</h3>
 
                         <strong>Simulation to Device Under Test:</strong>
-                        {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']%}
+                        {% if not config['SIMULATION_CONFIG']['gpios'].get('sim2dut') %}
                             No GPIO in this direction<br><br>
                         {% else %}
                             <br><small><tt>{{ config['BINARY_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['file'] }}</tt></small><br>
@@ -64,7 +118,7 @@
                         {% endif %}
 
                         <strong>Device Under Test to Simulation:</strong>
-                        {% if config['SIMULATION_CONFIG']['gpios']['dut2sim']%}
+                        {% if not config['SIMULATION_CONFIG']['gpios'].get('sim2dut') %}
                             No GPIO in this direction
                         {% else %}
                             <small><tt>{{ config['BINARY_DIRECTORY'] }}{{ sep }}{{ config['SIMULATION_CONFIG']['gpios']['dut2sim']['file'] }}</tt></small>
@@ -103,39 +157,58 @@
                   <div class="collapse multi-collapse" id="text-collapse" data-bs-parent=".content-container">
                     <div class="card card-body">
                         <h3>Text Input</h3>
-                        {% if config['SIMULATION_CONFIG']['serial-dut2sim']['dut2sim']%}
-                            No GPIO in this direction
+                        {% if not config['SIMULATION_CONFIG'].get('serial') %}
+                            No Serial Communication Protocol
                         {% else %}
-                            <strong>Simulation to Device Under Test:</strong>                            <br>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        {% for n in range(config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']) %}
-                                        <th>gpio-sim2dut-{{ n }}
-                                        {% if config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'] %}
-                                            <br>
-                                            <small><tt>({{ config['SIMULATION_CONFIG']['gpios']['sim2dut']['labels'][n] }})</tt></small>
-                                        {% endif %}
-                                        </th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        {% for n in range(config['SIMULATION_CONFIG']['gpios']['sim2dut']['number']) %}
-                                        <td id="gpios-sim2dut-{{ n }}">
-                                            <div class="form-check gpio-sim2dut">
-                                                <input class="form-check-input" disabled type="checkbox" id="gpios-sim2dut-{{ n }}" data-number="{{ n }}">
-                                                <label class="form-check-label" for="gpios-sim2dut-{{ n }}" id="gpios-sim2dut-{{ n }}-label">0</label>
-                                            </div>
-                                        </td>
-                                        {% endfor %}
-                                    </tr>
-                                </tbody>
-                            </table>
+                            {% if config['SIMULATION_CONFIG']['serial'].get('dut2sim') %}
+                                <br>
+                                <div class="row-md-6">
+                                     <!-- Submit Button -->
+                                    <div class="input-group mb-3">
+                                        <button class="btn btn-primary" type="button" id="button-send-dut2sim">Send dut2sim</button>
+                                        <input type="text" class="form-control" id="dut2sim-input"
+                                                aria-label="Sizing example input" 
+                                                aria-describedby="button-send-dut2sim">
+                                        <div id="dut2sim-invalid-message" class="invalid-feedback"></div>
+                                    </div>
+                                    
+                                </div>
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        // Get the button and input field
+                                        const sendButton = document.getElementById("button-send-dut2sim");
+                                        const dut2simInputField = document.getElementById("dut2sim-input");
+                                        const errorMessageDiv = document.getElementById("dut2sim-invalid-message");
+
+                                        // Add event listener to the button
+                                        sendButton.addEventListener("click", function () {
+                                            // Store the input value in a constant
+                                            const dut2simInput = dut2simInputField.value.trim();
+                                            // Regular expression to check for only 1s and 0s
+                                            const binaryRegex = /^[01]+$/;
+
+                                            if (!binaryRegex.test(dut2simInput)) {
+                                                dut2simInputField.classList.remove("is-valid"); // Remove success style
+                                                dut2simInputField.classList.add("is-invalid"); // Apply error style
+                                                errorMessageDiv.textContent = ` Expected only 1s and 0s, received content containing other characteres`;
+                                            } else if (dut2simInput.length !== numBitsdut2Sim) {
+                                                dut2simInputField.classList.remove("is-valid"); // Remove success style
+                                                dut2simInputField.classList.add("is-invalid"); // Apply error style
+                                                errorMessageDiv.textContent = ` Received ${dut2simInput.length} characters.\nExpected ${numBitsdut2Sim} characters`;
+                                            } else {
+                                                dut2simInputField.classList.remove("is-invalid"); // Remove error style
+                                                dut2simInputField.classList.add("is-valid"); // Apply success style
+                                                errorMessageDiv.textContent = ""; // Clear error message
+                                                dut2SimSendSerial(dut2simInput);
+                                            }
+                                        });
+                                    });
+                                </script>                                
+                            {% endif %}
                         {% endif %}
                     </div>
-                  </div>
+                </div>
+                
 
             </div>
             <div class="col">
