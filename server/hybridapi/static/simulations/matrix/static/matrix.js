@@ -1,4 +1,4 @@
-import kaboom from "https://unpkg.com/kaboom/dist/kaboom.mjs";
+import kaboom from "https://cdn.jsdelivr.net/npm/kaboom@3000.1.15/dist/kaboom.mjs";
 
 kaboom({
     width: 360, // Adjust to include border
