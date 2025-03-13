@@ -26,12 +26,12 @@ serial:
     # Example File Inputs
 
     sample_input:
-      url: matrix/samples
+      url: matrix/
       samples:
       # Files must have the following format: "01001001" (or whatever)
         startup_image: 
-          file: startup.txt
-          name: Startup image
+          file: static.txt
+          name: Static
         bee: 
           file: bee.txt
           name: Bee

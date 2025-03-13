@@ -442,8 +442,7 @@
                                 if (sampleFile.startsWith("http://") || sampleFile.startsWith("https://")) {
                                   url = sampleFile;
                                 } else {
-                                  url = "{{ samples_url }}/" + sampleFile;
-                                  console.log('iframe:  {{iframe_src}}');
+                                  url = "{{ samples_url }}" + sampleFile;
                                   console.log('sample: ', url);
                                 }
                     
