@@ -427,8 +427,6 @@
                         
                         <script>
                           document.addEventListener("DOMContentLoaded", function () {
-                            // Define the expected number of bits (adjust as needed)
-                            const numBitsdut2Sim = 480;
                             // Get all sample buttons and the error message element
                             const sampleButtons = document.querySelectorAll("button[id^='button-sample-send-dut2sim-']");
                             const errorMessageDiv = document.getElementById("dut2sim-sample-invalid-message");
@@ -456,11 +454,14 @@
                                   .then(text => {
                                     const content = text.trim();
                                     // Regular expression to check for only 1s and 0s
+                                    console.log(content);
                                     const binaryRegex = /^[01]+$/;
                                     if (!binaryRegex.test(content)) {
+                                      console.log("other chars");
                                       errorMessageDiv.textContent = "Expected only 1s and 0s, but received content with other characters.";
                                     } else if (content.length !== numBitsdut2Sim) {
-                                      errorMessageDiv.textContent = `Received ${content.length} characters. Expected ${numBitsdut2Sim} characters.`;
+                                        console.log("wrong length: ", content.length);
+                                        errorMessageDiv.textContent = `Received ${content.length} characters. Expected ${numBitsdut2Sim} characters.`;
                                     } else {
                                       errorMessageDiv.textContent = "";
                                       // Process the valid content
@@ -469,6 +470,7 @@
                                     }
                                   })
                                   .catch(error => {
+                                    console.log("ERROR");
                                     errorMessageDiv.textContent = "Error loading file: " + error.message;
                                   });
                               });
