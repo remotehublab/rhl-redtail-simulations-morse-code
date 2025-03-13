@@ -7,7 +7,7 @@
  void WatertankDeustoSimulation::initialize() {
  
      this->targetDevice->initializeSimulation(
-             {"lowSensorActive", "midSensorActive", "highSensorActive"},
+             {"lowSensorActive", "midSensorActive", "highSensorActive", "pump1Hot", "pump2Hot"},
              {"pump1", "pump2"}
      );
  
@@ -38,9 +38,9 @@
  
      double addedWater = 0;
 
-     if (mState.pump1Temperature>=70) mState.pump1Hot = true;
+     if (mState.pump1Temperature>=85) mState.pump1Hot = true;
      else mState.pump1Hot = false;
-     if (mState.pump2Temperature>=70) mState.pump2Hot = true;
+     if (mState.pump2Temperature>=85) mState.pump2Hot = true;
      else mState.pump2Hot = false;
 
      if (mState.pump1Temperature>=100) mState.pump1Broken = true;
@@ -113,7 +113,8 @@
      this->targetDevice->setGpio("lowSensorActive", mState.lowSensorActive);
      this->targetDevice->setGpio("midSensorActive", mState.midSensorActive);
      this->targetDevice->setGpio("highSensorActive", mState.highSensorActive);
-
+     this->targetDevice->setGpio("pump1Hot", mState.pump1Hot);
+     this->targetDevice->setGpio("pump2Hot", mState.pump2Hot);
      
      this->log() << "of: " << request.outputFlow << "; err: " << request.makeError << "; res: " << request.resetError << std::endl;
 
