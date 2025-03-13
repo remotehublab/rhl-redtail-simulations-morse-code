@@ -25,14 +25,16 @@ serial:
     num_pulses: 256 # The number of pulses per latch
     # Example File Inputs
 
-    samples:
+    sample_input:
+      url: matrix/samples
+      samples:
       # Files must have the following format: "01001001" (or whatever)
-      startup_image: 
-        file: startup.txt
-        name: Startup image
-      house: 
-        file: house.txt
-        name: House
+        startup_image: 
+          file: startup.txt
+          name: Startup image
+        bee: 
+          file: bee.txt
+          name: Bee
   
   sim2dut:
     latch: null
