@@ -12,6 +12,7 @@
 #include "rhlab/butterfly.h"
 #include "rhlab/matrix.h"
 #include "deusto/door.h"
+#include "deusto/watertankDeusto.h"
 #include "labsland/simulations/utils/communicatorfiles.h"
 #include "labsland/simulations/targetdevicefiles.h"
 #include "labsland/utils/timemanagerstd.h"
@@ -33,12 +34,12 @@ class ConcreteSimulationRunner : public SimulationRunner {
         ConcreteSimulationRunner(const string & config, const string & mode): configuration(config), mode(mode) {}
 
         void run() {
-            auto timeManager = new LabsLand::Utils::TimeManagerStd();
-            LabsLand::Utils::TargetDevice * targetDevice = 0;
-            SimulationCommunicator<OutputDataType, InputDataType> * communicator;
+            shared_ptr<LabsLand::Utils::TimeManager> timeManager = make_shared<LabsLand::Utils::TimeManagerStd>();
+            shared_ptr<LabsLand::Utils::TargetDevice> targetDevice = nullptr;
+            shared_ptr<SimulationCommunicator<OutputDataType, InputDataType>> communicator = nullptr;
             if (configuration == "files") {
-                targetDevice = new LabsLand::Utils::TargetDeviceFiles(20, 10);
-                communicator = new SimulationCommunicatorFiles<OutputDataType, InputDataType>("output-messages.txt", "input-messages.txt");
+                targetDevice = make_shared<LabsLand::Utils::TargetDeviceFiles>(20, 10);
+                communicator = make_shared<SimulationCommunicatorFiles<OutputDataType, InputDataType>>("output-messages.txt", "input-messages.txt");
             } else {
                 // Add here other implementations
                 cerr << "Unsupported configuration: " << configuration << endl;
@@ -112,7 +113,9 @@ int main(int argc, char * argv[]) {
         runner = new ConcreteSimulationRunner<STM32_WB55RG_ButterflySimulation, ButterflyData, ButterflyRequest>(configuration, mode);
     } else if (simulation == "door") {
         runner = new ConcreteSimulationRunner<DoorSimulation, DoorData, DoorRequest>(configuration, mode);
-    } else {
+    } else if (simulation == "watertankDeusto") {
+        runner = new ConcreteSimulationRunner<WatertankDeustoSimulation, WatertankDeustoData, WatertankDeustoRequest>(configuration, mode);
+    }else {
         cerr << "Invalid simulation: '" << simulation << "'. Use a valid name" << endl;
         return 2;
     }

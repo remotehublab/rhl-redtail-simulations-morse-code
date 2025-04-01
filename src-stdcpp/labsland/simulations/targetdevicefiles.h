@@ -58,14 +58,14 @@ namespace LabsLand::Utils {
             /*
              * Does it support this number of inputs and outputs?
              */
-            virtual bool checkSimulationSupport(TargetDeviceConfiguration * configuration);
+            virtual bool checkSimulationSupport(std::shared_ptr<TargetDeviceConfiguration> configuration);
 
             /*
              * Allocate a set of outputs and inputs, in whichever order the device defines.
              *
              * It returns true/false if possible.
              */
-            virtual bool initializeSimulation(TargetDeviceConfiguration * configuration);
+            virtual bool initializeSimulation(std::shared_ptr<TargetDeviceConfiguration> configuration);
 
             /*
              * Reset to the default state of the target device (e.g., all GPIOs available for regular use)

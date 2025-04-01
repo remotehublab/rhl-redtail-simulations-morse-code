@@ -53,7 +53,7 @@ namespace LabsLand::Protocols {
 
     class I2CSlaveConfiguration {
          // there can be up to 2 I2C slaves. You can initialize one, the other or both.
-        const i2cSlaveCallback * callback = 0;
+        const i2cSlaveCallback * callback = nullptr;
         const unsigned int address = 0;
 
         public:

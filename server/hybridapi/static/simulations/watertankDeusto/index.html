@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | DoorDeusto</title>
+    <title>Unity WebGL Player | WatertankDeusto</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
@@ -20,7 +20,7 @@
       <div id="unity-footer">
         <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">DoorDeusto</div>
+        <div id="unity-build-title">WatertankDeusto</div>
       </div>
     </div>
     <script>
@@ -56,14 +56,14 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/UnityDoorDeusto.loader.js";
+      var loaderUrl = buildUrl + "/WatertankDeusto.loader.js";
       var config = {
-        dataUrl: buildUrl + "/UnityDoorDeusto.data.gz",
-        frameworkUrl: buildUrl + "/UnityDoorDeusto.framework.js.gz",
-        codeUrl: buildUrl + "/UnityDoorDeusto.wasm.gz",
+        dataUrl: buildUrl + "/WatertankDeusto.data.gz",
+        frameworkUrl: buildUrl + "/WatertankDeusto.framework.js.gz",
+        codeUrl: buildUrl + "/WatertankDeusto.wasm.gz",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Giovanna",
-        productName: "DoorDeusto",
+        productName: "WatertankDeusto",
         productVersion: "0.1",
         showBanner: unityShowBanner,
       };
@@ -111,13 +111,12 @@
           };
           function handleMessage(message) {
           const segments = message.split('&');
-          if (segments.length < 2) {
+          if (segments.length < 15) {
+            console.log("Mensaje no reconocido:", message);
             return;
           }
-          unityInstance.SendMessage("enviroment", "UpdateDoor",message);
+          unityInstance.SendMessage("watertank", "UpdateWatertank", message);
         }
-
-        // Escucha los mensajes enviados desde el servidor
         window.addEventListener("message", function (event) {
           if (event.data.messageType == "sim2web") {
             handleMessage(event.data.value);
@@ -130,15 +129,14 @@
       };
       document.body.appendChild(script);
     </script>
-      <script>
-        function handleMessageFromUnity(textMessage) {
-          console.log("mes unity: "+ textMessage);
-          parent.postMessage({
-            messageType: "web2sim",
-            version: "1.0",
-            value: textMessage
-          }, '*');
-        }
-      </script>
+    <script>
+      function handleMessageFromUnity(textMessage) {
+        parent.postMessage({
+          messageType: "web2sim",
+          version: "1.0",
+          value: textMessage
+        }, '*');
+      }
+    </script>
   </body>
 </html>

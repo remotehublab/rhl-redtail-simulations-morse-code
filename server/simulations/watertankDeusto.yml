@@ -1,0 +1,10 @@
+name: Watertank
+description: This is a watertank simulation
+iframe:
+  url: https://static-apps.labsland.com/simulations/watertankDeusto/index.html
+  height: 700
+gpios:
+  sim2dut:
+    labels: [ lowSensor, midSensor, highSensor, pump1Hot, pump2Hot ]
+  dut2sim:
+    labels: [ pump1, pump2 ]
