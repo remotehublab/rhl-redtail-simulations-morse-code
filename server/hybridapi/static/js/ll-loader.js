@@ -38,6 +38,7 @@ function requestWeb2SimMessages() {
     $.get(window.BASE_URL + "/messages/web2sim/?previous_response=" + encodeURIComponent(window.WEB2SIM_STATUS)).done(function (data) {
         window.WEB2SIM_STATUS = data.value;
         $("#web2sim-messages").val(data.value);
+        $("#web2sim-messages").trigger('input');
         requestWeb2SimMessages();
     });
 }
