@@ -29,7 +29,7 @@ serial:
       url: matrix/
       samples:
       # Files must have the following format: "01001001" (or whatever)
-        startup_image: 
+        static: 
           file: static.txt
           name: Static
         bee: 
