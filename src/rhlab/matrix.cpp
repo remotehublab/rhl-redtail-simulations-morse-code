@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 #include "matrix.h"
 
 using namespace std;
@@ -12,19 +13,17 @@ void MatrixSimulation::initialize(){
     setReportWhenMarked(true);
 }
 
-bool MatrixSimulation::readSerialCommunication(bool buffer[], int bits) {
+bool MatrixSimulation::readSerialCommunication(vector<vector<bool>>& buffer, vector<string>& gpios) {
     try {
-        for (int i = 0; i < bits; i += 2) { // reading 2 at a time
+        for (int i = 0; i < buffer.size(); i++) { // reading 2 at a time
             // Wait for a rising edge on the pulse GPIO
             while (this->targetDevice->getGpio("pulse") == 0) {}
 
             // Read the data bit when the pulse is high
-            buffer[i] = this->targetDevice->getGpio("red");
-            buffer[i+1] = this->targetDevice->getGpio("green");
-
-            this->log() << "buffer[" << i << "] = " << ((buffer[i] == true)?"1":"0") << "; // red" << endl;
-            this->log() << "buffer[" << i+1 << "] = " << ((buffer[i+1] == true)?"1":"0") << "; // green" << endl;
-
+            for (int j = 0; j < gpios.size(); j++) {
+                buffer[i][j] = this->targetDevice->getGpio(gpios[j]);
+                this->log() << "buffer[" << i << "][ " << j << "] = " << ((buffer[i][j] == true)?"1":"0") << "; // " << gpios[j] << endl;
+            }
             // Wait for the pulse to go low again before reading the next bit
             while (this->targetDevice->getGpio("pulse") == 1) {}
         }
@@ -42,22 +41,23 @@ void MatrixSimulation::update(double delta) {
     if (this->targetDevice->getGpio("latch") == 0) {
         return;
     }
-
-    // Number of bits to read from the device
-    int bitsNumber = COLS * ROWS * BITS_PER_LED;
-    bool targetDeviceInputData[bitsNumber];
+    
+    // Input GPIO channel names
+    vector<string> inputGPIOs = {"green", "red"};
+    // 2D Vector of ROWS * COLS x BITS_PER_LED (inputGPIOs.size()), bools for input data
+    vector<vector<bool>> targetDeviceInputData(ROWS * COLS, vector<bool>(BITS_PER_LED, false));
 
     // Wait for latch to become 0
     while (this->targetDevice->getGpio("latch") == 1) {}
 
     // Process the received data and update the matrix
-    if (readSerialCommunication(targetDeviceInputData, bitsNumber)) {
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
+    if (readSerialCommunication(targetDeviceInputData, inputGPIOs)) {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
                 // Map the received data to LED matrix states
-                int bitIndex = (row * COLS + col) * BITS_PER_LED;
-                bool red = targetDeviceInputData[bitIndex];
-                bool green = targetDeviceInputData[bitIndex+1];
+                int bitIndex = row * COLS + col;
+                bool green = targetDeviceInputData[bitIndex][0];
+                bool red = targetDeviceInputData[bitIndex][1];
                 char color = ' ';
                 if (red && green) {
                     color = 'Y';
