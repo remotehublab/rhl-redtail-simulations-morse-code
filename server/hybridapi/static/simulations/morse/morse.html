@@ -1,0 +1,18 @@
+<html>
+<body>
+Hello there! MORSE code
+<pre id="code"></pre>
+<script>
+
+    window.addEventListener("message", (event) => {
+        console.log(event.data.value);
+        if (event.source != parent) {
+            console.log("Message from somewhere other than the parent window", event);
+            return;
+        }
+        document.getElementById("code").innerText = event.data.value;
+    }
+    );
+</script>
+</body>
+</html>
