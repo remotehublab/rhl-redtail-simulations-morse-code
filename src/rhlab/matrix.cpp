@@ -20,7 +20,7 @@ bool MatrixSimulation::readSerialCommunication(vector<vector<bool>>& buffer, vec
             while (this->targetDevice->getGpio("pulse") == 0) {}
 
             // Read the data bit when the pulse is high
-            for (int j = 0; j < gpios.size(); j++) {
+            for (int j = 0; j < buffer[i].size(); j++) {
                 buffer[i][j] = this->targetDevice->getGpio(gpios[j]);
                 this->log() << "buffer[" << i << "][ " << j << "] = " << ((buffer[i][j] == true)?"1":"0") << "; // " << gpios[j] << endl;
             }
