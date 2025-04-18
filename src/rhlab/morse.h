@@ -49,11 +49,13 @@ namespace RHLab::Morse {
 
     };
 
+
     class MorseSimulation : public Simulation<MorseData, MorseRequest> {
         public:
             MorseSimulation() = default;
             void update(double delta) override;
             void initialize() override;
+            void interpretSignal(bool isHigh, double duration);
 
     };
 }
