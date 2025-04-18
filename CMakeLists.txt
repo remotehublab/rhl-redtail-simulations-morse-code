@@ -18,5 +18,4 @@ add_executable(hybridapi
     src/rhlab/butterfly.cpp
     src/rhlab/matrix.cpp
     src/rhlab/morse.cpp
-
 )
