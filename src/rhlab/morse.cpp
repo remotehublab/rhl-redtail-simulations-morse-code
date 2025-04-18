@@ -24,13 +24,19 @@ void MorseSimulation::update(double delta) {
         this->mState.addCharacter('b');
     }
 
+    // capture the time when the signal was high(1) and low(0)
     clock_t startTime = this->timeManager->getAbsoluteTime();
+    bool signalWasHigh = this->targetDevice->getGpio("morseSignal") == 1;
+    double signalDuration = 0;
 
-    while ( this->targetDevice->getGpio("morseSignal") == 1) ;
-
-    clock_t endTime = this->timeManager->getAbsoluteTime();
-
-    this->log() << "Was 1 for " << (endTime - startTime) << endl;
+    // wait until the signal changes or a timeout occurs
+    const double MAX_WAIT_TIME = 1.0; // in seconds
+    while ((this->targetDevice->getGpio("morseSignal") == 1) == signalWasHigh) {
+        signalDuration = (this->timeManager->getAbsoluteTime() - startTime) / CLOCKS_PER_SEC;
+        if (signalDuration > MAX_WAIT_TIME) break;
+    }
+    
+    this->log() << "Signal was " << (signalWasHigh ? "HIGH(1)" : "LOW(0)") << " for " << signalDuration << " seconds" << endl;
 
     requestReportState();
     if (this->targetDevice->getGpio("morseSignal") == 0) {

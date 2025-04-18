@@ -10,6 +10,7 @@
 using namespace std;
 
 namespace RHLab::Morse {
+    // fixed buffer size   
     const int BUFFER_SIZE = 200;
 
     // struct that receives the string; NOT USED FOR NOW
