@@ -11,13 +11,16 @@ void MorseSimulation::initialize(){
     setReportWhenMarked(true);
 }
 
-
+// Interpret the signal based on its duration
 void MorseSimulation::interpretSignal(bool isHigh, double duration) {
+
+    this->log() << "Interpreting signal: " << (isHigh ? "HIGH" : "LOW") << " with duration " << (duration * 1000) << " ms" << endl;
+    
     // Define time thresholds for dots, dashes, and spaces
-    const double DOT_THRESHOLD = 0.2;  // seconds
-    const double DASH_THRESHOLD = 0.5; // seconds
-    const double LETTER_SPACE = 0.7;   // seconds
-    const double WORD_SPACE = 1.5;     // seconds
+    const double DOT_THRESHOLD = 0.001;        // 1 millisecond
+    const double DASH_THRESHOLD = 0.0015;      // 1.5 milliseconds
+    const double LETTER_SPACE = 0.002;         // 2 milliseconds
+    const double WORD_SPACE = 0.004;           // 4 milliseconds
     
     if (isHigh) {
         // Signal was high (mark)
@@ -37,37 +40,47 @@ void MorseSimulation::interpretSignal(bool isHigh, double duration) {
 }
 
 
-// count for how long a particular signal is happening
+
 void MorseSimulation::update(double delta) {
-    // If latch is low, there's nothing to process.
-    this-> log() << "Checking morseSignal " << delta << " " << this->targetDevice->getGpio("morseSignal") << endl;
-    this->log() << this->timeManager->getAbsoluteTime() << endl;
-
-    if ( this->targetDevice->getGpio("morseSignal")  == 0 ) { 
-        this->mState.addCharacter('a');
-    } else {
-        this->mState.addCharacter('b');
-    }
-
-    // capture the time when the signal was high(1) and low(0)
-    clock_t startTime = this->timeManager->getAbsoluteTime();
-    bool signalWasHigh = this->targetDevice->getGpio("morseSignal") == 1;
-    double signalDuration = 0;
-
-    // wait until the signal changes or a timeout occurs
-    const double MAX_WAIT_TIME = 1.0; // in seconds
-    while ((this->targetDevice->getGpio("morseSignal") == 1) == signalWasHigh) {
-        signalDuration = (this->timeManager->getAbsoluteTime() - startTime) / CLOCKS_PER_SEC;
-        if (signalDuration > MAX_WAIT_TIME) break;
-    }
+    // Get current signal state
+    bool currentSignal = this->targetDevice->getGpio("morseSignal");
     
-    this->log() << "Signal was " << (signalWasHigh ? "HIGH(1)" : "LOW(0)") << " for " << signalDuration << " seconds" << endl;
-
-    // Interpret the signal based on duration
-    interpretSignal(signalWasHigh, signalDuration);
+    // Log the current state
+    this->log() << "Checking morseSignal " << delta << " " << currentSignal << endl;
     
-    requestReportState();
-    if (this->targetDevice->getGpio("morseSignal") == 0) {
+    // Static variables to persist between calls
+    static bool lastSignal = currentSignal;  // Initialize with current value
+    static clock_t lastTransitionTime = this->timeManager->getAbsoluteTime();
+    static bool initialized = false;
+    
+    // Get current timestamp
+    clock_t currentTime = this->timeManager->getAbsoluteTime();
+    
+    // First-time initialization
+    if (!initialized) {
+        lastSignal = currentSignal;
+        lastTransitionTime = currentTime;
+        initialized = true;
+        this->log() << "Initialized signal tracking" << endl;
         return;
     }
+    
+    // If signal changed, calculate duration and interpret
+    if (currentSignal != lastSignal) {
+        // Calculate duration in seconds
+        double duration = (currentTime - lastTransitionTime) / (double)CLOCKS_PER_SEC;
+        
+        // Log the duration
+        this->log() << "Signal was " << (lastSignal ? "HIGH(1)" : "LOW(0)") << " for " << duration << " seconds" << endl;
+        
+        // Interpret the previous signal based on its duration
+        interpretSignal(lastSignal, duration);
+        
+        // Update state tracking variables
+        lastSignal = currentSignal;
+        lastTransitionTime = currentTime;
+    }
+    
+    // Request state report to update the UI
+    requestReportState();
 }
