@@ -42,6 +42,20 @@ void MorseSimulation::interpretSignal(bool isHigh, double duration) {
 
 
 void MorseSimulation::update(double delta) {
+
+    MorseRequest userRequest;
+    bool requestWasRead = readRequest(userRequest);
+    if(requestWasRead) {
+        this->log() << "Updating speed to: " << userRequest.speed << " clearing: " << userRequest.clearing << endl;;
+        // do something with speed or clearing
+        if (userRequest.clearing) {
+            this->mState.clearBuffer();
+            this->log() << "Clearing buffer" << endl;
+            // Request state report to update the UI
+            requestReportState();
+        }
+    }
+
     // Get current signal state
     bool currentSignal = this->targetDevice->getGpio("morseSignal");
     
@@ -79,8 +93,8 @@ void MorseSimulation::update(double delta) {
         // Update state tracking variables
         lastSignal = currentSignal;
         lastTransitionTime = currentTime;
+        // Request state report to update the UI
+        requestReportState();
     }
     
-    // Request state report to update the UI
-    requestReportState();
 }

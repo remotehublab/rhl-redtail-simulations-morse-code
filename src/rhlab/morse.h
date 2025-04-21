@@ -13,9 +13,45 @@ namespace RHLab::Morse {
     // fixed buffer size   
     const int BUFFER_SIZE = 200;
 
-    // struct that receives the string; NOT USED FOR NOW
     struct MorseRequest : public BaseInputDataType {
+
+        // either 'N' for normal, 'S' for slow, 'F' for fast
+        char speed = 'N';
+        bool clearing = false;
+
+        // messages are like:
+        // "<SPEED>:<CLEARING>"
+        // where: 
+        // <SPEED> is a string such as "normal", "slow" or "fast"
+        // <CLEARING> is either 1 (clearing) or 0 (not clearing)
         bool deserialize(std::string const & input) {
+            if (input.size() > 1) {
+                size_t pos = input.find(':');
+                if (pos != string::npos) {
+                    string speed = input.substr(0, pos);
+                    string clearing = input.substr(pos + 1, input.size() - (pos + 1));
+
+                    if (speed == "normal") {
+                        this->speed = 'N';
+                    } else if (speed == "fast") {
+                        this->speed = 'F';
+                    } else if (speed == "slow") {
+                        this->speed = 'S';
+                    } else {
+                        return false;
+                    }
+
+                    if (clearing == "1") {
+                        this->clearing = true;
+                    } else if (clearing == "0") {
+                        this->clearing = false;
+                    } else {
+                        return false;
+                    }
+                    
+                    return true;
+                }
+            }
             return false;
         }
     };
@@ -32,13 +68,19 @@ namespace RHLab::Morse {
                 } 
             }
 
+            void clearBuffer() {
+                for (int i = 0; i < BUFFER_SIZE; i++)  
+                    buffer[i] = '\0';
+                lastPos = 0;
+            }
+
             void addCharacter(char c) {
                 buffer[lastPos] = c;
                 lastPos++;
-                if (lastPos >= BUFFER_SIZE - 1) {
+                if (lastPos >= BUFFER_SIZE - 2) {
                      lastPos = 0;
-                 }
-                buffer[BUFFER_SIZE - 1] = '\0';
+                }
+                buffer[lastPos + 1] = '\0';
             }
 
             string serialize() const {
