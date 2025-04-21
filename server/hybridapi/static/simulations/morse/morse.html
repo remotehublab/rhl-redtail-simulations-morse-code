@@ -220,6 +220,12 @@
     let fullText = "";
     let lastSignalState = false;
     
+    // Store received data globally for potential clearing
+    window.receivedMorseData = "";
+    
+    // Create array for tracking timers
+    window.morseTimers = [];
+    
     // Process incoming messages
     window.addEventListener("message", (event) => {
       // Check if the message is from the parent window
@@ -228,9 +234,30 @@
         return;
       }
       
+      // Check if it's a command message (like clear)
+      if (event.data.command === "clear") {
+        clearAllMessages();
+        return;
+      }
+      
+      // If it's a clear command directly
+      if (event.data.clear === true) {
+        clearAllMessages();
+        return;
+      }
+      
+      // Check if value property exists before trying to access it
+      if (!event.data.hasOwnProperty('value')) {
+        console.log("Received message without 'value' property:", event.data);
+        return;
+      }
+      
       // Process the received data
       const receivedData = event.data.value;
       console.log("Received data:", receivedData);
+      
+      // Store the received data globally so it can be cleared
+      window.receivedMorseData = receivedData;
       
       // Update the status
       statusElement.textContent = "Signal received at " + new Date().toLocaleTimeString();
@@ -291,24 +318,51 @@
       translatedTextElement.textContent = result;
     }
     
+    // Function to completely clear all message data
+    function clearAllMessages() {
+      // Clear the DOM elements
+      morseSymbolsElement.innerHTML = "";
+      translatedTextElement.innerHTML = "";
+      
+      // Reset all state variables
+      currentMorseSequence = "";
+      currentWord = "";
+      fullText = "";
+      lastSignalState = false;
+      
+      // Clear any stored data
+      window.receivedMorseData = "";
+      
+      try {
+        localStorage.removeItem("morseBuffer");
+      } catch (e) {
+        console.warn("Error clearing localStorage", e);
+      }
+      
+      // Send message to parent to clear if needed
+      try {
+        parent.postMessage({ command: "clearMorse", status: "cleared" }, "*");
+      } catch (e) {
+        console.error("Failed to send clear message to parent", e);
+      }
+      
+      // Update the status
+      statusElement.textContent = "All messages cleared at " + new Date().toLocaleTimeString();
+      console.log("ALL MORSE DATA CLEARED COMPLETELY");
+      
+      // If there were any timers or intervals, clear them
+      if (window.morseTimers) {
+        window.morseTimers.forEach(timerId => clearTimeout(timerId));
+        window.morseTimers = [];
+      }
+    }
+    
     // Initialize the status
     statusElement.textContent = "Ready to receive Morse code signals";
     
     // Add event listener for the clear button
     document.getElementById("clear-button").addEventListener("click", function() {
-      // Clear the displays
-      morseSymbolsElement.textContent = "";
-      translatedTextElement.textContent = "";
-      
-      // Reset the variables
-      currentMorseSequence = "";
-      currentWord = "";
-      fullText = "";
-      
-      // Update status
-      statusElement.textContent = "Display cleared at " + new Date().toLocaleTimeString();
-      
-      console.log("Morse code display cleared");
+      clearAllMessages();
     });
   </script>
 </body>

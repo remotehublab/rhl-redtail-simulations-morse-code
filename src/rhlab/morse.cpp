@@ -14,13 +14,13 @@ void MorseSimulation::initialize(){
 // Interpret the signal based on its duration
 void MorseSimulation::interpretSignal(bool isHigh, double duration) {
 
-    this->log() << "Interpreting signal: " << (isHigh ? "HIGH" : "LOW") << " with duration " << (duration * 1000) << " ms" << endl;
+    this->log() << "Interpreting signal: " << (isHigh ? "HIGH" : "LOW") << " with duration " << duration << " s" << endl;
     
     // Define time thresholds for dots, dashes, and spaces
-    const double DOT_THRESHOLD = 0.001;        // 1 millisecond
-    const double DASH_THRESHOLD = 0.0015;      // 1.5 milliseconds
-    const double LETTER_SPACE = 0.002;         // 2 milliseconds
-    const double WORD_SPACE = 0.004;           // 4 milliseconds
+    const double DOT_THRESHOLD = 1;        // 1 seconds
+    const double DASH_THRESHOLD = 1.5;      // 1.5 seconds
+    const double LETTER_SPACE = 2;         // 2 seconds
+    const double WORD_SPACE = 4;           // 4 seconds
     
     if (isHigh) {
         // Signal was high (mark)
@@ -68,7 +68,7 @@ void MorseSimulation::update(double delta) {
     // If signal changed, calculate duration and interpret
     if (currentSignal != lastSignal) {
         // Calculate duration in seconds
-        double duration = (currentTime - lastTransitionTime) / (double)CLOCKS_PER_SEC;
+        double duration = (currentTime - lastTransitionTime) / (double)this->timeManager->getClocksPerSec();
         
         // Log the duration
         this->log() << "Signal was " << (lastSignal ? "HIGH(1)" : "LOW(0)") << " for " << duration << " seconds" << endl;
