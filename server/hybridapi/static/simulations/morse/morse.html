@@ -13,27 +13,6 @@
       color: #333;
     }
     
-    .button-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    
-    .clear-btn {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    
-    .clear-btn:hover {
-      background-color: #2980b9;
-    }
-    
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -152,10 +131,6 @@
       <div class="translated-text" id="translated-text"></div>
     </div>
     
-    <div class="button-container">
-      <button id="clear-button" class="clear-btn">Clear Messages</button>
-    </div>
-    
     <div class="morse-legend">
       <h3>Morse Code Legend</h3>
       <div class="legend-grid">
@@ -198,7 +173,7 @@
     const statusElement = document.getElementById("status");
     const signalLedElement = document.getElementById("signal-led");
     
-    // Store received data globally for potential clearing
+    // Store received data globally
     window.receivedMorseData = "";
     
     // Create array for tracking timers
@@ -234,7 +209,7 @@
       const receivedData = event.data.value;
       console.log("Received data:", receivedData);
       
-      // Store the received data globally so it can be cleared
+      // Store the received data globally
       window.receivedMorseData = receivedData;
       
       // Update the status
@@ -285,16 +260,9 @@
         console.warn("Error clearing localStorage", e);
       }
       
-      // Send message to parent to clear if needed
-      try {
-        parent.postMessage({ command: "clearMorse", status: "cleared" }, "*");
-      } catch (e) {
-        console.error("Failed to send clear message to parent", e);
-      }
-      
       // Update the status
       statusElement.textContent = "All messages cleared at " + new Date().toLocaleTimeString();
-      console.log("ALL MORSE DATA CLEARED COMPLETELY");
+      console.log("ALL MORSE DATA CLEARED");
       
       // If there were any timers or intervals, clear them
       if (window.morseTimers) {
@@ -305,11 +273,6 @@
     
     // Initialize the status
     statusElement.textContent = "Ready to receive Morse code signals";
-    
-    // Add event listener for the clear button
-    document.getElementById("clear-button").addEventListener("click", function() {
-      clearAllMessages();
-    });
   </script>
 </body>
 </html>

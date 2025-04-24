@@ -145,7 +145,7 @@ void MorseSimulation::updateSpeedThresholds(char speed) {
             break;
         case 'N': // Normal
             DOT_THRESHOLD = 1.0;    // 1.0 seconds
-            DASH_THRESHOLD = 1.5;   // 1.5 seconds
+            DASH_THRESHOLD = 2.0;   // 2.0 seconds
             LETTER_SPACE = 2.0;     // 2.0 seconds
             WORD_SPACE = 4.0;       // 4.0 seconds
             break;
