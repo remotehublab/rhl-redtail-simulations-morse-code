@@ -6,12 +6,14 @@
 #include <cstring>
 #include <sstream>
 #include <stdio.h>
+#include <map>
 
 using namespace std;
 
 namespace RHLab::Morse {
     // fixed buffer size   
     const int BUFFER_SIZE = 200;
+    const int TEXT_BUFFER_SIZE = 100;
 
     struct MorseRequest : public BaseInputDataType {
 
@@ -58,20 +60,28 @@ namespace RHLab::Morse {
 
     // struct that tracks the virtual LED states
     struct MorseData : public BaseOutputDataType {
-        char buffer[BUFFER_SIZE];
+        char buffer[BUFFER_SIZE];          // Morse code buffer (dots, dashes, spaces)
+        char translatedText[TEXT_BUFFER_SIZE]; // Translated text buffer
         int lastPos = 0;
+        int lastTextPos = 0;
 
         public:
             MorseData() {
                 for (int i = 0; i < BUFFER_SIZE; i++){
                     buffer[i] = '\0';
                 } 
+                for (int i = 0; i < TEXT_BUFFER_SIZE; i++){
+                    translatedText[i] = '\0';
+                }
             }
 
             void clearBuffer() {
                 for (int i = 0; i < BUFFER_SIZE; i++)  
                     buffer[i] = '\0';
+                for (int i = 0; i < TEXT_BUFFER_SIZE; i++)
+                    translatedText[i] = '\0';
                 lastPos = 0;
+                lastTextPos = 0;
             }
 
             void addCharacter(char c) {
@@ -83,12 +93,24 @@ namespace RHLab::Morse {
                 buffer[lastPos + 1] = '\0';
             }
 
-            string serialize() const {
-
-                return buffer;
+            void addTranslatedCharacter(char c) {
+                translatedText[lastTextPos] = c;
+                lastTextPos++;
+                if (lastTextPos >= TEXT_BUFFER_SIZE - 2) {
+                    lastTextPos = 0;
+                }
+                translatedText[lastTextPos + 1] = '\0';
             }
 
-
+            string serialize() const {
+                // Combine the Morse buffer and translated text into a JSON-like format
+                string result = "{\"morse\":\"";
+                result += buffer;
+                result += "\",\"text\":\"";
+                result += translatedText;
+                result += "\"}";
+                return result;
+            }
     };
 
 
@@ -99,9 +121,21 @@ namespace RHLab::Morse {
             double DASH_THRESHOLD = 1.5;
             double LETTER_SPACE = 2.0;
             double WORD_SPACE = 4.0;
+            
+            // Morse code translator
+            std::map<std::string, char> morseToChar;
+            
+            // Current morse sequence being built
+            std::string currentSequence;
+            
+            // Process morse code and update translated text
+            void translateMorse(char symbol);
+            
+            // Initialize the morse code dictionary
+            void initializeMorseDictionary();
 
         public:
-            MorseSimulation() = default;
+            MorseSimulation();
             void update(double delta) override;
             void initialize() override;
             void interpretSignal(bool isHigh, double duration);

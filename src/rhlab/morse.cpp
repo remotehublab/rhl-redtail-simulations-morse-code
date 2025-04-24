@@ -1,10 +1,130 @@
 #include <iostream>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include "morse.h"
 
 using namespace std;
 using namespace RHLab::Morse;
+
+MorseSimulation::MorseSimulation() {
+    // Initialize the morse code dictionary in the constructor
+    initializeMorseDictionary();
+    currentSequence = "";
+}
+
+void MorseSimulation::initializeMorseDictionary() {
+    // Letters
+    morseToChar[".-"] = 'A';
+    morseToChar["-..."] = 'B';
+    morseToChar["-.-."] = 'C';
+    morseToChar["-.."] = 'D';
+    morseToChar["."] = 'E';
+    morseToChar["..-."] = 'F';
+    morseToChar["--."] = 'G';
+    morseToChar["...."] = 'H';
+    morseToChar[".."] = 'I';
+    morseToChar[".---"] = 'J';
+    morseToChar["-.-"] = 'K';
+    morseToChar[".-.."] = 'L';
+    morseToChar["--"] = 'M';
+    morseToChar["-."] = 'N';
+    morseToChar["---"] = 'O';
+    morseToChar[".--."] = 'P';
+    morseToChar["--.-"] = 'Q';
+    morseToChar[".-."] = 'R';
+    morseToChar["..."] = 'S';
+    morseToChar["-"] = 'T';
+    morseToChar["..-"] = 'U';
+    morseToChar["...-"] = 'V';
+    morseToChar[".--"] = 'W';
+    morseToChar["-..-"] = 'X';
+    morseToChar["-.--"] = 'Y';
+    morseToChar["--.."] = 'Z';
+    
+    // Numbers
+    morseToChar[".----"] = '1';
+    morseToChar["..---"] = '2';
+    morseToChar["...--"] = '3';
+    morseToChar["....-"] = '4';
+    morseToChar["....."] = '5';
+    morseToChar["-...."] = '6';
+    morseToChar["--..."] = '7';
+    morseToChar["---.."] = '8';
+    morseToChar["----."] = '9';
+    morseToChar["-----"] = '0';
+    
+    // Punctuation
+    morseToChar[".-.-.-"] = '.';
+    morseToChar["--..--"] = ',';
+    morseToChar["..--.."] = '?';
+    morseToChar[".----."] = '\'';
+    morseToChar["-.-.--"] = '!';
+    morseToChar["-..-."] = '/';
+    morseToChar["-.--."] = '(';
+    morseToChar["-.--.-"] = ')';
+    morseToChar[".-..."] = '&';
+    morseToChar["---..."] = ':';
+    morseToChar["-.-.-."] = ';';
+    morseToChar["-...-"] = '=';
+    morseToChar[".-.-."] = '+';
+    morseToChar["-....-"] = '-';
+    morseToChar["..--.-"] = '_';
+    morseToChar[".-..-."] = '"';
+    morseToChar["...-..-"] = '$';
+    morseToChar[".--.-."] = '@';
+}
+
+void MorseSimulation::translateMorse(char symbol) {
+    this->log() << "Translating symbol: " << symbol << endl;
+    
+    // Process according to the symbol
+    if (symbol == '.' || symbol == '-') {
+        // Add to current sequence
+        currentSequence += symbol;
+        this->log() << "Current sequence: " << currentSequence << endl;
+    }
+    else if (symbol == '/') {
+        // Letter space - translate the current sequence
+        if (!currentSequence.empty()) {
+            char translatedChar = '?';
+            
+            // Look up in dictionary
+            if (morseToChar.find(currentSequence) != morseToChar.end()) {
+                translatedChar = morseToChar[currentSequence];
+            }
+            
+            this->log() << "Translated " << currentSequence << " to: " << translatedChar << endl;
+            
+            // Add to translated text
+            this->mState.addTranslatedCharacter(translatedChar);
+            
+            // Reset current sequence
+            currentSequence = "";
+        }
+    }
+    else if (symbol == ' ') {
+        // Word space - translate the current sequence and add a space
+        if (!currentSequence.empty()) {
+            char translatedChar = '?';
+            
+            // Look up in dictionary
+            if (morseToChar.find(currentSequence) != morseToChar.end()) {
+                translatedChar = morseToChar[currentSequence];
+            }
+            
+            this->log() << "Translated " << currentSequence << " to: " << translatedChar << endl;
+            
+            // Add to translated text
+            this->mState.addTranslatedCharacter(translatedChar);
+            
+            // Reset current sequence
+            currentSequence = "";
+        }
+        
+        // Add space
+        this->mState.addTranslatedCharacter(' ');
+    }
+}
 
 void MorseSimulation::initialize(){
     this->targetDevice->initializeSimulation({}, {"morseSignal"});
@@ -44,35 +164,32 @@ void MorseSimulation::updateSpeedThresholds(char speed) {
         ", WORD SPACE: " << WORD_SPACE << endl;
 }
 
-
-
 // Interpret the signal based on its duration
 void MorseSimulation::interpretSignal(bool isHigh, double duration) {
-
     this->log() << "Interpreting signal: " << (isHigh ? "HIGH" : "LOW") << " with duration " << duration << " s" << endl;
-    
     
     if (isHigh) {
         // Signal was high (mark)
         if (duration < DOT_THRESHOLD) {
-            this->mState.addCharacter('.');  // Dot
+            this->mState.addCharacter('.'); // Dot
+            translateMorse('.');
         } else {
-            this->mState.addCharacter('-');  // Dash
+            this->mState.addCharacter('-'); // Dash
+            translateMorse('-');
         }
     } else {
         // Signal was low (space)
         if (duration > WORD_SPACE) {
-            this->mState.addCharacter(' ');  // Word space
+            this->mState.addCharacter(' '); // Word space
+            translateMorse(' ');
         } else if (duration > LETTER_SPACE) {
-            this->mState.addCharacter('/');  // Letter space
+            this->mState.addCharacter('/'); // Letter space
+            translateMorse('/');
         }
     }
 }
 
-
-
 void MorseSimulation::update(double delta) {
-
     MorseRequest userRequest;
     bool requestWasRead = readRequest(userRequest);
     if(requestWasRead) {
@@ -84,6 +201,7 @@ void MorseSimulation::update(double delta) {
         // do something with speed or clearing
         if (userRequest.clearing) {
             this->mState.clearBuffer();
+            this->currentSequence = ""; // Clear current sequence
             this->log() << "Clearing buffer" << endl;
 
             // Request state report to update the UI
@@ -131,5 +249,4 @@ void MorseSimulation::update(double delta) {
         // Request state report to update the UI
         requestReportState();
     }
-    
 }

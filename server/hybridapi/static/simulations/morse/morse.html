@@ -192,33 +192,11 @@
   </div>
   
   <script>
-    // Define the Morse code dictionary
-    const morseToText = {
-      ".-": "A", "-...": "B", "-.-.": "C", "-..": "D", ".": "E",
-      "..-.": "F", "--.": "G", "....": "H", "..": "I", ".---": "J",
-      "-.-": "K", ".-..": "L", "--": "M", "-.": "N", "---": "O",
-      ".--.": "P", "--.-": "Q", ".-.": "R", "...": "S", "-": "T",
-      "..-": "U", "...-": "V", ".--": "W", "-..-": "X", "-.--": "Y",
-      "--..": "Z", ".----": "1", "..---": "2", "...--": "3", "....-": "4",
-      ".....": "5", "-....": "6", "--...": "7", "---..": "8", "----.": "9",
-      "-----": "0", ".-.-.-": ".", "--..--": ",", "..--..": "?",
-      ".----.": "'", "-.-.--": "!", "-..-.": "/", "-.--.": "(",
-      "-.--.-": ")", ".-...": "&", "---...": ":", "-.-.-.": ";",
-      "-...-": "=", ".-.-.": "+", "-....-": "-", "..--.-": "_",
-      ".-..-.": "\"", "...-..-": "$", ".--.-.": "@"
-    };
-    
     // DOM elements
     const morseSymbolsElement = document.getElementById("morse-symbols");
     const translatedTextElement = document.getElementById("translated-text");
     const statusElement = document.getElementById("status");
     const signalLedElement = document.getElementById("signal-led");
-    
-    // Current state
-    let currentMorseSequence = "";
-    let currentWord = "";
-    let fullText = "";
-    let lastSignalState = false;
     
     // Store received data globally for potential clearing
     window.receivedMorseData = "";
@@ -268,54 +246,28 @@
     
     // Function to process morse code and update the UI
     function processMorseCode(morseData) {
-      // Update the morse symbols display
-      morseSymbolsElement.textContent = morseData;
-      
-      // Parse the morse data into characters/words
-      let currentSequence = "";
-      let result = "";
-      
-      for (let i = 0; i < morseData.length; i++) {
-        const symbol = morseData[i];
+      try {
+        // Parse the JSON data from the backend
+        const data = JSON.parse(morseData);
         
-        // Process different morse symbols
-        if (symbol === '.' || symbol === '-') {
-          // Add to current sequence
-          currentSequence += symbol;
-          
-          // Show active signal
-          signalLedElement.classList.add("active");
-          setTimeout(() => {
-            signalLedElement.classList.remove("active");
-          }, 100);
-        } 
-        else if (symbol === '/') {
-          // Letter space - look up the character
-          if (currentSequence) {
-            const character = morseToText[currentSequence] || '?';
-            result += character;
-            currentSequence = "";
-          }
-        } 
-        else if (symbol === ' ') {
-          // Word space - add the last character and a space
-          if (currentSequence) {
-            const character = morseToText[currentSequence] || '?';
-            result += character;
-            currentSequence = "";
-          }
-          result += " ";
-        }
+        // Update the morse symbols display
+        morseSymbolsElement.textContent = data.morse;
+        
+        // Update the translated text directly from the backend
+        translatedTextElement.textContent = data.text;
+        
+        // Show active signal briefly
+        signalLedElement.classList.add("active");
+        setTimeout(() => {
+          signalLedElement.classList.remove("active");
+        }, 100);
+        
+      } catch (e) {
+        console.error("Error processing morse data:", e);
+        
+        // Fallback to the old format if JSON parsing fails
+        morseSymbolsElement.textContent = morseData;
       }
-      
-      // Add any remaining sequence
-      if (currentSequence) {
-        const character = morseToText[currentSequence] || '?';
-        result += character;
-      }
-      
-      // Update the translated text display
-      translatedTextElement.textContent = result;
     }
     
     // Function to completely clear all message data
@@ -323,12 +275,6 @@
       // Clear the DOM elements
       morseSymbolsElement.innerHTML = "";
       translatedTextElement.innerHTML = "";
-      
-      // Reset all state variables
-      currentMorseSequence = "";
-      currentWord = "";
-      fullText = "";
-      lastSignalState = false;
       
       // Clear any stored data
       window.receivedMorseData = "";
