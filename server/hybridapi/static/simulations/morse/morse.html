@@ -235,6 +235,15 @@
     // Create array for tracking timers
     window.morseTimers = [];
     
+    // Function to send message to parent window
+    function sendMessage(message) {
+      window.parent.postMessage({
+        messageType: "web2sim",
+        value: message
+      }, "*");
+      console.log(`Sent message: ${message}`);
+    }
+    
     // Initialize event listeners for controls
     speedSelectElement.addEventListener("change", function() {
       // Get selected speed
@@ -244,33 +253,44 @@
       // For speed change, clearing is 0
       const message = `${selectedSpeed}:0`;
       
-      // Send message to parent window with proper messageType
-      window.parent.postMessage({
-        messageType: "web2sim",
-        value: message
-      }, "*");
+      // Send message to parent window
+      sendMessage(message);
       
-      console.log(`Speed changed to: ${selectedSpeed}`);
       statusElement.textContent = `Speed set to ${selectedSpeed} at ${new Date().toLocaleTimeString()}`;
     });
     
-    // Clear button click handler
+    // Clear button click handler with immediate auto-restore
     clearButtonElement.addEventListener("click", function() {
       // Get current speed
-      const currentSpeed = speedSelectElement.value; // "normal", "fast", or "slow"
+      const currentSpeed = speedSelectElement.value;
       
-      // Create message with format "<SPEED>:<CLEARING>"
-      // For clearing, clearing is 1
-      const message = `${currentSpeed}:1`;
+      // Clear the DOM elements
+      morseSymbolsElement.innerHTML = "";
+      translatedTextElement.innerHTML = "";
       
-      // Send message to parent window with proper messageType
-      window.parent.postMessage({
-        messageType: "web2sim",
-        value: message
-      }, "*");
+      // Clear any stored data
+      window.receivedMorseData = "";
       
-      console.log(`Clear request sent: ${message}`);
-      statusElement.textContent = `Clear requested at ${new Date().toLocaleTimeString()}`;
+      // If there were any timers or intervals, clear them
+      if (window.morseTimers) {
+        window.morseTimers.forEach(timerId => clearTimeout(timerId));
+        window.morseTimers = [];
+      }
+      
+      // Send clear message to parent window
+      sendMessage(`${currentSpeed}:1`);
+      
+      // Update status
+      statusElement.textContent = `Messages cleared at ${new Date().toLocaleTimeString()}`;
+      
+      // Add a very short delay (50ms) to ensure messages are processed in proper order
+      setTimeout(() => {
+        // Send restore message
+        sendMessage(`${currentSpeed}:0`);
+        
+        // Update status
+        statusElement.textContent = `Ready to receive at ${new Date().toLocaleTimeString()}`;
+      }, 50);
     });
     
     // Process incoming messages from parent
