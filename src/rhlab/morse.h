@@ -103,13 +103,7 @@ namespace RHLab::Morse {
             }
 
             string serialize() const {
-                // Combine the Morse buffer and translated text into a JSON-like format
-                string result = "{\"morse\":\"";
-                result += buffer;
-                result += "\",\"text\":\"";
-                result += translatedText;
-                result += "\"}";
-                return result;
+                return translatedText;
             }
     };
 
