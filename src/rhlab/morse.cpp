@@ -148,6 +148,7 @@ void MorseSimulation::addMorseCharacter(char symbol) {
     this->mState.replaceWithPhrase(translated);
 }
 
+
 void MorseSimulation::initialize(){
     this->targetDevice->initializeSimulation({}, {"morseSignal"});
     setReportWhenMarked(true);
