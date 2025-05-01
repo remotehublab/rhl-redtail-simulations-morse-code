@@ -7,17 +7,19 @@
 #include <cstring>
 #include <sstream>
 #include <stdio.h>
+#include <vector>
 
 using namespace std;
 
 namespace RHLab::LEDMatrix {
-    
-    const int INPUTS = 4; // Latch, Pulse and data Green, data Red (from the target device to the simulation)
-    const int OUTPUTS = 0; // No need for any data in
 
     const int COLS = 16;
     const int ROWS = 16;
     const int BITS_PER_LED = 2; // 00 = off; 01 = green; 10 = red; 11 = yellow
+    
+    const int INPUTS = 4; // Latch, Pulse and data Green, data Red (from the target device to the simulation)
+    const int OUTPUTS = 0; // No need for any data in
+    
 
     // struct that receives the string; NOT USED FOR NOW
     struct MatrixRequest : public BaseInputDataType {
@@ -66,9 +68,8 @@ namespace RHLab::LEDMatrix {
         public:
             MatrixSimulation() = default;
             void update(double delta) override;
-            bool readSerialCommunication(bool buffer[], int bits);
+            bool readSerialCommunication(vector<vector<bool>>& buffer, vector<string>& gpios);
             void initialize() override;
-
     };
 }
 

@@ -3,7 +3,7 @@ description: This is a simulation of a LED Matrix
 
 iframe:
   url: "matrix/matrix.html"
-  height: 500
+  height: 900
 
 gpios:
   dut2sim:
@@ -29,7 +29,7 @@ serial:
       url: matrix/
       samples:
       # Files must have the following format: "01001001" (or whatever)
-        startup_image: 
+        static: 
           file: static.txt
           name: Static
         bee: 
