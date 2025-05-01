@@ -76,55 +76,58 @@ void MorseSimulation::initializeMorseDictionary() {
 
 void MorseSimulation::translateMorse(char symbol) {
     this->log() << "Translating symbol: " << symbol << endl;
+    this->log() << "Buffer before update: \"" << this->mState.translatedText << "\"" << endl;
     
     // Process according to the symbol
     if (symbol == '.' || symbol == '-') {
         // Add to current sequence
         currentSequence += symbol;
         this->log() << "Current sequence: " << currentSequence << endl;
-    }
-    else if (symbol == '/') {
-        // Letter space - translate the current sequence
-        if (!currentSequence.empty()) {
-            char translatedChar = '?';
-            
-            // Look up in dictionary
-            if (morseToChar.find(currentSequence) != morseToChar.end()) {
-                translatedChar = morseToChar[currentSequence];
-            }
-            
-            this->log() << "Translated " << currentSequence << " to: " << translatedChar << endl;
-            
-            // Add to translated text
-            this->mState.addTranslatedCharacter(translatedChar);
-            
-            // Reset current sequence
-            currentSequence = "";
-        }
-    }
-    else if (symbol == ' ') {
-        // Word space - translate the current sequence and add a space
-        if (!currentSequence.empty()) {
-            char translatedChar = '?';
-            
-            // Look up in dictionary
-            if (morseToChar.find(currentSequence) != morseToChar.end()) {
-                translatedChar = morseToChar[currentSequence];
-            }
-            
-            this->log() << "Translated " << currentSequence << " to: " << translatedChar << endl;
-            
-            // Add to translated text
-            this->mState.addTranslatedCharacter(translatedChar);
-            
-            // Reset current sequence
-            currentSequence = "";
+        
+        // Translate the current sequence and update the display in real-time
+        char translatedChar = '?';
+        
+        // Look up in dictionary
+        if (morseToChar.find(currentSequence) != morseToChar.end()) {
+            translatedChar = morseToChar[currentSequence];
         }
         
+        this->log() << "Partial translation " << currentSequence << " to: " << translatedChar << endl;
+        
+        // Replace the last character or add a new one
+        if (this->mState.lastTextPos > 0) {
+            // Replace the last character with the new translation
+            this->mState.translatedText[this->mState.lastTextPos - 1] = translatedChar;
+        } else {
+            // Add the first character
+            this->mState.addTranslatedCharacter(translatedChar);
+        }
+        
+        // Log the current buffer content
+        this->log() << "Current buffer: \"" << this->mState.translatedText << "\"" << endl;
+    }
+    else if (symbol == '/') {
+        // Letter space - finalize the current character and reset for the next one
+        this->log() << "Letter space detected, resetting sequence" << endl;
+        currentSequence = "";
+        // Move to the next character position
+        this->mState.lastTextPos++;
+        
+        // Log the current buffer content
+        this->log() << "Current buffer: \"" << this->mState.translatedText << "\"" << endl;
+    }
+    else if (symbol == ' ') {
+        // Word space - finalize the current character, reset, and add a space
+        this->log() << "Word space detected, adding space and resetting sequence" << endl;
+        currentSequence = "";
         // Add space
         this->mState.addTranslatedCharacter(' ');
+        
+        // Log the current buffer content
+        this->log() << "Current buffer: \"" << this->mState.translatedText << "\"" << endl;
     }
 }
+
 
 void MorseSimulation::initialize(){
     this->targetDevice->initializeSimulation({}, {"morseSignal"});
