@@ -118,7 +118,7 @@ namespace RHLab::Morse {
         private:
             // Speed threshold variables
             double DOT_THRESHOLD = 1.0;
-            double DASH_THRESHOLD = 2.0;
+            double DASH_THRESHOLD = 1.5;
             double LETTER_SPACE = 2.0;
             double WORD_SPACE = 4.0;
             
