@@ -343,38 +343,53 @@
       
       console.log("Unhandled message:", event.data);
     });
+      
     
     // Function to process morse code and update the UI
-    function processMorseCode(morseData) {
-      try {
-        // Parse the JSON data from the backend
-        const data = JSON.parse(morseData);
+    function processMorseCode(inputData) {
+        console.log("Processing input:", inputData);
+          
+          // If parsing fails, assume it's a direct character input
+          const inputChar = inputData.trim().toUpperCase();
+          
+          // Define the Morse code dictionary
+          const morseDict = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+            'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
+          'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
+          'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+          'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
+          'Z': '--..', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+          '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+          '0': '-----', ' ': '/'
+        };
         
-        // Update the morse symbols display
-        morseSymbolsElement.textContent = data.morse;
+        // Display the original character in the translated text area
+        translatedTextElement.textContent = inputChar;
         
-        // Update the translated text directly from the backend
-        translatedTextElement.textContent = data.text;
+        // Look up and display the Morse code
+        if (morseDict[inputChar]) {
+          morseSymbolsElement.textContent = morseDict[inputChar];
+        } else {
+          morseSymbolsElement.textContent = "?"; // Unknown character
+        }
         
         // Show active signal briefly
         signalLedElement.classList.add("active");
         setTimeout(() => {
           signalLedElement.classList.remove("active");
         }, 100);
-        
-      } catch (e) {
-        console.error("Error processing morse data:", e);
-        
-        // Fallback to the old format if JSON parsing fails
-        morseSymbolsElement.textContent = morseData;
-      }
+          
     }
-    
+
+
     // Function to completely clear all message data
     function clearAllMessages() {
       // Clear the DOM elements
       morseSymbolsElement.innerHTML = "";
       translatedTextElement.innerHTML = "";
+
+      
       
       // Clear any stored data
       window.receivedMorseData = "";
