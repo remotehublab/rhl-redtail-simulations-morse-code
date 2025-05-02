@@ -228,6 +228,8 @@
     const signalLedElement = document.getElementById("signal-led");
     const speedSelectElement = document.getElementById("speed-select");
     const clearButtonElement = document.getElementById("clear-btn");
+
+    
     
     // Store received data globally
     window.receivedMorseData = "";
@@ -343,14 +345,15 @@
       
       console.log("Unhandled message:", event.data);
     });
-      
+
+    
+    
+    let fullMorseHistory = "";
+
     
     // Function to process morse code and update the UI
-    function processMorseCode(inputData) {
+      function processMorseCode(inputData) {
         console.log("Processing input:", inputData);
-          
-          // If parsing fails, assume it's a direct character input
-          const inputChar = inputData.trim().toUpperCase();
           
           // Define the Morse code dictionary
           const morseDict = {
@@ -363,18 +366,22 @@
           '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
           '0': '-----', ' ': '/'
         };
-        
-        // Display the original character in the translated text area
-        translatedTextElement.textContent = inputChar;
-        
-        // Look up and display the Morse code
-        if (morseDict[inputChar]) {
-          morseSymbolsElement.textContent = morseDict[inputChar];
-        } else {
-          morseSymbolsElement.textContent = "?"; // Unknown character
+
+        // Uppercase and trim the input string
+        const inputChars = inputData.trim().toUpperCase().split("");
+
+        let translatedText = "";
+        let morseSymbols = "";
+
+        for (const char of inputChars) {
+          translatedText += char + " ";
+          morseSymbols += (morseDict[char] || "?") + " ";
         }
         
-        // Show active signal briefly
+        translatedTextElement.textContent = translatedText.trim();
+        morseSymbolsElement.textContent = morseSymbols.trim();
+        
+        // Show LED signal 
         signalLedElement.classList.add("active");
         setTimeout(() => {
           signalLedElement.classList.remove("active");
