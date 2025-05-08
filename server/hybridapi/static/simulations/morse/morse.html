@@ -214,6 +214,22 @@
         <div class="legend-item">X: -..-</div>
         <div class="legend-item">Y: -.--</div>
         <div class="legend-item">Z: --..</div>
+        <div class="legend-item">0: -----</div>
+        <div class="legend-item">1: .----</div>
+        <div class="legend-item">2: ..---</div>
+        <div class="legend-item">3: ...--</div>
+        <div class="legend-item">4: ....-</div>
+        <div class="legend-item">5: .....</div>
+        <div class="legend-item">6: -....</div>
+        <div class="legend-item">7: --...</div>
+        <div class="legend-item">8: ---..</div>
+        <div class="legend-item">9: ----.</div>
+        <div class="legend-item">.: .-.-.-</div>
+        <div class="legend-item">,: --..--</div>
+        <div class="legend-item">?: ..--..</div>
+        <div class="legend-item">!: -.-.--</div>
+        <div class="legend-item">/: -..-.</div>
+        <div class="legend-item">Space: /</div>
       </div>
     </div>
     
@@ -229,8 +245,6 @@
     const speedSelectElement = document.getElementById("speed-select");
     const clearButtonElement = document.getElementById("clear-btn");
 
-    
-    
     // Store received data globally
     window.receivedMorseData = "";
     
@@ -346,57 +360,61 @@
       console.log("Unhandled message:", event.data);
     });
 
-    
-    
     let fullMorseHistory = "";
-
     
     // Function to process morse code and update the UI
-      function processMorseCode(inputData) {
-        console.log("Processing input:", inputData);
-          
-          // Define the Morse code dictionary
-          const morseDict = {
-            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
-            'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
-          'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
-          'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
-          'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
-          'Z': '--..', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
-          '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
-          '0': '-----', ' ': '/'
-        };
+    function processMorseCode(inputData) {
+      console.log("Processing input:", JSON.stringify(inputData));
+      
+      // Define the Morse code dictionary (encode)
+      const morseDict = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+        'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
+        'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
+        'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+        'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
+        'Z': '--..', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+        '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+        '0': '-----', ' ': '/', '.': '.-.-.-', ',': '--..--', '?': '..--..',
+        "'": '.----.', '!': '-.-.--', '/': '-..-.', '(': '-.--.', 
+        ')': '-.--.-', '&': '.-...', ':': '---...', ';': '-.-.-.', 
+        '=': '-...-', '+': '.-.-.', '-': '-....-', '_': '..--.-', 
+        '"': '.-..-.', '$': '...-..-', '@': '.--.-.'
+      };
 
-        // Uppercase and trim the input string
-        const inputChars = inputData.trim().toUpperCase().split("");
-
-        let translatedText = "";
-        let morseSymbols = "";
-
-        for (const char of inputChars) {
-          translatedText += char + " ";
-          morseSymbols += (morseDict[char] || "?") + " ";
+      // First convert slashes to spaces for display in the text output
+      const displayText = inputData.replace(/\//g, ' ');
+      translatedTextElement.textContent = displayText;
+      
+      // Convert to Morse symbols - keeping the slashes for the Morse code representation
+      let morseSymbols = "";
+      for (const char of inputData) {
+        if (morseDict[char.toUpperCase()]) {
+          morseSymbols += morseDict[char.toUpperCase()] + " ";
+        } else {
+          morseSymbols += "? ";
         }
-        
-        translatedTextElement.textContent = translatedText.trim();
-        morseSymbolsElement.textContent = morseSymbols.trim();
-        
-        // Show LED signal 
-        signalLedElement.classList.add("active");
-        setTimeout(() => {
-          signalLedElement.classList.remove("active");
-        }, 100);
-          
+      }
+      
+      morseSymbolsElement.textContent = morseSymbols.trim();
+      
+      // Debug logs
+      console.log("Original:", JSON.stringify(inputData));
+      console.log("Display text:", JSON.stringify(displayText));
+      console.log("Morse symbols:", morseSymbols);
+      
+      // Show LED signal 
+      signalLedElement.classList.add("active");
+      setTimeout(() => {
+        signalLedElement.classList.remove("active");
+      }, 100);
     }
-
 
     // Function to completely clear all message data
     function clearAllMessages() {
       // Clear the DOM elements
       morseSymbolsElement.innerHTML = "";
       translatedTextElement.innerHTML = "";
-
-      
       
       // Clear any stored data
       window.receivedMorseData = "";
